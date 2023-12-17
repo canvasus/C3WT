@@ -128,13 +128,12 @@ void connect(AudioStream &source, unsigned char sourceOutput, AudioStream &desti
 
 void updateVoices()
 {
-  static elapsedMillis timer = 0;
-  if (timer > 10)
+  static elapsedMicros timer = 0;
+  if (timer > 1000)
   {
     timer = 0;
     voiceBank1.update();
   }
-  
 }
 
 void displayResources()

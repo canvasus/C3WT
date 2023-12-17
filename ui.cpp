@@ -6,7 +6,7 @@ Encoder encoders[1] = {Encoder(ENC1_A, ENC1_B)};
 uint16_t coordinates[5][2];
 
 Page pages[NR_PAGES];
-Header header;
+//Header header;
 uint8_t currentPage = PAGE_PATCH;
 uint8_t backgroundPage = PAGE_PATCH;
 bool forceReload = false;
@@ -20,8 +20,7 @@ void setupUI()
   tft.useCapINT(RA8875_INT);
   tft.fillWindow(MAIN_BG_COLOR);
   tft.enableCapISR(true);
-  tft.setFontScale(1);
-  //tft.setFont(Arial_24);
+  //tft.setFontScale(1);
 
   //showStartupScreen();
   configurePage_patch();
@@ -36,7 +35,9 @@ void setupUI()
   configurePage_screenSaver();
   configurePage_envelope();
   configurePage_filter();
-  header.tft = &tft;
+  configurePage_controls();
+
+  //header.tft = &tft;
 }
 
 void showStartupScreen()
@@ -104,7 +105,7 @@ void updatePage(uint8_t pageId, bool firstCall)
     if (tft.getTouchState() == CTP_FINGER_DOWN)
     {
       tft.getTScoordinates(coordinates);
-      Serial.printf("X: %d, Y: %d\n", coordinates[0][0], coordinates[0][1]);
+      //Serial.printf("X: %d, Y: %d\n", coordinates[0][0], coordinates[0][1]);
       newSelectedId = pages[pageId].checkTouch(coordinates[0][0], coordinates[0][1]);
     }
     tft.enableCapISR(); // needed?
@@ -162,11 +163,10 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].backPageId = PAGE_PATCH;
   pages[PAGE].color1 = SELECTED_COLOR;
   pages[PAGE].color2 = IDLE_COLOR;
-  pages[PAGE].fontSize = 14;
 
   const uint16_t column_w = 140;
-  const uint16_t row_h = 70;
-  const uint8_t padding = 2;
+  const uint16_t row_h = 60;
+  const uint8_t padding = 4;
 
   widgetIndex = pages[PAGE].addWidget(PAGE_PATCHNAME, 0, 0, 400, 60);
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
@@ -209,6 +209,10 @@ FLASHMEM void configurePage_patch()
 
   widgetIndex = pages[PAGE].addWidget(PAGE_EFFECTS, 2* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("EFX");
+  pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
+
+  widgetIndex = pages[PAGE].addWidget(PAGE_CONTROLS, 3* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
+  pages[PAGE].widgets[widgetIndex].label("CTRL");
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 
 
@@ -505,7 +509,7 @@ FLASHMEM void configurePage_modulation2()
    // draw row headers
   const uint8_t nrRows = 7;
   const uint8_t nrColumns = 5;
-  const uint8_t rowHeight = 20;
+  const uint8_t rowHeight = 50;
   const uint8_t padding = 2;
   const uint8_t columnWidth = 120;
 
@@ -733,7 +737,7 @@ FLASHMEM void configurePage_patchName()
   pages[PAGE].backPageId = PAGE_PATCH;
   pages[PAGE].color1 = SELECTED_COLOR;
   pages[PAGE].color2 = IDLE_COLOR;
-  pages[PAGE].fontSize = 14;
+  //pages[PAGE].fontSize = 14;
 
   staticIndex = pages[PAGE].addStatic(0, 20, 20, 500, 200);
   pages[PAGE].statics[staticIndex].color1 = PATCHNAME_BG_COLOR;
@@ -779,69 +783,71 @@ FLASHMEM void configurePage_lfo()
   pages[PAGE].color1 = SELECTED_COLOR;
   pages[PAGE].color2 = IDLE_COLOR;
 
-  widgetIndex = pages[PAGE].addWidget(LFO1_WAVEFORM, 0, 0, 80, 40);
+  const uint16_t column_w = 140;
+  const uint16_t row_h = 50;
+  const uint8_t padding = 4;
+  const uint16_t varOffsetX = 60;
+
+  widgetIndex = pages[PAGE].addWidget(LFO1_WAVEFORM, 0* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("LFO1");
   pages[PAGE].widgets[widgetIndex].drawWaveform = true;
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 45;
-  pages[PAGE].widgets[widgetIndex].varOffsetY = 4;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.lfo1_waveform;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
-  widgetIndex = pages[PAGE].addWidget(LFO1_FREQUENCY, 0, 42, 80, 20);
+  widgetIndex = pages[PAGE].addWidget(LFO1_FREQUENCY, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("Freq");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 45;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.lfo1Frequency;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
-  widgetIndex = pages[PAGE].addWidget(LFO1_AMPLITUDE, 0, 64, 80, 20);
+  widgetIndex = pages[PAGE].addWidget(LFO1_AMPLITUDE, 0* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("Ampl");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 45;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.lfo1Level;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
-  widgetIndex = pages[PAGE].addWidget(LFO1_FILTER_MODE, 0, 86, 80, 20);
+  widgetIndex = pages[PAGE].addWidget(LFO1_FILTER_MODE, 0* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("Filt");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 45;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.lfo1FilterMode;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
 
-  widgetIndex = pages[PAGE].addWidget(LFO2_WAVEFORM, 82, 0, 80, 40);
+  widgetIndex = pages[PAGE].addWidget(LFO2_WAVEFORM, 1* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("LFO2");
   pages[PAGE].widgets[widgetIndex].drawWaveform = true;
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 45;
-  pages[PAGE].widgets[widgetIndex].varOffsetY = 4;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.lfo2_waveform;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
-  widgetIndex = pages[PAGE].addWidget(LFO2_FREQUENCY, 82, 42, 80, 20);
+  widgetIndex = pages[PAGE].addWidget(LFO2_FREQUENCY, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("Freq");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 45;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.lfo2Frequency;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
-  widgetIndex = pages[PAGE].addWidget(LFO2_AMPLITUDE, 82, 64, 80, 20);
+  widgetIndex = pages[PAGE].addWidget(LFO2_AMPLITUDE, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("Ampl");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 45;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.lfo2Level;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
-  widgetIndex = pages[PAGE].addWidget(LFO2_FILTER_MODE, 82, 86, 80, 20);
+  widgetIndex = pages[PAGE].addWidget(LFO2_FILTER_MODE, 1* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("Filt");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 45;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.lfo2FilterMode;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 270, 220, 48, 20);
+  widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 680, 410, 120, 60);
   pages[PAGE].widgets[widgetIndex].label("<BACK");
-  //pages[PAGE].widgets[widgetIndex].setI8 = &setPage;
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 }
 
@@ -858,12 +864,13 @@ FLASHMEM void configurePage_wavetable()
   pages[PAGE].animateFunction = &animateWavetable;
 
   const uint16_t column_w = 140;
-  const uint16_t row_h = 60;
-  const uint8_t padding = 2;
+  const uint16_t row_h = 50;
+  const uint8_t padding = 4;
+  const uint16_t varOffsetX = 60;
 
   widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_INDEX, 0* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("wt#");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 30;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.osc1_waveTable_index;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
@@ -872,43 +879,43 @@ FLASHMEM void configurePage_wavetable()
 
   widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_MODE, 1* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("mod");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 30;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.osc1_waveTable_mode;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
   pages[PAGE].widgets[widgetIndex].color1 = WAVETABLE1_SELECTED;
   pages[PAGE].widgets[widgetIndex].color2 = WAVETABLE1_IDLE;
 
-  widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_START, 2* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_START, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("strt");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 26;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_u16 = &voiceBank1.patch.osc1_waveTable_start;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
   pages[PAGE].widgets[widgetIndex].color1 = WAVETABLE1_SELECTED;
   pages[PAGE].widgets[widgetIndex].color2 = WAVETABLE1_IDLE;
 
-  widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_LENGTH, 3* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_LENGTH, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("len");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 25;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_u16 = &voiceBank1.patch.osc1_waveTable_length;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
   pages[PAGE].widgets[widgetIndex].color1 = WAVETABLE1_SELECTED;
   pages[PAGE].widgets[widgetIndex].color2 = WAVETABLE1_IDLE;
   
-  widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_INTERVAL, 4* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_INTERVAL, 0* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("int");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 24;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_u16 = &voiceBank1.patch.osc1_waveTable_interval;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
   pages[PAGE].widgets[widgetIndex].color1 = WAVETABLE1_SELECTED;
   pages[PAGE].widgets[widgetIndex].color2 = WAVETABLE1_IDLE;
 
-  widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_STEPSIZE, 5* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_STEPSIZE, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("stp");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 24;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_u16 = &voiceBank1.patch.osc1_waveTable_stepSize;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
@@ -916,54 +923,54 @@ FLASHMEM void configurePage_wavetable()
   pages[PAGE].widgets[widgetIndex].color2 = WAVETABLE1_IDLE;
 
 
- widgetIndex = pages[PAGE].addWidget(OSC2_WAVETABLE_INDEX, 0* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
+ widgetIndex = pages[PAGE].addWidget(OSC2_WAVETABLE_INDEX, 0* (column_w + padding), 5* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("wt#");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 30;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.osc2_waveTable_index;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
   pages[PAGE].widgets[widgetIndex].color1 = WAVETABLE2_SELECTED;
   pages[PAGE].widgets[widgetIndex].color2 = WAVETABLE2_IDLE;
 
-  widgetIndex = pages[PAGE].addWidget(OSC2_WAVETABLE_MODE, 1* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(OSC2_WAVETABLE_MODE, 1* (column_w + padding), 5* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("mod");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 30;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.osc2_waveTable_mode;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
   pages[PAGE].widgets[widgetIndex].color1 = WAVETABLE2_SELECTED;
   pages[PAGE].widgets[widgetIndex].color2 = WAVETABLE2_IDLE;
 
-  widgetIndex = pages[PAGE].addWidget(OSC2_WAVETABLE_START, 2* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(OSC2_WAVETABLE_START, 0* (column_w + padding), 6* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("strt");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 26;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_u16 = &voiceBank1.patch.osc2_waveTable_start;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
   pages[PAGE].widgets[widgetIndex].color1 = WAVETABLE2_SELECTED;
   pages[PAGE].widgets[widgetIndex].color2 = WAVETABLE2_IDLE;
 
-  widgetIndex = pages[PAGE].addWidget(OSC2_WAVETABLE_LENGTH, 3* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(OSC2_WAVETABLE_LENGTH, 1* (column_w + padding), 6* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("len");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 25;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_u16 = &voiceBank1.patch.osc2_waveTable_length;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
   pages[PAGE].widgets[widgetIndex].color1 = WAVETABLE2_SELECTED;
   pages[PAGE].widgets[widgetIndex].color2 = WAVETABLE2_IDLE;
   
-  widgetIndex = pages[PAGE].addWidget(OSC2_WAVETABLE_INTERVAL, 4* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(OSC2_WAVETABLE_INTERVAL, 0* (column_w + padding), 7* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("int");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 24;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_u16 = &voiceBank1.patch.osc2_waveTable_interval;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
   pages[PAGE].widgets[widgetIndex].color1 = WAVETABLE2_SELECTED;
   pages[PAGE].widgets[widgetIndex].color2 = WAVETABLE2_IDLE;
 
-  widgetIndex = pages[PAGE].addWidget(OSC2_WAVETABLE_STEPSIZE, 5* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(OSC2_WAVETABLE_STEPSIZE, 1* (column_w + padding), 7* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("stp");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 24;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_u16 = &voiceBank1.patch.osc2_waveTable_stepSize;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
@@ -1064,7 +1071,7 @@ FLASHMEM void configurePage_envelope()
 
   const uint16_t column_w = 140;
   const uint16_t row_h = 70;
-  const uint8_t padding = 2;
+  const uint8_t padding = 4;
 
   widgetIndex = pages[PAGE].addWidget(ENV_ATTACK, 0* (column_w + padding), 0* (row_h + padding), column_w, row_h);
   pages[PAGE].widgets[widgetIndex].label("ATTACK");
@@ -1190,6 +1197,38 @@ FLASHMEM void configurePage_filter()
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 }
 
+FLASHMEM void configurePage_controls()
+{
+  uint8_t PAGE = PAGE_CONTROLS;
+  uint8_t widgetIndex = 0;
+  //uint8_t staticIndex = 0;
+  pages[PAGE].tft = &tft;
+  pages[PAGE].backPageId = PAGE_PATCH;
+  pages[PAGE].color1 = SELECTED_COLOR;
+  pages[PAGE].color2 = IDLE_COLOR;
+  //pages[PAGE].animateFunction = &animateAmpEnvelope;
+
+  const uint16_t column_w = 100;
+  const uint16_t row_h = 400;
+  const uint8_t padding = 4;
+
+  widgetIndex = pages[PAGE].addWidget(FILTER_CUTOFF, 0* (column_w + padding), 0* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgets[widgetIndex].label("FRQ");
+  //pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  //pages[PAGE].widgets[widgetIndex].varOffsetX = 80;
+  //pages[PAGE].widgets[widgetIndex].varOffsetY = 30;
+  //pages[PAGE].widgets[widgetIndex].floatPrecision = 0;
+
+  pages[PAGE].widgets[widgetIndex].type = WIDGET_SLIDER_V;
+
+  pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.cutoff;
+  pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
+
+  widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 680, 410, 120, 60);
+  pages[PAGE].widgets[widgetIndex].label("<BACK");
+  pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
+}
+
 //void configurePageArpeggiator()
 //{
     // widgetIndex = pages[PAGE].addWidget(0, 0, 0, 80, 20);
@@ -1207,7 +1246,6 @@ FLASHMEM void configurePage_filter()
   // pages[PAGE].widgets[widgetIndex].setI8 = &adjustBpm;
 //}
 
-//void setPage(uint8_t page, int8_t dummy) { currentPage = page; }
 void setPage(uint8_t page) { currentPage = page; }
 
 void changePatch(uint8_t callerId, int8_t delta)
@@ -1227,8 +1265,8 @@ void changePatch(uint8_t callerId, int8_t delta)
 void adjustVoiceBankWrapper(uint8_t index, int8_t delta)
 {
   voiceBank1.adjustParameter(index, delta);
-  if (index == OSC1_WAVETABLE_INDEX) header.eventString(waveTableNames[voiceBank1.patch.osc1_waveTable_index]);
-  if (index == OSC2_WAVETABLE_INDEX) header.eventString(waveTableNames[voiceBank1.patch.osc2_waveTable_index]);
+  //if (index == OSC1_WAVETABLE_INDEX) header.eventString(waveTableNames[voiceBank1.patch.osc1_waveTable_index]);
+  //if (index == OSC2_WAVETABLE_INDEX) header.eventString(waveTableNames[voiceBank1.patch.osc2_waveTable_index]);
 }
 
 void adjustCharacter(uint8_t charPos, int8_t delta)
@@ -1255,8 +1293,8 @@ void peekPatchNameWrapper(uint8_t index, int8_t delta)
 void animateWavetable(bool firstCall)
 {
   static elapsedMillis animateTimer = 0;
-  const uint16_t x0 = 50;
-  const uint16_t yMid1 = 140;
+  const uint16_t x0 = 400;
+  const uint16_t yMid1 = 100;
   const uint16_t yMid2 = 360;
   const uint16_t h = 60;
 
@@ -1337,16 +1375,16 @@ void animateWavetable2(bool firstCall)
   const uint16_t xOffset = 120;
   const uint8_t scaler = 10;
 
+  if (firstCall)
+  {
+    tft.drawLine(x0 - 5, yMidStart + 5, x0 - 5 + 2 * xOffset, yMidEnd, WAVETABLE_LANES);
+    tft.drawLine(x0 + 256 + 5, yMidStart, x0 + 256 + 5 + 2 * xOffset, yMidEnd, WAVETABLE_LANES);
+  }
+
   if (animateTimer > 50)
   {
     animateTimer = 0;
   
-    if (firstCall)
-    {
-      tft.drawLine(x0 - 3, yMidStart, x0 - 3 + 2 * xOffset, yMidEnd, WAVETABLE_LANES);
-      tft.drawLine(x0 + 256 + 3, yMidStart, x0 + 256 + 3 + 2 * xOffset, yMidEnd, WAVETABLE_LANES);
-    }
-
     for (uint16_t index = 0; index < 256; index++)
     {
       int16_t startSample = startWave[index];
@@ -1433,7 +1471,7 @@ void animateEnvelope(float attack, float decay, float sustain, float release, ui
     _release = release;
     uint16_t dx1 = attack / 10;
     uint16_t dx2 = decay / 10;
-    uint16_t dx4 = release / 20;
+    uint16_t dx4 = release / 50;
     uint16_t dx3 = w - dx1 - dx2 - dx4; 
     uint16_t dy1 = h * sustain;
     if (MODE == 0)
@@ -1459,7 +1497,6 @@ void animateEnvelope(float attack, float decay, float sustain, float release, ui
       tft.fillCircle(x0 + dx1 + dx2 + dx3, y0 - dy1, 5, color);
       tft.fillCircle(x0 + dx1 + dx2 + dx3 + dx4, y0, 5, color);
     }
-
   }
 }
 

@@ -7,11 +7,22 @@ MidiSettings midiSettings;
 IntervalTimer masterClockTimer;
 Arpeggiator arpeggiator(&midiSettings, &voiceBank1);
 
+
+USBHost myusb;
+USBHub hub1(myusb);
+MIDIDevice_BigBuffer midi1(myusb);
+//MIDIDevice_BigBuffer midi2(myusb);
+//MIDIDevice_BigBuffer midi3(myusb);
+
 uint8_t noteStatus[128];
 
 void setupMidi()
 {
   Serial.println("MIDI SETUP");
+
+  myusb.begin();
+  delay(200);
+  
   usbMIDI.setHandleNoteOn(myNoteOn);
   usbMIDI.setHandleNoteOff(myNoteOff);
   usbMIDI.setHandleControlChange(myControlChange);
@@ -21,6 +32,12 @@ void setupMidi()
   serialMIDI.setHandleNoteOff(myNoteOff);
   serialMIDI.setHandleControlChange(myControlChange);
   serialMIDI.setHandlePitchBend(myPitchBend);
+
+  midi1.setHandleNoteOn(myNoteOn);
+  midi1.setHandleNoteOff(myNoteOff);
+  midi1.setHandleControlChange(myControlChange);
+  midi1.setHandlePitchChange(myPitchBend);
+
   masterClockTimer.begin(&tickMasterClock, midiSettings.oneTickUs);
 }
 
@@ -28,6 +45,7 @@ void updateMidi()
 {
   usbMIDI.read();
   serialMIDI.read();
+  midi1.read();
   //updateArpeggiator();
 }
 
@@ -55,9 +73,9 @@ void myControlChange(uint8_t channel, uint8_t control, uint8_t value)
   }
 }
 
-void myPitchBend(uint8_t channel, int pitch)
+void myPitchBend(uint8_t channel, int pitchBend)
 {
-  // tbd 
+  voiceBank1.setPitchBend(pitchBend);
 }
 
 void tickMasterClock() { arpeggiator.tick(); }

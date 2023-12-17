@@ -3,6 +3,7 @@
 #include <MIDI.h>
 #include "voice.h"
 #include "audioFunc.h"
+#include <USBHost_t36.h>
 
 #define RESOLUTION 4 // 1/16th
 #define MAX_ARP_NOTES 8
@@ -66,7 +67,7 @@ void updateMidi();
 void myNoteOn(uint8_t channel, uint8_t note, uint8_t velocity);
 void myNoteOff(uint8_t channel, uint8_t note, uint8_t velocity);
 void myControlChange(uint8_t channel, uint8_t control, uint8_t value);
-void myPitchBend(uint8_t channel, int pitch);
+void myPitchBend(uint8_t channel, int pitchBend);
 
 void tickMasterClock();
 void updateArpeggiator();

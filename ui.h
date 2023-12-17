@@ -9,23 +9,23 @@
 #include "sdMgr.h"
 #include <Encoder.h>
 
-//#include <ili9488_t3_font_ComicSansMS.h>
+#include <font_Arial.h>
 
 #define SCREEN_YRES           480
 #define SCREEN_XRES           800
 
 #define RA8875_CS     10  // ER-TFTM070 pin 5
 #define RA8875_RESET  9   // ER-TFTM070 pin 11
-#define RA8875_MOSI   11  //ER-TFTM070 pin 7
-#define RA8875_MISO   12  //ER-TFTM070 pin 6
-#define RA8875_SCLK   13  //ER-TFTM070 pin 8
-#define RA8875_INT    32
+#define RA8875_MOSI   11  // ER-TFTM070 pin 7
+#define RA8875_MISO   12  // ER-TFTM070 pin 6
+#define RA8875_SCLK   13  // ER-TFTM070 pin 8
+#define RA8875_INT    32  // FT5206 interrupt, ER-TFTM070 pin 
 
-#define MAXTOUCHLIMIT   1//1...5
+#define MAXTOUCHLIMIT   1 //1...5
 #define CTP_FINGER_UP   1
 #define CTP_FINGER_DOWN 2
 
-#define CTP_INT           32    // touch data ready for read from FT5206 touch controller
+//#define CTP_INT 32    // FT5206 touch controller interrupt
 
 #define ENC1_A  38 //36
 #define ENC1_B  37 //37
@@ -50,7 +50,6 @@
 #define WAVETABLE_BAR_BG      0x8c71
 #define WAVETABLE_LANES       0x7bef
 
-
 #define PAGE_PATCH       0
 #define PAGE_OSCILLATOR  1
 #define PAGE_MODULATION  2
@@ -63,9 +62,10 @@
 #define PAGE_SCREENSAVER 9
 #define PAGE_ENVELOPE    10
 #define PAGE_FILTER      11
+#define PAGE_CONTROLS    12
 //#define PAGE_ARPEGGIATOR 
 
-#define NR_PAGES 12
+#define NR_PAGES 13
 
 #define PAGE_MESSAGE  254
 #define N_A           255
@@ -100,13 +100,12 @@ class Widget
     
     char _label[8];
     void _drawBox(bool selected);
-    //void _drawSliderV(bool selected);
+    void _drawSliderV(bool selected);
     //void _drawSliderH(bool selected);
     //void _drawPot(bool selected);
     void _drawWaveform(bool selected);
     void _drawArray(bool selected);
   public:
-    //ILI9341_t3 * tft = nullptr;
     RA8875 * tft = nullptr;
     void configure(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
     void label(String label);
@@ -126,13 +125,13 @@ class Widget
     uint16_t textColor1 = 0;
     uint16_t textColor2 = 0;
     uint8_t labelOffsetX = 2;
-    uint8_t labelOffsetY = 2;
+    uint8_t labelOffsetY = 4;
     uint8_t varOffsetX = 2;
     uint8_t varOffsetY = 4;
     uint8_t valueMax = 127;
     uint8_t valueMin = 0;
     uint8_t valueScaler = 1;
-    uint8_t fontSize = 10;
+    uint8_t fontSize = 16;
     uint8_t floatPrecision = 2;
     
     SetFunctionI8 setI8 = nullptr;
@@ -162,7 +161,7 @@ class Page
     uint8_t selectedId = 0;
     uint16_t color1 = 0;
     uint16_t color2 = 0;
-    uint8_t fontSize = 10;
+    uint8_t fontSize = 18;
     bool clearOnFirstCall = true;
     int checkTouch(uint16_t xPos, uint16_t yPos);
 };
@@ -190,9 +189,9 @@ void setupUI();
 void showStartupScreen();
 
 void updateUI();
-void updateUiBoardControls();
+//void updateUiBoardControls();
 void updatePage(uint8_t pageId, bool firstCall);
-void updateFooter(String variableName, float value, uint8_t precision);
+//void updateFooter(String variableName, float value, uint8_t precision);
 
 void configurePage_patch();
 void configurePage_oscillator();
@@ -206,8 +205,8 @@ void configurePage_wavetable2();
 void configurePage_screenSaver();
 void configurePage_envelope();
 void configurePage_filter();
+void configurePage_controls();
 
-//void setPage(uint8_t page, int8_t dummy);
 void setPage(uint8_t page);
 void changePatch(uint8_t callerId, int8_t delta);
 void adjustVoiceBankWrapper(uint8_t index, int8_t delta);

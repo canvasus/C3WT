@@ -20,9 +20,9 @@ void Widget::draw(bool selected)
     // case WIDGET_SLIDER_H:
     //   _drawSliderH(selected);
     //   break;
-    // case WIDGET_SLIDER_V:
-    //   _drawSliderV(selected);
-    //   break;
+    case WIDGET_SLIDER_V:
+      _drawSliderV(selected);
+      break;
     // case WIDGET_POT:
     //   _drawPot(selected);
     //   break;
@@ -37,24 +37,30 @@ void Widget::_drawBox(bool selected)
   if (drawBorder && !selected) tft->drawRect(_x, _y, _w, _h, color2);
 
   tft->setTextColor(colors[selected]);
-  // switch (fontSize)
-  // {
-  //   case 12:
-  //     tft->setFont(Arial_12);
-  //     break;
-  //   case 14:
-  //     tft->setFont(Arial_14);
-  //     break;
-  //   case 16:
-  //     tft->setFont(Arial_16);
-  //     break;
-  //   case 24:
-  //     tft->setFont(Arial_24);
-  //     break;
-  //   default:
-  //     tft->setFont(Arial_10);
-  //     break;
-  // }
+  switch (fontSize)
+  {
+    case 12:
+      tft->setFont(Arial_12);
+      break;
+    case 14:
+      tft->setFont(Arial_14);
+      break;
+    case 16:
+      tft->setFont(Arial_16);
+      break;
+    case 18:
+      tft->setFont(Arial_18);
+      break;
+    case 20:
+      tft->setFont(Arial_20);
+      break;
+    case 24:
+      tft->setFont(Arial_24);
+      break;
+    default:
+      tft->setFont(Arial_10);
+      break;
+  }
    
   if (drawLabel)
   {
@@ -76,9 +82,15 @@ void Widget::_drawBox(bool selected)
   if (drawWaveform) _drawWaveform(selected);
 }
 
+void Widget::_drawSliderV(bool selected)
+{
+
+}
+
 void Widget::_drawWaveform(bool selected)
 {
   // uint16_t colors[2] = {color1, color2};
+  //const String names[4] = {"SINE", "SAW", "PULSE", "ARBT"};
   uint16_t x0 = _x + varOffsetX;
   uint16_t y0 = _y + varOffsetY;
   uint8_t waveformIndex = 0;
@@ -89,6 +101,7 @@ void Widget::_drawWaveform(bool selected)
   // {
   //  tft->drawBitmap(x0, y0, epd_bitmap_allArray[3], 32, 32, colors[selected]);
     tft->setCursor(x0 + 4, y0 + 4);
+    //tft->print(names[waveformIndex]);
     tft->print(waveformIndex);
   //}
 }
@@ -97,12 +110,20 @@ bool Widget::checkTouch(uint16_t xPos, uint16_t yPos)
 {
   const uint16_t xMargin = 2;
   const uint16_t yMargin = 2;
+  
   if ( (xPos < _x + xMargin) || (xPos > _x + _w - xMargin) || (yPos < _y + yMargin) || (yPos > _y + _h - yMargin) ) return false;
   else
   {
-    if (activateCb) activateCb(id);
-    return true;
+    switch (type)
+    {
+      case WIDGET_BOX:
+        if (activateCb) activateCb(id);
+        return true;
+      case WIDGET_SLIDER_V:
+        break;
+    }
   }
+  return false;
 }
 
 int Page::checkTouch(uint16_t xPos, uint16_t yPos)

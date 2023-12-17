@@ -314,8 +314,8 @@ void Voice::noteOff(uint8_t note, uint8_t velocity)
 
 void Voice::updateFrequency()
 {
-  float baseFrequency = NOTEFREQS[constrain(currentNote, 0, 127)];
-  float baseFrequencyTransposed = NOTEFREQS[constrain(currentNote + _patch->transpose, 0, 127)];
+  float baseFrequency = NOTEFREQS[constrain(currentNote, 0, 127)] * (1.0 + pitchBend);
+  float baseFrequencyTransposed = NOTEFREQS[constrain(currentNote + _patch->transpose, 0, 127)] * (1.0 + pitchBend);
   _osc1.frequency(baseFrequency * pow(2, _patch->detune / 100.0) * (1.0 + unisonDetune));
   _osc2.frequency(baseFrequencyTransposed * pow(2, -_patch->detune / 100.0) * (1.0 + unisonDetune));
   _pwm.frequency(baseFrequencyTransposed * pow(2, unisonDetune / 100.0));
@@ -1127,6 +1127,17 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
   }
 }
 
+void VoiceBank::setPitchBend(int pitchBend)
+{
+  
+  float bendFactor = pitchBend / 8192.0;
+  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++)
+  {
+    voices[voiceIndex].pitchBend = bendFactor;
+    voices[voiceIndex].updateFrequency();
+  }
+}
+
 void VoiceBank::setAmpEnv_attack(uint16_t attack)
 {
   patch.ampEnvelope_attack = attack * 2.0;
@@ -1307,3 +1318,13 @@ void VoiceBank::importWaveTable(const unsigned int * waveTableI32, int16_t * wav
     //else waveTableI16[2 * index + 1] = (sample1 / (2* preScaler)) + (sample2 / (2* preScaler));
   }
 }
+
+// void updateVoices()
+// {
+//   static elapsedMillis timer = 0;
+//   if (timer > 10)
+//   {
+//     timer = 0;
+//     voiceBank1.update();
+//   }
+// }

@@ -1,5 +1,5 @@
-#include <Audio.h>
-#include "SM2k_control_wm8731.h"
+//#include <Audio.h>
+//#include "SM2k_control_wm8731.h"
 #include <SPI.h>
 #include <RA8875.h>
 #include <Wire.h>
@@ -17,11 +17,11 @@
 #define FT5206_I2C_ADDRESS 0x38
 #define FT5206_REGISTERS 12
 
-AudioOutputI2S        output_i2s;
-AudioSynthWaveform             osc;
-AudioConnection p1(osc, 0, output_i2s , 0);
-AudioConnection p2(osc, 0, output_i2s , 1);
-SM2k_AudioControlWM8731 codecControl1;
+// AudioOutputI2S        output_i2s;
+// AudioSynthWaveform             osc;
+// AudioConnection p1(osc, 0, output_i2s , 0);
+// AudioConnection p2(osc, 0, output_i2s , 1);
+// SM2k_AudioControlWM8731 codecControl1;
 
 RA8875 tft = RA8875(RA8875_CS,RA8875_RESET);
 //FT5206 cts = FT5206(CTP_INT);
@@ -38,14 +38,14 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(TP_INT), getRegisters, CHANGE);
 
   Serial.println("BEGIN");
-  AudioMemory(32);
-  codecControl1.setAddress(0x1A);
-  codecControl1.enable();
-  codecControl1.inputLevel(0.0);
-  osc.begin(1.0, 440.0, WAVEFORM_SINE);
+  // AudioMemory(32);
+  // codecControl1.setAddress(0x1A);
+  // codecControl1.enable();
+  // codecControl1.inputLevel(0.0);
+  // osc.begin(1.0, 440.0, WAVEFORM_SINE);
 
   tft.begin(RA8875_800x480);
-  tft.fillScreen(0xfe01);
+  tft.fillWindow(0xfe01);
 
   Wire1.begin();
   //writeRegister(FT5206_DEVICE_MODE,0);

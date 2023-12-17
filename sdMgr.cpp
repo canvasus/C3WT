@@ -395,7 +395,7 @@ uint8_t peekPatchName(uint8_t patchNr, char * buf)
   return 0;
 }
 
-void checkFileSystem()
+FLASHMEM void checkFileSystem()
 {
   for (uint8_t patchNr = 0; patchNr < NR_PATCHES; patchNr++)
   {
