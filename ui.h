@@ -49,6 +49,8 @@
 #define WAVETABLE2_IDLE       0xcebd
 #define WAVETABLE_BAR_BG      0x8c71
 #define WAVETABLE_LANES       0x7bef
+#define SLIDER_LANE           0x7bef
+#define SLIDER_HANDLE         0xfd60
 
 #define PAGE_PATCH       0
 #define PAGE_OSCILLATOR  1
@@ -87,6 +89,7 @@
 #define MAX_STATICS 16
 
 typedef void (*SetFunctionI8)(uint8_t index, int8_t value);
+typedef void (*SetFunctionF)(uint8_t index, float value);
 typedef void (*ActivateCb)(uint8_t index); 
 typedef void (*AnimateFunction)(bool firstCall);
 
@@ -98,6 +101,9 @@ class Widget
     uint16_t _w = 0;
     uint16_t _h = 0;
     
+    uint16_t _previousSliderX = 0;
+    uint16_t _previousSliderY = 0;
+
     char _label[8];
     void _drawBox(bool selected);
     void _drawSliderV(bool selected);
@@ -110,7 +116,7 @@ class Widget
     void configure(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
     void label(String label);
     void draw(bool selected);
-    bool checkTouch(uint16_t xPos, uint16_t yPos);
+    bool checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType);
     
     uint8_t id = 0;
     uint8_t type = WIDGET_BOX;
@@ -128,13 +134,15 @@ class Widget
     uint8_t labelOffsetY = 4;
     uint8_t varOffsetX = 2;
     uint8_t varOffsetY = 4;
-    uint8_t valueMax = 127;
-    uint8_t valueMin = 0;
+    float valueMax = 127.0;
+    float valueMin = 0.0;
     uint8_t valueScaler = 1;
     uint8_t fontSize = 16;
     uint8_t floatPrecision = 2;
     
     SetFunctionI8 setI8 = nullptr;
+    SetFunctionF setF = nullptr;
+
     ActivateCb activateCb = nullptr;
     uint8_t * var_ptr_u8 = nullptr;
     uint16_t * var_ptr_u16 = nullptr;
@@ -163,7 +171,7 @@ class Page
     uint16_t color2 = 0;
     uint8_t fontSize = 18;
     bool clearOnFirstCall = true;
-    int checkTouch(uint16_t xPos, uint16_t yPos);
+    int checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType);
 };
 
 class Header
@@ -210,6 +218,7 @@ void configurePage_controls();
 void setPage(uint8_t page);
 void changePatch(uint8_t callerId, int8_t delta);
 void adjustVoiceBankWrapper(uint8_t index, int8_t delta);
+void setVoiceBankWrapper(uint8_t index, float value);
 void adjustCharacter(uint8_t charPos, int8_t delta);
 void savePatchWrapper(uint8_t index);
 void peekPatchNameWrapper(uint8_t index, int8_t delta);

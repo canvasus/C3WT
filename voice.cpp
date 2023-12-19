@@ -945,7 +945,7 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       break;
     case AM_WAVEFORM:
       targetValueU8 = patch.osc_am_waveform + delta;
-      patch.osc_am_waveform = constrain(targetValueU8, 0, (nrWaveforms - 1));
+      patch.osc_am_waveform = constrain(targetValueU8, 0, (nrWaveforms - 2));
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setOscAmWaveform();
       break;
     
@@ -1009,12 +1009,24 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       _lfo2.begin(waveformList[patch.lfo2_waveform]);
       break;
     case LFO1_FREQUENCY:
+      targetValueF = patch.lfo1Frequency + delta * 0.1;
+      patch.lfo1Frequency = constrain(targetValueF, 0.0, 10.0);
+      _lfo1.frequency(patch.lfo1Frequency);
       break;
     case LFO2_FREQUENCY:
+      targetValueF = patch.lfo2Frequency + delta * 0.1;
+      patch.lfo2Frequency = constrain(targetValueF, 0.0, 10.0);
+      _lfo2.frequency(patch.lfo2Frequency);
       break;
     case LFO1_AMPLITUDE:
+      targetValueF = patch.lfo1Level + delta * 0.05;
+      patch.lfo1Level = constrain(targetValueF, 0.0, 1.0);
+      _lfo1.amplitude(patch.lfo1Level);
       break;
     case LFO2_AMPLITUDE:
+      targetValueF = patch.lfo2Level + delta * 0.05;
+      patch.lfo2Level = constrain(targetValueF, 0.0, 1.0);
+      _lfo2.amplitude(patch.lfo2Level);
       break;
     case LFO1_FILTER_MODE:
       break;
@@ -1124,6 +1136,18 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       if (targetValueU8 > 8) targetValueU8 = 8;
       patch.polyMode = targetValueU8;
       break;
+  }
+}
+
+void VoiceBank::setParameter(uint8_t parameter, float value)
+{
+  switch (parameter)
+  {
+    case FILTER_CUTOFF:
+    patch.cutoff = (FILTER_MAX_CUTOFF / 9) * (pow(10, value) - 1);
+    for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
+    Serial.println(patch.cutoff);
+    break;
   }
 }
 

@@ -430,6 +430,7 @@ class VoiceBank
     void setPitchBend(int pitchBend);
 
     void adjustParameter(uint8_t parameter, int8_t delta);
+    void setParameter(uint8_t parameter, float value);
 
     void setAmpEnv_attack(uint16_t attack);
     void setAmpEnv_decay(uint16_t decay);

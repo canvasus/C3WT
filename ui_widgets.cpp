@@ -21,7 +21,10 @@ void Widget::draw(bool selected)
     //   _drawSliderH(selected);
     //   break;
     case WIDGET_SLIDER_V:
+      _drawBox(selected);
       _drawSliderV(selected);
+      _previousSliderX = _x + (_w >> 1);
+      _previousSliderY = _y + (_h >> 1);
       break;
     // case WIDGET_POT:
     //   _drawPot(selected);
@@ -84,13 +87,25 @@ void Widget::_drawBox(bool selected)
 
 void Widget::_drawSliderV(bool selected)
 {
-
+  float value_f = 0.0;
+  if (var_ptr_u8 != nullptr) value_f = (float)(*var_ptr_u8);
+  else if (var_ptr_u16 != nullptr) value_f = (float)(*var_ptr_u16);
+  else if (var_ptr_f != nullptr) value_f = *var_ptr_f;
+  else if (var_ptr_i8 != nullptr) value_f = (float)(*var_ptr_i8);
+  
+  tft->fillCircle(_previousSliderX, _previousSliderY, 5, color1);
+  tft->drawFastVLine(_x + (_w >> 1), _y, _h, SLIDER_LANE);
+  float fractionalValue = (valueMax - valueMin) / value_f;
+  uint16_t sliderLevel = _y + _h - fractionalValue * _h;
+  tft->fillCircle(_x + (_w >> 1), sliderLevel, 5, SLIDER_HANDLE);
+  _previousSliderX = _x;
+  _previousSliderY = _y; 
 }
 
 void Widget::_drawWaveform(bool selected)
 {
   // uint16_t colors[2] = {color1, color2};
-  //const String names[4] = {"SINE", "SAW", "PULSE", "ARBT"};
+  const String names[4] = {"SIN", "SAW", "PLS", "WTB"};
   uint16_t x0 = _x + varOffsetX;
   uint16_t y0 = _y + varOffsetY;
   uint8_t waveformIndex = 0;
@@ -101,36 +116,47 @@ void Widget::_drawWaveform(bool selected)
   // {
   //  tft->drawBitmap(x0, y0, epd_bitmap_allArray[3], 32, 32, colors[selected]);
     tft->setCursor(x0 + 4, y0 + 4);
-    //tft->print(names[waveformIndex]);
-    tft->print(waveformIndex);
+    tft->print(names[waveformIndex]);
+    //tft->print(waveformIndex);
   //}
 }
 
-bool Widget::checkTouch(uint16_t xPos, uint16_t yPos)
+bool Widget::checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType)
 {
   const uint16_t xMargin = 2;
   const uint16_t yMargin = 2;
   
-  if ( (xPos < _x + xMargin) || (xPos > _x + _w - xMargin) || (yPos < _y + yMargin) || (yPos > _y + _h - yMargin) ) return false;
-  else
+  //if ( (xPos < _x + xMargin) || (xPos > _x + _w - xMargin) || (yPos < _y + yMargin) || (yPos > _y + _h - yMargin) ) return false;
+  if (xPos < _x + xMargin) return false;
+  if (xPos > _x + _w - xMargin) return false;
+  if (yPos < _y + yMargin) return false;
+  if (yPos > _y + _h - yMargin) return false;
+  switch (type)
   {
-    switch (type)
-    {
-      case WIDGET_BOX:
+    case WIDGET_BOX:
+      if (eventType == CTP_FINGER_DOWN)
+      {
         if (activateCb) activateCb(id);
-        return true;
-      case WIDGET_SLIDER_V:
+       }
+      return true;
+    case WIDGET_SLIDER_V:
+      {
+        float sliderLevelFractional = 1.0 - (yPos - _y) / (1.0 * _h);
+        if (setF) setF(id, sliderLevelFractional);
+        Serial.println(sliderLevelFractional);
+        //draw(true);
+        _drawSliderV(true);
         break;
-    }
+      }
   }
   return false;
 }
 
-int Page::checkTouch(uint16_t xPos, uint16_t yPos)
+int Page::checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType)
 {
   for(uint8_t widgetId = 0; widgetId < nrWidgets; widgetId++)
   {
-    if (widgets[widgetId].checkTouch(xPos, yPos))
+    if (widgets[widgetId].checkTouch(xPos, yPos, eventType))
     {
       selectedId = widgetId;
       return widgetId;

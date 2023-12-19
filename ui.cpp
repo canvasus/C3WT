@@ -102,11 +102,12 @@ void updatePage(uint8_t pageId, bool firstCall)
   {
     screenSaverTimer = 0;
     tft.updateTS();
-    if (tft.getTouchState() == CTP_FINGER_DOWN)
+    uint8_t touchState = tft.getTouchState();
+    if (touchState == CTP_FINGER_DOWN || touchState == CTP_FINGER_UP)
     {
       tft.getTScoordinates(coordinates);
       //Serial.printf("X: %d, Y: %d\n", coordinates[0][0], coordinates[0][1]);
-      newSelectedId = pages[pageId].checkTouch(coordinates[0][0], coordinates[0][1]);
+      newSelectedId = pages[pageId].checkTouch(coordinates[0][0], coordinates[0][1], touchState);
     }
     tft.enableCapISR(); // needed?
   }
@@ -235,14 +236,14 @@ FLASHMEM void configurePage_oscillator()
   pages[PAGE].color1 = SELECTED_COLOR;
   pages[PAGE].color2 = IDLE_COLOR;
 
-  const uint16_t column_w = 140;
-  const uint16_t row_h = 70;
-  const uint8_t padding = 2;
+  const uint16_t column_w = 136;
+  const uint16_t row_h = 68;
+  const uint8_t padding = 4;
 
   widgetIndex = pages[PAGE].addWidget(OSC1_WAVEFORM, 0, 0, column_w, row_h);
   pages[PAGE].widgets[widgetIndex].label("OSC1");
   pages[PAGE].widgets[widgetIndex].drawWaveform = true;
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 100;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = 70;
   pages[PAGE].widgets[widgetIndex].varOffsetY = 30;
   pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.osc1_waveform;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
@@ -250,7 +251,7 @@ FLASHMEM void configurePage_oscillator()
   widgetIndex = pages[PAGE].addWidget(OSC2_WAVEFORM, 0, 1* (row_h + padding), column_w, row_h);
   pages[PAGE].widgets[widgetIndex].label("OSC2");
   pages[PAGE].widgets[widgetIndex].drawWaveform = true;
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 100;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = 70;
   pages[PAGE].widgets[widgetIndex].varOffsetY = 30;
   pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.osc2_waveform;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
@@ -786,7 +787,7 @@ FLASHMEM void configurePage_lfo()
   const uint16_t column_w = 140;
   const uint16_t row_h = 50;
   const uint8_t padding = 4;
-  const uint16_t varOffsetX = 60;
+  const uint16_t varOffsetX = 70;
 
   widgetIndex = pages[PAGE].addWidget(LFO1_WAVEFORM, 0* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("LFO1");
@@ -1206,7 +1207,6 @@ FLASHMEM void configurePage_controls()
   pages[PAGE].backPageId = PAGE_PATCH;
   pages[PAGE].color1 = SELECTED_COLOR;
   pages[PAGE].color2 = IDLE_COLOR;
-  //pages[PAGE].animateFunction = &animateAmpEnvelope;
 
   const uint16_t column_w = 100;
   const uint16_t row_h = 400;
@@ -1214,15 +1214,16 @@ FLASHMEM void configurePage_controls()
 
   widgetIndex = pages[PAGE].addWidget(FILTER_CUTOFF, 0* (column_w + padding), 0* (row_h + padding), column_w, row_h);
   pages[PAGE].widgets[widgetIndex].label("FRQ");
-  //pages[PAGE].widgets[widgetIndex].drawVariable = true;
-  //pages[PAGE].widgets[widgetIndex].varOffsetX = 80;
+  pages[PAGE].widgets[widgetIndex].drawVariable = true;
+
+  pages[PAGE].widgets[widgetIndex].varOffsetX = 80;
   //pages[PAGE].widgets[widgetIndex].varOffsetY = 30;
-  //pages[PAGE].widgets[widgetIndex].floatPrecision = 0;
+  pages[PAGE].widgets[widgetIndex].floatPrecision = 0;
 
   pages[PAGE].widgets[widgetIndex].type = WIDGET_SLIDER_V;
 
   pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.cutoff;
-  pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
+  pages[PAGE].widgets[widgetIndex].setF = &setVoiceBankWrapper;
 
   widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 680, 410, 120, 60);
   pages[PAGE].widgets[widgetIndex].label("<BACK");
@@ -1262,12 +1263,9 @@ void changePatch(uint8_t callerId, int8_t delta)
   else Serial.println(F("Load failed"));
 }
 
-void adjustVoiceBankWrapper(uint8_t index, int8_t delta)
-{
-  voiceBank1.adjustParameter(index, delta);
-  //if (index == OSC1_WAVETABLE_INDEX) header.eventString(waveTableNames[voiceBank1.patch.osc1_waveTable_index]);
-  //if (index == OSC2_WAVETABLE_INDEX) header.eventString(waveTableNames[voiceBank1.patch.osc2_waveTable_index]);
-}
+void adjustVoiceBankWrapper(uint8_t index, int8_t delta) { voiceBank1.adjustParameter(index, delta); }
+
+void setVoiceBankWrapper(uint8_t index, float value) { voiceBank1.setParameter(index, value); }
 
 void adjustCharacter(uint8_t charPos, int8_t delta)
 {
