@@ -37,7 +37,7 @@ AudioParameters audioParameters;
 DMAMEM int16_t granularMemoryL[GRANULAR_MEMORY_SIZE];
 DMAMEM int16_t granularMemoryR[GRANULAR_MEMORY_SIZE];
 
-void setupAudio()
+FLASHMEM void setupAudio()
 {
   AudioMemory(512);
 
@@ -114,7 +114,7 @@ void setupAudio()
   applyAudioParameters();
 }
 
-void connect(AudioStream &source, unsigned char sourceOutput, AudioStream &destination, unsigned char destinationInput)
+FLASHMEM void connect(AudioStream &source, unsigned char sourceOutput, AudioStream &destination, unsigned char destinationInput)
 {
   static uint16_t connectionIndex = 0;
   patchCords[connectionIndex] = new AudioConnection(source, sourceOutput, destination , destinationInput);

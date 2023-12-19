@@ -6,6 +6,10 @@ void Widget::configure(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
   _y = y;
   _w = w;
   _h = h;
+
+  slider_header_h = _h * 0.1;
+  slider_footer_h = _h * 0.1;
+  sliderHandleRadius = _w * 0.2;
 }
 
 void Widget::label(String label) { label.toCharArray(_label, 8); }
@@ -88,18 +92,19 @@ void Widget::_drawBox(bool selected)
 void Widget::_drawSliderV(bool selected)
 {
   float value_f = 0.0;
+  uint16_t slider_mid_h = _h - slider_footer_h - slider_header_h;
+
   if (var_ptr_u8 != nullptr) value_f = (float)(*var_ptr_u8);
   else if (var_ptr_u16 != nullptr) value_f = (float)(*var_ptr_u16);
   else if (var_ptr_f != nullptr) value_f = *var_ptr_f;
   else if (var_ptr_i8 != nullptr) value_f = (float)(*var_ptr_i8);
   
-  tft->fillCircle(_previousSliderX, _previousSliderY, 5, color1);
-  tft->drawFastVLine(_x + (_w >> 1), _y, _h, SLIDER_LANE);
-  float fractionalValue = (valueMax - valueMin) / value_f;
-  uint16_t sliderLevel = _y + _h - fractionalValue * _h;
-  tft->fillCircle(_x + (_w >> 1), sliderLevel, 5, SLIDER_HANDLE);
-  _previousSliderX = _x;
-  _previousSliderY = _y; 
+  if ( (_previousSliderX != 0) && (_previousSliderY != 0) ) tft->fillCircle(_previousSliderX, _previousSliderY, sliderHandleRadius, color1); // clear old point
+  tft->drawFastVLine(_x + (_w >> 1), _y + slider_header_h, slider_mid_h, SLIDER_LANE); // draw lane
+  uint16_t slider_y = _y + slider_header_h + slider_mid_h - value_f * slider_mid_h;
+  tft->fillCircle(_x + (_w >> 1), slider_y, sliderHandleRadius, SLIDER_HANDLE);
+  _previousSliderX = _x + (_w >> 1);
+  _previousSliderY = slider_y; 
 }
 
 void Widget::_drawWaveform(bool selected)
@@ -126,11 +131,11 @@ bool Widget::checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType)
   const uint16_t xMargin = 2;
   const uint16_t yMargin = 2;
   
-  //if ( (xPos < _x + xMargin) || (xPos > _x + _w - xMargin) || (yPos < _y + yMargin) || (yPos > _y + _h - yMargin) ) return false;
-  if (xPos < _x + xMargin) return false;
-  if (xPos > _x + _w - xMargin) return false;
-  if (yPos < _y + yMargin) return false;
-  if (yPos > _y + _h - yMargin) return false;
+  if (xPos < _x + xMargin) return false;      // outside left
+  if (xPos > _x + _w - xMargin) return false; // outside right
+  if (yPos < _y + yMargin) return false;      // outside above
+  if (yPos > _y + _h - yMargin) return false; // outside below
+
   switch (type)
   {
     case WIDGET_BOX:
@@ -141,12 +146,15 @@ bool Widget::checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType)
       return true;
     case WIDGET_SLIDER_V:
       {
-        float sliderLevelFractional = 1.0 - (yPos - _y) / (1.0 * _h);
+        if (yPos < _y + slider_header_h) return true; // on header
+        if (yPos > _y + _h - slider_footer_h) return true; // on footer
+
+        float sliderLevelFractional = 1.0 - (yPos - slider_header_h) / (1.0 * (_h - slider_header_h - slider_footer_h));
         if (setF) setF(id, sliderLevelFractional);
         Serial.println(sliderLevelFractional);
         //draw(true);
         _drawSliderV(true);
-        break;
+        return true;
       }
   }
   return false;
@@ -191,47 +199,47 @@ uint8_t Page::addStatic(uint8_t id, uint16_t x, uint16_t y, uint16_t w, uint16_t
   return (nrStatics - 1);
 }
 
-void Header::eventVariable(String name, float value, uint8_t precision)
-{
-  _messageTimer = 0;
-  _variableState = MSG_CUED;
-  name.toCharArray(_message, 10);
-  _value = value;
-  _precision = precision;
-}
+// void Header::eventVariable(String name, float value, uint8_t precision)
+// {
+//   _messageTimer = 0;
+//   _variableState = MSG_CUED;
+//   name.toCharArray(_message, 10);
+//   _value = value;
+//   _precision = precision;
+// }
 
-void Header::eventString(String name)
-{
-  _messageTimer = 0;
-  _variableState = MSG_STR_CUED;
-  name.toCharArray(_message, 10);
-}
+// void Header::eventString(String name)
+// {
+//   _messageTimer = 0;
+//   _variableState = MSG_STR_CUED;
+//   name.toCharArray(_message, 10);
+// }
 
-void Header::eventMidi()
-{
-  _midiTimer = 0;
-  _midiState = MSG_CUED;
-}
+// void Header::eventMidi()
+// {
+//   _midiTimer = 0;
+//   _midiState = MSG_CUED;
+// }
 
-void Header::update()
-{
-  if ( (_variableState == MSG_CUED) || (_variableState == MSG_STR_CUED))
-  {
-    tft->fillRect(0, 220, 160, 20, IDLE_COLOR);
-    tft->setTextColor(MAIN_BG_COLOR);
-    //tft->setFont(Arial_10);
-    tft->setCursor(4 , 225);
-    tft->print(_message);
-    tft->setCursor(10 + 70 , 225);
-    if (_variableState == MSG_CUED) tft->print(_value, _precision);
-    _variableState = MSG_SHOWN;
-    return;
-  }
+// void Header::update()
+// {
+//   if ( (_variableState == MSG_CUED) || (_variableState == MSG_STR_CUED))
+//   {
+//     tft->fillRect(0, 220, 160, 20, IDLE_COLOR);
+//     tft->setTextColor(MAIN_BG_COLOR);
+//     //tft->setFont(Arial_10);
+//     tft->setCursor(4 , 225);
+//     tft->print(_message);
+//     tft->setCursor(10 + 70 , 225);
+//     if (_variableState == MSG_CUED) tft->print(_value, _precision);
+//     _variableState = MSG_SHOWN;
+//     return;
+//   }
 
-  if((_messageTimer > 1000) && (_variableState == MSG_SHOWN))
-  {
-    _variableState = MSG_IDLE;
-    tft->fillRect(0, 220, 160, 20, MAIN_BG_COLOR);
-    return;
-  }
-}
+//   if((_messageTimer > 1000) && (_variableState == MSG_SHOWN))
+//   {
+//     _variableState = MSG_IDLE;
+//     tft->fillRect(0, 220, 160, 20, MAIN_BG_COLOR);
+//     return;
+//   }
+// }

@@ -436,8 +436,8 @@ void Voice::setEnv3()
 
 void Voice::setFilter()
 {
-  _filter.frequency(_patch->cutoff);
-  _filter.resonance(_patch->resonance);
+  _filter.frequency( (FILTER_MAX_CUTOFF / 9) * (pow(10, _patch->cutoff) - 1) );
+  _filter.resonance(0.7 + 4.3 * _patch->resonance);
 }
 
 void Voice::setOscMixer(uint8_t oscillatorId)
@@ -721,13 +721,13 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
     case ENV_ATTACK:
       if (patch.ampEnvelope_attack < 10) targetValueF = patch.ampEnvelope_attack + delta;
       else targetValueF = patch.ampEnvelope_attack + delta * 10;
-      patch.ampEnvelope_attack = constrain(targetValueF, 0.0, 1000.0);
+      patch.ampEnvelope_attack = constrain(targetValueF, 0.0, 2000.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setAmpEnv();
       break;
     case ENV_DECAY:
       if (patch.ampEnvelope_decay < 10) targetValueF = patch.ampEnvelope_decay + delta;
       else targetValueF = patch.ampEnvelope_decay + delta * 10;
-      patch.ampEnvelope_decay = constrain(targetValueF, 0.0, 1000.0);
+      patch.ampEnvelope_decay = constrain(targetValueF, 0.0, 2000.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setAmpEnv();
       break;
     case ENV_SUSTAIN:
@@ -745,13 +745,13 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
     case FILTER_ATTACK:
       if (patch.filterEnvelope_attack < 10) targetValueF = patch.filterEnvelope_attack + delta;
       else targetValueF = patch.filterEnvelope_attack + delta * 10;
-      patch.filterEnvelope_attack = constrain(targetValueF, 0.0, 1000.0);
+      patch.filterEnvelope_attack = constrain(targetValueF, 0.0, 2000.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilterEnv();
       break;
     case FILTER_DECAY:
       if (patch.filterEnvelope_decay < 10) targetValueF = patch.filterEnvelope_decay + delta;
       else targetValueF = patch.filterEnvelope_decay + delta * 10;
-      patch.filterEnvelope_decay = constrain(targetValueF, 0.0, 1000.0);
+      patch.filterEnvelope_decay = constrain(targetValueF, 0.0, 2000.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilterEnv();
       break;
     case FILTER_SUSTAIN:
@@ -774,17 +774,19 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       break;
 
     case FILTER_CUTOFF:
-      if (patch.cutoff < 1) targetValueF = patch.cutoff + delta * 0.1;
-      else if (patch.cutoff < 10) targetValueF = patch.cutoff + delta;
-      else if (patch.cutoff < 100) targetValueF = patch.cutoff + delta * 10;
-      else if (patch.cutoff < 1000) targetValueF = patch.cutoff + delta * 100;
-      else targetValueF = patch.cutoff + delta * 500;
-      patch.cutoff = constrain(targetValueF, 0.0, FILTER_MAX_CUTOFF);
+      // if (patch.cutoff < 1) targetValueF = patch.cutoff + delta * 0.1;
+      // else if (patch.cutoff < 10) targetValueF = patch.cutoff + delta;
+      // else if (patch.cutoff < 100) targetValueF = patch.cutoff + delta * 10;
+      // else if (patch.cutoff < 1000) targetValueF = patch.cutoff + delta * 100;
+      // else targetValueF = patch.cutoff + delta * 500;
+      targetValueF = patch.cutoff + delta * 0.02;
+      //patch.cutoff = constrain(targetValueF, 0.0, FILTER_MAX_CUTOFF);
+      patch.cutoff = constrain(targetValueF, 0.0, 1.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
       break;
     case FILTER_RESONANCE:
-      targetValueF = patch.resonance + delta * 0.1;
-      patch.resonance = constrain(targetValueF, 0.7, 5.0);
+      targetValueF = patch.resonance + delta * 0.05;
+      patch.resonance = constrain(targetValueF, 0.0, 1.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
       break;
     
@@ -1144,10 +1146,13 @@ void VoiceBank::setParameter(uint8_t parameter, float value)
   switch (parameter)
   {
     case FILTER_CUTOFF:
-    patch.cutoff = (FILTER_MAX_CUTOFF / 9) * (pow(10, value) - 1);
-    for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
-    Serial.println(patch.cutoff);
-    break;
+      patch.cutoff = constrain(value, 0.0, 1.0);
+      for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
+      break;
+    case FILTER_RESONANCE:
+      patch.resonance = constrain(value, 0.0, 1.0);
+      for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
+      break;
   }
 }
 
@@ -1160,135 +1165,6 @@ void VoiceBank::setPitchBend(int pitchBend)
     voices[voiceIndex].pitchBend = bendFactor;
     voices[voiceIndex].updateFrequency();
   }
-}
-
-void VoiceBank::setAmpEnv_attack(uint16_t attack)
-{
-  patch.ampEnvelope_attack = attack * 2.0;
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setAmpEnv();
-  
-}
-
-void VoiceBank::setAmpEnv_decay(uint16_t decay)
-{
-  patch.ampEnvelope_decay = decay * 2.0;
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setAmpEnv();
-}
-
-void VoiceBank::setAmpEnv_sustain(uint16_t sustain)
-{
-  patch.ampEnvelope_sustain = sustain / 1023.0;
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setAmpEnv();
-}
-
-void VoiceBank::setAmpEnv_release(uint16_t release)
-{
-  patch.ampEnvelope_release = release * 3.0;
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setAmpEnv();
-}
-
-void VoiceBank::setFilterEnv_attack(uint16_t attack)
-{
-  patch.filterEnvelope_attack = attack * 2.0;
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilterEnv();
-}
-
-void VoiceBank::setFilterEnv_decay(uint16_t decay)
-{
-  patch.filterEnvelope_decay = decay * 2.0;
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilterEnv();
-}
-
-void VoiceBank::setFilterEnv_sustain(uint16_t sustain)
-{
-  patch.filterEnvelope_sustain = sustain / 1023.0;
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilterEnv();
-}
-
-void VoiceBank::setFilterEnv_release(uint16_t release)
-{
-  patch.filterEnvelope_release = release * 3.0;
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilterEnv();
-}
-
-void VoiceBank::setEnv3_attack(uint16_t attack)
-{
-  patch.envelope3_attack = attack * 10.0;
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setEnv3();
-}
-
-void VoiceBank::setEnv3_decay(uint16_t decay)
-{
-  patch.envelope3_decay = decay * 10.0;
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setEnv3();
-}
-
-void VoiceBank::setEnv3_sustain(uint16_t sustain)
-{
-  patch.envelope3_sustain = sustain / 1023.0;
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setEnv3();
-}
-
-void VoiceBank::setEnv3_release(uint16_t release)
-{
-  patch.envelope3_release = release * 10.0;
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setEnv3();
-}
-
-void VoiceBank::setFilterEnv_amplitude(uint16_t amplitude)
-{
-  patch.envToFilter = amplitude / 512.0;
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].set_modMixer_filter();
-}
-
-void VoiceBank::setFilterCutoff(uint16_t cutoff)
-{
-  patch.cutoff = (FILTER_MAX_CUTOFF / 9) * (pow(10, cutoff / 1023.0) - 1);
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
-}
-
-void VoiceBank::setFilterResonance(uint16_t resonance)
-{
-  patch.resonance = 0.7 + 5 * resonance / 1023.0;
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
-}
-
-void VoiceBank::setLfo1Waveform(uint16_t waveform)
-{
-  patch.lfo1_waveform = map(waveform, 0, 1023, 0, (nrWaveforms - 1));
-  _lfo1.begin(waveformList[patch.lfo1_waveform]);
-}
-
-void VoiceBank::setLfo2Waveform(uint16_t waveform)
-{
-  patch.lfo2_waveform = map(waveform, 0, 1023, 0, (nrWaveforms - 1));
-  _lfo2.begin(waveformList[patch.lfo2_waveform]);
-}
-
-void VoiceBank::setLfo1Level(uint16_t level)
-{
-  patch.lfo1Level = level / 1023.0;
-  _lfo1.amplitude(patch.lfo1Level);
-}
-
-void VoiceBank::setLfo2Level(uint16_t level)
-{
-  patch.lfo2Level = level / 1023.0;
-  _lfo2.amplitude(patch.lfo2Level);
-  //Serial.printf("lfo2 ampl: %.2f\n",patch.lfo2Level);
-}
-
-void VoiceBank::setLfo1Frequency(uint16_t frequency)
-{
-  patch.lfo1Frequency = frequency / 64.0;
-  _lfo1.frequency(patch.lfo1Frequency);
-}
-
-void VoiceBank::setLfo2Frequency(uint16_t frequency)
-{
-  patch.lfo2Frequency = frequency / 64.0;
-  _lfo2.frequency(patch.lfo2Frequency);
-  //Serial.printf("lfo2 freq: %.2f\n",patch.lfo2Frequency);
 }
 
 float VoiceBank::_getPannedLevel(float baseLevel, uint8_t channel)
@@ -1342,13 +1218,3 @@ void VoiceBank::importWaveTable(const unsigned int * waveTableI32, int16_t * wav
     //else waveTableI16[2 * index + 1] = (sample1 / (2* preScaler)) + (sample2 / (2* preScaler));
   }
 }
-
-// void updateVoices()
-// {
-//   static elapsedMillis timer = 0;
-//   if (timer > 10)
-//   {
-//     timer = 0;
-//     voiceBank1.update();
-//   }
-// }

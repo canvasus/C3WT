@@ -1,6 +1,5 @@
 #pragma once
-//#include <Adafruit_GFX.h>
-//#include <FT5206.h>
+
 #include <SPI.h>
 #include <RA8875.h>
 #include "voice.h"
@@ -11,8 +10,8 @@
 
 #include <font_Arial.h>
 
-#define SCREEN_YRES           480
 #define SCREEN_XRES           800
+#define SCREEN_YRES           480
 
 #define RA8875_CS     10  // ER-TFTM070 pin 5
 #define RA8875_RESET  9   // ER-TFTM070 pin 11
@@ -21,11 +20,9 @@
 #define RA8875_SCLK   13  // ER-TFTM070 pin 8
 #define RA8875_INT    32  // FT5206 interrupt, ER-TFTM070 pin 
 
-#define MAXTOUCHLIMIT   1 //1...5
+#define MAXTOUCHLIMIT   1 // 1...5
 #define CTP_FINGER_UP   1
 #define CTP_FINGER_DOWN 2
-
-//#define CTP_INT 32    // FT5206 touch controller interrupt
 
 #define ENC1_A  38 //36
 #define ENC1_B  37 //37
@@ -37,7 +34,7 @@
 #define SELECTED_COLOR        0x07e0 //0xfe01
 #define IDLE_COLOR            0xe71c
 #define BORDER_COLOR          0x9cf3 //0x8c71
-#define HEADER_COLOR              
+//#define HEADER_COLOR              
 #define PATCHNAME_BG_COLOR    0xfbe8
 #define PATCHNAME_MAINPAGE    0xfd80
 #define MIDIEVENT_ON          0xbe1f
@@ -139,6 +136,9 @@ class Widget
     uint8_t valueScaler = 1;
     uint8_t fontSize = 16;
     uint8_t floatPrecision = 2;
+    uint16_t sliderHandleRadius = 10;
+    uint16_t slider_header_h = 0;
+    uint16_t slider_footer_h = 0;
     
     SetFunctionI8 setI8 = nullptr;
     SetFunctionF setF = nullptr;
@@ -174,32 +174,30 @@ class Page
     int checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType);
 };
 
-class Header
-{
-  private:
-    elapsedMillis _messageTimer;
-    elapsedMillis _midiTimer;
-    uint8_t _variableState = MSG_IDLE;
-    uint8_t _midiState = MSG_IDLE;
-    float _value = 0.00;
-    uint8_t _precision = 2;
-    char _message[10];
-  public:
-    //ILI9341_t3 * tft = nullptr;
-    RA8875 * tft = nullptr;
-    void update();
-    void eventMidi();
-    void eventVariable(String name, float value, uint8_t precision);
-    void eventString(String name);
-};
+// class Header
+// {
+//   private:
+//     elapsedMillis _messageTimer;
+//     elapsedMillis _midiTimer;
+//     uint8_t _variableState = MSG_IDLE;
+//     uint8_t _midiState = MSG_IDLE;
+//     float _value = 0.00;
+//     uint8_t _precision = 2;
+//     char _message[10];
+//   public:
+//     //ILI9341_t3 * tft = nullptr;
+//     RA8875 * tft = nullptr;
+//     void update();
+//     void eventMidi();
+//     void eventVariable(String name, float value, uint8_t precision);
+//     void eventString(String name);
+// };
 
 void setupUI();
 void showStartupScreen();
 
 void updateUI();
-//void updateUiBoardControls();
 void updatePage(uint8_t pageId, bool firstCall);
-//void updateFooter(String variableName, float value, uint8_t precision);
 
 void configurePage_patch();
 void configurePage_oscillator();

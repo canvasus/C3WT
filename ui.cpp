@@ -37,6 +37,8 @@ void setupUI()
   configurePage_filter();
   configurePage_controls();
 
+
+  //changePatch(0, 0);
   //header.tft = &tft;
 }
 
@@ -61,7 +63,7 @@ void showStartupScreen()
 void updateUI()
 {
   static elapsedMillis uiTimer = 0;
-  const uint8_t uiInterval = 50;
+  const uint8_t uiInterval = 33;
 
   if (uiTimer > uiInterval)
   {
@@ -75,7 +77,6 @@ void updateUI()
         updatePage(currentPage, firstCall);
         break;
     }
-    //header.update();
   }
 }
 
@@ -1128,7 +1129,7 @@ FLASHMEM void configurePage_filter()
 
   const uint16_t column_w = 140;
   const uint16_t row_h = 70;
-  const uint8_t padding = 2;
+  const uint8_t padding = 4;
 
   widgetIndex = pages[PAGE].addWidget(FILTER_ATTACK, 0* (column_w + padding), 0* (row_h + padding), column_w, row_h);
   pages[PAGE].widgets[widgetIndex].label("ATTACK");
@@ -1178,16 +1179,16 @@ FLASHMEM void configurePage_filter()
   widgetIndex = pages[PAGE].addWidget(FILTER_CUTOFF, 4* (column_w + padding), 1* (row_h + padding), column_w + 20, row_h);
   pages[PAGE].widgets[widgetIndex].label("FREQ");
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 60;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = 70;
   pages[PAGE].widgets[widgetIndex].varOffsetY = 30;
-  pages[PAGE].widgets[widgetIndex].floatPrecision = 0;
+  pages[PAGE].widgets[widgetIndex].floatPrecision = 2;
   pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.cutoff;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
   widgetIndex = pages[PAGE].addWidget(FILTER_RESONANCE, 4* (column_w + padding), 2* (row_h + padding), column_w + 20, row_h);
   pages[PAGE].widgets[widgetIndex].label("RESO");
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 60;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = 70;
   pages[PAGE].widgets[widgetIndex].varOffsetY = 30;
   pages[PAGE].widgets[widgetIndex].floatPrecision = 1;
   pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.resonance;
@@ -1214,16 +1215,16 @@ FLASHMEM void configurePage_controls()
 
   widgetIndex = pages[PAGE].addWidget(FILTER_CUTOFF, 0* (column_w + padding), 0* (row_h + padding), column_w, row_h);
   pages[PAGE].widgets[widgetIndex].label("FRQ");
-  pages[PAGE].widgets[widgetIndex].drawVariable = true;
-
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 80;
-  //pages[PAGE].widgets[widgetIndex].varOffsetY = 30;
-  pages[PAGE].widgets[widgetIndex].floatPrecision = 0;
-
   pages[PAGE].widgets[widgetIndex].type = WIDGET_SLIDER_V;
-
   pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.cutoff;
   pages[PAGE].widgets[widgetIndex].setF = &setVoiceBankWrapper;
+
+  widgetIndex = pages[PAGE].addWidget(FILTER_RESONANCE, 1* (column_w + padding), 0* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgets[widgetIndex].label("RES");
+  pages[PAGE].widgets[widgetIndex].type = WIDGET_SLIDER_V;
+  pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.resonance;
+  pages[PAGE].widgets[widgetIndex].setF = &setVoiceBankWrapper;
+  pages[PAGE].widgets[widgetIndex].color1 = WAVETABLE2_SELECTED;
 
   widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 680, 410, 120, 60);
   pages[PAGE].widgets[widgetIndex].label("<BACK");

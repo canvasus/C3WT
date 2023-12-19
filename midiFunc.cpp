@@ -7,7 +7,6 @@ MidiSettings midiSettings;
 IntervalTimer masterClockTimer;
 Arpeggiator arpeggiator(&midiSettings, &voiceBank1);
 
-
 USBHost myusb;
 USBHub hub1(myusb);
 MIDIDevice_BigBuffer midi1(myusb);
@@ -68,7 +67,8 @@ void myControlChange(uint8_t channel, uint8_t control, uint8_t value)
   switch (control)
   {
     case CC_MODWHEEL:
-      voiceBank1.setFilterCutoff(value << 3);
+      //voiceBank1.setFilterCutoff(value / 127.0);
+      voiceBank1.setParameter(FILTER_CUTOFF, value / 127.0);
       break;
   }
 }
