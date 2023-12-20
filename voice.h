@@ -19,7 +19,7 @@
 
 #define FILTER_MAX_CUTOFF 13600
 
-// 107
+// 108
 #define POLY_MODE 106
 
 #define OSC1_WAVEFORM 0
@@ -107,6 +107,7 @@
 #define AM_FREQ_MULTIPLIER 64
 #define AM_LEVEL           65
 #define AM_WAVEFORM        66
+#define AM_FIXEDFREQUENCY   107
 
 #define FM_FREQ_MULTIPLIER 67
 #define FM_LEVEL           68
@@ -255,6 +256,7 @@ struct Patch
   float am_frequency_multiplier = 2;
   float am_level = 0.0;
   uint8_t osc_am_waveform = 0;
+  uint8_t am_fixedFrequency = 0;
 
   float dryLevel = 0.8;
   float pan = 0.0; // center
@@ -361,6 +363,7 @@ class Voice
     void setOsc1Waveform();
     void setOsc2Waveform();
     void setOscAmWaveform();
+    void setAmFrequency();
     void setOscFmWaveform();
     void setAmpEnv();
     void setFilterEnv();

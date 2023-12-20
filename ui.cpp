@@ -1468,8 +1468,8 @@ void animateEnvelope(float attack, float decay, float sustain, float release, ui
     _decay = decay;
     _sustain = sustain;
     _release = release;
-    uint16_t dx1 = attack / 10;
-    uint16_t dx2 = decay / 10;
+    uint16_t dx1 = attack / 20;
+    uint16_t dx2 = decay / 20;
     uint16_t dx4 = release / 50;
     uint16_t dx3 = w - dx1 - dx2 - dx4; 
     uint16_t dy1 = h * sustain;
@@ -1506,7 +1506,7 @@ int16_t getEncoderDirection(uint8_t encoderNr)
 {
   static elapsedMillis encoderTimer;
   static int8_t acceleration = 1;
-  bool isAccelerated = false;
+  static bool isAccelerated = false;
   int16_t value = encoders[encoderNr].read();
   int16_t returnValue = 0;
   if (value > 3)
@@ -1534,7 +1534,7 @@ int16_t getEncoderDirection(uint8_t encoderNr)
       acceleration = 1;
     }
 
-     returnValue = returnValue * acceleration;
+    returnValue = returnValue * acceleration;
     encoderTimer = 0;
   }
   //if (returnValue != 0) Serial.printf("Encoder %d: %d\n", encoderNr, returnValue);

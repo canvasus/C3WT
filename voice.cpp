@@ -319,7 +319,8 @@ void Voice::updateFrequency()
   _osc1.frequency(baseFrequency * pow(2, _patch->detune / 100.0) * (1.0 + unisonDetune));
   _osc2.frequency(baseFrequencyTransposed * pow(2, -_patch->detune / 100.0) * (1.0 + unisonDetune));
   _pwm.frequency(baseFrequencyTransposed * pow(2, unisonDetune / 100.0));
-  _osc_AM.frequency(baseFrequency * _patch->am_frequency_multiplier * (1.0 + unisonDetune));
+  if (_patch->am_fixedFrequency == 0) _osc_AM.frequency(baseFrequency * _patch->am_frequency_multiplier * (1.0 + unisonDetune));
+  else _osc_AM.frequency(_patch->am_frequency_multiplier);
   _osc_FM.frequency(baseFrequency * _patch->fm_frequency_multiplier * (1.0 + unisonDetune));
 }
 
@@ -446,6 +447,11 @@ void Voice::setOscMixer(uint8_t oscillatorId)
   if (oscillatorId == OSC2_LEVEL) _oscMixer.gain(1, _patch->osc2_level);
   if (oscillatorId == PULSE_LEVEL) _oscMixer.gain(2, _patch->pulse_level);
   if (oscillatorId == NOISE_LEVEL) _oscMixer.gain(3, _patch->noise_level);
+}
+
+void Voice::setAmFrequency()
+{
+  _osc_AM.frequency(_patch->am_frequency_multiplier);
 }
 
 void Voice::setAmplitudeModulation()

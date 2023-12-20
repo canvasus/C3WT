@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SPI.h>
-#include <RA8875.h>
+#include "src/RA8875-RA8875_t4/RA8875.h" // local copy for Wire1 and use FT5206
 #include "voice.h"
 #include "audioFunc.h"
 #include "midiFunc.h"
