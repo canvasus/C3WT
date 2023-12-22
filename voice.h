@@ -19,7 +19,7 @@
 
 #define FILTER_MAX_CUTOFF 13600
 
-// 108
+// 112
 #define POLY_MODE 106
 
 #define OSC1_WAVEFORM 0
@@ -55,6 +55,11 @@
 #define OSC2_WAVETABLE_LENGTH   99
 #define OSC2_WAVETABLE_INTERVAL 100
 #define OSC2_WAVETABLE_STEPSIZE 101
+
+#define ENV3_ATTACK  108
+#define ENV3_DECAY   109
+#define ENV3_SUSTAIN 110
+#define ENV3_RELEASE 111
 
 #define MOD_ENV3_OSC1_PITCH   30
 #define MOD_ENV3_OSC2_PITCH   31
@@ -363,7 +368,6 @@ class Voice
     void setOsc1Waveform();
     void setOsc2Waveform();
     void setOscAmWaveform();
-    void setAmFrequency();
     void setOscFmWaveform();
     void setAmpEnv();
     void setFilterEnv();

@@ -39,9 +39,16 @@ void Widget::draw(bool selected)
 void Widget::_drawBox(bool selected)
 {
   uint16_t colors[2] = {textColor1, textColor2};
-  if(selected) tft->fillRect(_x, _y, _w, _h, color1);
-  else tft->fillRect(_x, _y, _w, _h, color2);
-  if (drawBorder && !selected) tft->drawRect(_x, _y, _w, _h, color2);
+  const uint8_t r = 6;
+
+  //if(selected) tft->fillRect(_x, _y, _w, _h, color1);
+  //else tft->fillRect(_x, _y, _w, _h, color2);
+  //if (drawBorder && !selected) tft->drawRect(_x, _y, _w, _h, color2);
+
+  if(selected) tft->fillRoundRect(_x, _y, _w, _h, r, color1);
+  else tft->fillRoundRect(_x, _y, _w, _h, r, color2);
+
+  if (drawBorder && !selected) tft->drawRoundRect(_x, _y, _w, _h, r, color2);
 
   tft->setTextColor(colors[selected]);
   switch (fontSize)
@@ -198,48 +205,3 @@ uint8_t Page::addStatic(uint8_t id, uint16_t x, uint16_t y, uint16_t w, uint16_t
   statics[nrStatics - 1].tft = tft;
   return (nrStatics - 1);
 }
-
-// void Header::eventVariable(String name, float value, uint8_t precision)
-// {
-//   _messageTimer = 0;
-//   _variableState = MSG_CUED;
-//   name.toCharArray(_message, 10);
-//   _value = value;
-//   _precision = precision;
-// }
-
-// void Header::eventString(String name)
-// {
-//   _messageTimer = 0;
-//   _variableState = MSG_STR_CUED;
-//   name.toCharArray(_message, 10);
-// }
-
-// void Header::eventMidi()
-// {
-//   _midiTimer = 0;
-//   _midiState = MSG_CUED;
-// }
-
-// void Header::update()
-// {
-//   if ( (_variableState == MSG_CUED) || (_variableState == MSG_STR_CUED))
-//   {
-//     tft->fillRect(0, 220, 160, 20, IDLE_COLOR);
-//     tft->setTextColor(MAIN_BG_COLOR);
-//     //tft->setFont(Arial_10);
-//     tft->setCursor(4 , 225);
-//     tft->print(_message);
-//     tft->setCursor(10 + 70 , 225);
-//     if (_variableState == MSG_CUED) tft->print(_value, _precision);
-//     _variableState = MSG_SHOWN;
-//     return;
-//   }
-
-//   if((_messageTimer > 1000) && (_variableState == MSG_SHOWN))
-//   {
-//     _variableState = MSG_IDLE;
-//     tft->fillRect(0, 220, 160, 20, MAIN_BG_COLOR);
-//     return;
-//   }
-// }

@@ -31,10 +31,12 @@
 #define SCREEN_SAVER_TIME 120 * 1000
 
 #define MAIN_BG_COLOR         0x0000
-#define SELECTED_COLOR        0x07e0 //0xfe01
+#define SELECTED_COLOR        0x07e0
 #define IDLE_COLOR            0xe71c
-#define BORDER_COLOR          0x9cf3 //0x8c71
-//#define HEADER_COLOR              
+#define BORDER_COLOR          0x9cf3 
+#define NO_CONTROL_COLOR      0xb596
+#define HEADER_COLOR          0xb596
+
 #define PATCHNAME_BG_COLOR    0xfbe8
 #define PATCHNAME_MAINPAGE    0xfd80
 #define MIDIEVENT_ON          0xbe1f
@@ -48,6 +50,8 @@
 #define WAVETABLE_LANES       0x7bef
 #define SLIDER_LANE           0x7bef
 #define SLIDER_HANDLE         0xfd60
+#define MOD_SOURCE_COLOR      0xb75f
+#define MOD_DESTINATION_COLOR 0xfd75
 
 #define PAGE_PATCH       0
 #define PAGE_OSCILLATOR  1
@@ -174,25 +178,6 @@ class Page
     int checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType);
 };
 
-// class Header
-// {
-//   private:
-//     elapsedMillis _messageTimer;
-//     elapsedMillis _midiTimer;
-//     uint8_t _variableState = MSG_IDLE;
-//     uint8_t _midiState = MSG_IDLE;
-//     float _value = 0.00;
-//     uint8_t _precision = 2;
-//     char _message[10];
-//   public:
-//     //ILI9341_t3 * tft = nullptr;
-//     RA8875 * tft = nullptr;
-//     void update();
-//     void eventMidi();
-//     void eventVariable(String name, float value, uint8_t precision);
-//     void eventString(String name);
-// };
-
 void setupUI();
 void showStartupScreen();
 
@@ -226,7 +211,8 @@ void animateWavetable2(bool firstCall);
 void animateScreenSaver(bool firstCall);
 void animateAmpEnvelope(bool firstCall);
 void animateFilterEnvelope(bool firstCall);
-void animateEnvelope(float attack, float decay, float sustain, float release, uint16_t color, bool firstCall);
+void animateEnvelope3(bool firstCall);
+void animateEnvelope(uint16_t x0, uint16_t y0, uint16_t w, uint16_t h, float attack, float decay, float sustain, float release, uint16_t color, bool firstCall);
 
 int16_t getEncoderDirection(uint8_t encoderNr);
 uint8_t updateButton(uint8_t buttonNr);

@@ -449,11 +449,6 @@ void Voice::setOscMixer(uint8_t oscillatorId)
   if (oscillatorId == NOISE_LEVEL) _oscMixer.gain(3, _patch->noise_level);
 }
 
-void Voice::setAmFrequency()
-{
-  _osc_AM.frequency(_patch->am_frequency_multiplier);
-}
-
 void Voice::setAmplitudeModulation()
 {
   _amplitudeModulationMixer.gain(0, 1.0 - _patch->am_level);
@@ -955,6 +950,11 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       targetValueU8 = patch.osc_am_waveform + delta;
       patch.osc_am_waveform = constrain(targetValueU8, 0, (nrWaveforms - 2));
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setOscAmWaveform();
+      break;
+    case AM_FIXEDFREQUENCY:
+      targetValueU8 = patch.am_fixedFrequency + delta;
+      patch.am_fixedFrequency = constrain(targetValueU8, 0, 1);
+      for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].updateFrequency();
       break;
     
     case FM_FREQ_MULTIPLIER:

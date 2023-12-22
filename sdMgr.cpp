@@ -170,7 +170,7 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   tempAudioPar.reverb_diffusion =doc["reverb_diffusion"];
   tempAudioPar.reverb_feedback = doc["reverb_feedback"];
   tempAudioPar.granular_speed = doc["granular_speed"];
-  tempAudioPar.granular_length = doc["granular_length"];
+  //tempAudioPar.granular_length = doc["granular_length"];
   tempAudioPar.chorus_lfoRate = doc["chorus_lfoRate"];
   tempAudioPar.phaser_lfoRate = doc["phaser_lfoRate"];
   tempAudioPar.phaser_stages = doc["phaser_stages"];
@@ -347,7 +347,7 @@ FLASHMEM void savePatch(uint8_t patchNr)
   doc["reverb_diffusion"] = audioParameters.reverb_diffusion;
   doc["reverb_feedback"] = audioParameters.reverb_feedback;
   doc["granular_speed"] = audioParameters.granular_speed;
-  doc["granular_length"] = audioParameters.granular_length;
+  //doc["granular_length"] = audioParameters.granular_length;
   doc["chorus_lfoRate"] = audioParameters.chorus_lfoRate;
   doc["phaser_lfoRate"] = audioParameters.phaser_lfoRate;
   doc["phaser_stages"] = audioParameters.phaser_stages;

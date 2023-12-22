@@ -1,5 +1,7 @@
 #include "ui.h"
 
+
+
 RA8875 tft = RA8875(RA8875_CS,RA8875_RESET);
 Encoder encoders[1] = {Encoder(ENC1_A, ENC1_B)};
 
@@ -158,9 +160,12 @@ FLASHMEM void configurePage_screenSaver()
 
 FLASHMEM void configurePage_patch()
 {
+  const char date[12] = __DATE__;
+  const char time[11] = __TIME__;
+
   uint8_t PAGE = PAGE_PATCH;
   uint8_t widgetIndex = 0;
-  //uint8_t staticIndex = 0;
+  uint8_t staticIndex = 0;
   pages[PAGE].tft = &tft;
   pages[PAGE].backPageId = PAGE_PATCH;
   pages[PAGE].color1 = SELECTED_COLOR;
@@ -169,6 +174,22 @@ FLASHMEM void configurePage_patch()
   const uint16_t column_w = 140;
   const uint16_t row_h = 60;
   const uint8_t padding = 4;
+
+  staticIndex = pages[PAGE].addStatic(0, SCREEN_XRES - 180, SCREEN_YRES - 20, 64, 20); 
+  pages[PAGE].statics[staticIndex].label("Build: ");
+  pages[PAGE].statics[staticIndex].color2 = NO_CONTROL_COLOR;
+  pages[PAGE].statics[staticIndex].fontSize = 12;
+
+  staticIndex = pages[PAGE].addStatic(0, SCREEN_XRES - 120, SCREEN_YRES - 20, 64, 20); 
+  pages[PAGE].statics[staticIndex].label(date);
+  pages[PAGE].statics[staticIndex].color2 = NO_CONTROL_COLOR;
+  pages[PAGE].statics[staticIndex].fontSize = 12;
+
+  staticIndex = pages[PAGE].addStatic(0, SCREEN_XRES - 60, SCREEN_YRES - 20, 60, 20); 
+  pages[PAGE].statics[staticIndex].label(time);
+  pages[PAGE].statics[staticIndex].color2 = NO_CONTROL_COLOR;
+  pages[PAGE].statics[staticIndex].fontSize = 12;
+
 
   widgetIndex = pages[PAGE].addWidget(PAGE_PATCHNAME, 0, 0, 400, 60);
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
@@ -181,50 +202,42 @@ FLASHMEM void configurePage_patch()
 
 
   // ----------------------------------
-  widgetIndex = pages[PAGE].addWidget(PAGE_OSCILLATOR, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PAGE_OSCILLATOR, 0* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("OSC");
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_ENVELOPE, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PAGE_ENVELOPE, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("ENV");
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_FILTER, 2* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PAGE_FILTER, 2* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("FILT");
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_MODULATION, 3* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PAGE_MODULATION, 3* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("MOD");
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_LFO, 4* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PAGE_LFO, 4* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("LFO");
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_WAVETABLE, 0* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PAGE_WAVETABLE, 0* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("WTB");
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_WAVETABLE2, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PAGE_WAVETABLE2, 1* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("WTB2");
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_EFFECTS, 2* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PAGE_EFFECTS, 2* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("EFX");
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_CONTROLS, 3* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PAGE_CONTROLS, 3* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("CTRL");
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 
-
-  widgetIndex = pages[PAGE].addWidget(POLY_MODE, 0* (column_w + padding), 4* (row_h + padding), column_w, row_h); 
-  pages[PAGE].widgets[widgetIndex].label("Uni:");
-  pages[PAGE].widgets[widgetIndex].drawVariable = true;
-  pages[PAGE].widgets[widgetIndex].varOffsetX = 45;
-  pages[PAGE].widgets[widgetIndex].varOffsetY = 4;
-  pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.polyMode;
-  pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 }
 
 FLASHMEM void configurePage_oscillator()
@@ -259,9 +272,11 @@ FLASHMEM void configurePage_oscillator()
 
   staticIndex = pages[PAGE].addStatic(0, 0, 2* (row_h + padding), column_w, row_h);
   pages[PAGE].statics[staticIndex].label("PULSE");
+  pages[PAGE].statics[staticIndex].color2 = NO_CONTROL_COLOR;
 
   staticIndex = pages[PAGE].addStatic(0, 0, 3* (row_h + padding), column_w, row_h);
   pages[PAGE].statics[staticIndex].label("NOISE");
+  pages[PAGE].statics[staticIndex].color2 = NO_CONTROL_COLOR;
 
   widgetIndex = pages[PAGE].addWidget(TRANSPOSE, 0, 20 + 4* (row_h + padding), column_w, row_h);
   pages[PAGE].widgets[widgetIndex].label("TRP");
@@ -279,7 +294,15 @@ FLASHMEM void configurePage_oscillator()
   pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.detune;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
-  // --- COLUMN 2 - MIX LEVELS ---
+  widgetIndex = pages[PAGE].addWidget(POLY_MODE, 1* (column_w + padding), 5* (row_h + padding), column_w, row_h); 
+  pages[PAGE].widgets[widgetIndex].label("Uni:");
+  pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = 45;
+  pages[PAGE].widgets[widgetIndex].varOffsetY = 4;
+  pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.polyMode;
+  pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
+
+  // --- MIX LEVELS ---
 
   widgetIndex = pages[PAGE].addWidget(OSC1_LEVEL, 1* (column_w + padding), 0, column_w, row_h);
   pages[PAGE].widgets[widgetIndex].label("LVL");
@@ -336,6 +359,14 @@ FLASHMEM void configurePage_oscillator()
   pages[PAGE].widgets[widgetIndex].varOffsetX = 60;
   pages[PAGE].widgets[widgetIndex].varOffsetY = 30;
   pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.am_level;
+  pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
+
+  widgetIndex = pages[PAGE].addWidget(AM_FIXEDFREQUENCY, 2* (column_w + padding), 3* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgets[widgetIndex].label("AM FIX");
+  pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = 60;
+  pages[PAGE].widgets[widgetIndex].varOffsetY = 30;
+  pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.am_fixedFrequency;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
 
@@ -432,16 +463,17 @@ FLASHMEM void configurePage_modulation()
   // draw row headers
   const uint8_t nrRows = 7;
   const uint8_t nrColumns = 5;
-  const uint8_t rowHeight = 50;
-  const uint8_t padding = 2;
+  const uint8_t rowHeight = 46;
+  const uint8_t padding = 4;
   const uint8_t columnWidth = 120;
 
   const String rowNames[nrRows] = {"O1P", "O2P", "ENV3", "LFO1", "LFO2", "VEL", "WHL"};
 
   for (uint8_t row = 0; row < nrRows; row++)
   {
-    staticIndex = pages[PAGE].addStatic(0, 0, (1 + row) * (rowHeight + 2), columnWidth, rowHeight);
+    staticIndex = pages[PAGE].addStatic(0, 0, (1 + row) * (rowHeight + padding), columnWidth, rowHeight);
     pages[PAGE].statics[staticIndex].label(rowNames[row]);
+    pages[PAGE].statics[staticIndex].color2 = MOD_SOURCE_COLOR;
   }
 
   // draw column headers
@@ -451,8 +483,18 @@ FLASHMEM void configurePage_modulation()
   {
     staticIndex = pages[PAGE].addStatic(0, (1 + column) * (columnWidth + padding), 0, columnWidth, rowHeight);
     pages[PAGE].statics[staticIndex].label(columnNames[column]);
+    pages[PAGE].statics[staticIndex].color2 = MOD_DESTINATION_COLOR;
   }
 
+  staticIndex = pages[PAGE].addStatic(0, 2 * (columnWidth + padding), 434, columnWidth, rowHeight);
+  pages[PAGE].statics[staticIndex].label("Source");
+  pages[PAGE].statics[staticIndex].color2 = MOD_SOURCE_COLOR;
+
+  staticIndex = pages[PAGE].addStatic(0, 3 * (columnWidth + padding), 434, columnWidth, rowHeight);
+  pages[PAGE].statics[staticIndex].label("Dest");
+  pages[PAGE].statics[staticIndex].color2 = MOD_DESTINATION_COLOR;
+
+  
   // draw parameters, 5*5x
   uint8_t parameterIndexes[7][5] = {{N_A, MOD_OSC1_OSC2_PITCH, N_A, MOD_OSC1_OSC2_PHASE, N_A},
                                     {MOD_OSC2_OSC1_PITCH, N_A, MOD_OSC2_OSC1_PHASE, N_A, N_A},
@@ -511,16 +553,17 @@ FLASHMEM void configurePage_modulation2()
    // draw row headers
   const uint8_t nrRows = 7;
   const uint8_t nrColumns = 5;
-  const uint8_t rowHeight = 50;
-  const uint8_t padding = 2;
+  const uint8_t rowHeight = 46;
+  const uint8_t padding = 4;
   const uint8_t columnWidth = 120;
 
   const String rowNames[nrRows] = {"O1P", "O2P", "ENV3", "LFO1", "LFO2", "VEL", "WHL"};
 
   for (uint8_t row = 0; row < nrRows; row++)
   {
-    staticIndex = pages[PAGE].addStatic(0, 0, (1 + row) * (rowHeight + 2), columnWidth, rowHeight);
+    staticIndex = pages[PAGE].addStatic(0, 0, (1 + row) * (rowHeight + padding), columnWidth, rowHeight);
     pages[PAGE].statics[staticIndex].label(rowNames[row]);
+    pages[PAGE].statics[staticIndex].color2 = MOD_SOURCE_COLOR;
   }
 
   // draw column headers
@@ -529,6 +572,7 @@ FLASHMEM void configurePage_modulation2()
   {
     staticIndex = pages[PAGE].addStatic(0, (1 + column) * (columnWidth + padding), 0, columnWidth, rowHeight);
     pages[PAGE].statics[staticIndex].label(columnNames[column]);
+    pages[PAGE].statics[staticIndex].color2 = MOD_DESTINATION_COLOR;
   }
 
   // draw parameters
@@ -585,22 +629,26 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].color1 = SELECTED_COLOR;
   pages[PAGE].color2 = IDLE_COLOR;
 
-  const uint16_t column_w = 200;
+  const uint16_t column_w = 150;
   const uint16_t row_h = 50;
-  const uint8_t padding = 2;
+  const uint8_t padding = 4;
   const uint16_t varOffsetX = 80;
    
   staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
   pages[PAGE].statics[staticIndex].label("REVERB");
+  pages[PAGE].statics[staticIndex].color2 = HEADER_COLOR;
   
   staticIndex = pages[PAGE].addStatic(0, 1* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
   pages[PAGE].statics[staticIndex].label("CHORUS");
+  pages[PAGE].statics[staticIndex].color2 = HEADER_COLOR;
 
   staticIndex = pages[PAGE].addStatic(0, 2* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
   pages[PAGE].statics[staticIndex].label("DELAY");
+  pages[PAGE].statics[staticIndex].color2 = HEADER_COLOR;
 
   staticIndex = pages[PAGE].addStatic(0, 3* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
   pages[PAGE].statics[staticIndex].label("PHASER");
+  pages[PAGE].statics[staticIndex].color2 = HEADER_COLOR;
 
 
   widgetIndex = pages[PAGE].addWidget(REVERB_SIZE, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
@@ -652,12 +700,12 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgets[widgetIndex].var_ptr_f = &audioParameters.granular_speed;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustAudioParameter;
 
-  widgetIndex = pages[PAGE].addWidget(GRANULAR_LENGTH, 0* (column_w + padding), 8* (row_h + padding), column_w, row_h); 
-  pages[PAGE].widgets[widgetIndex].label("Length");
-  pages[PAGE].widgets[widgetIndex].drawVariable = true;
-  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX + 5;
-  pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &audioParameters.granular_length;
-  pages[PAGE].widgets[widgetIndex].setI8 = &adjustAudioParameter;
+  // widgetIndex = pages[PAGE].addWidget(GRANULAR_LENGTH, 0* (column_w + padding), 8* (row_h + padding), column_w, row_h); 
+  // pages[PAGE].widgets[widgetIndex].label("Length");
+  // pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  // pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX + 5;
+  // pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &audioParameters.granular_length;
+  // pages[PAGE].widgets[widgetIndex].setI8 = &adjustAudioParameter;
 
 
   widgetIndex = pages[PAGE].addWidget(CHORUS_LFORATE, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
@@ -779,74 +827,123 @@ FLASHMEM void configurePage_lfo()
 {
   uint8_t PAGE = PAGE_LFO;
   uint8_t widgetIndex = 0;
-  //uint8_t staticIndex = 0;
+  uint8_t staticIndex = 0;
   pages[PAGE].tft = &tft;
   pages[PAGE].backPageId = PAGE_PATCH;
   pages[PAGE].color1 = SELECTED_COLOR;
   pages[PAGE].color2 = IDLE_COLOR;
+  pages[PAGE].animateFunction = &animateEnvelope3;
 
-  const uint16_t column_w = 140;
+  const uint16_t column_w = 130;
   const uint16_t row_h = 50;
   const uint8_t padding = 4;
   const uint16_t varOffsetX = 70;
 
-  widgetIndex = pages[PAGE].addWidget(LFO1_WAVEFORM, 0* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
-  pages[PAGE].widgets[widgetIndex].label("LFO1");
+  staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
+  pages[PAGE].statics[staticIndex].label("LFO1");
+  pages[PAGE].statics[staticIndex].color2 = HEADER_COLOR;
+
+  staticIndex = pages[PAGE].addStatic(0, 1* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
+  pages[PAGE].statics[staticIndex].label("LFO2");
+  pages[PAGE].statics[staticIndex].color2 = HEADER_COLOR;
+
+  staticIndex = pages[PAGE].addStatic(0, 2* (column_w + padding), 0* (row_h + padding), SCREEN_XRES - 2* (column_w + padding), row_h); 
+  pages[PAGE].statics[staticIndex].label("ENV3");
+  pages[PAGE].statics[staticIndex].color2 = HEADER_COLOR;
+  
+  widgetIndex = pages[PAGE].addWidget(LFO1_WAVEFORM, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
+  pages[PAGE].widgets[widgetIndex].label("Wfm");
   pages[PAGE].widgets[widgetIndex].drawWaveform = true;
   pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.lfo1_waveform;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
-  widgetIndex = pages[PAGE].addWidget(LFO1_FREQUENCY, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(LFO1_FREQUENCY, 0* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("Freq");
   pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.lfo1Frequency;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
-  widgetIndex = pages[PAGE].addWidget(LFO1_AMPLITUDE, 0* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(LFO1_AMPLITUDE, 0* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("Ampl");
   pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.lfo1Level;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
-  widgetIndex = pages[PAGE].addWidget(LFO1_FILTER_MODE, 0* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
-  pages[PAGE].widgets[widgetIndex].label("Filt");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
-  pages[PAGE].widgets[widgetIndex].drawVariable = true;
-  pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.lfo1FilterMode;
-  pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
+  // widgetIndex = pages[PAGE].addWidget(LFO1_FILTER_MODE, 0* (column_w + padding), 4* (row_h + padding), column_w, row_h); 
+  // pages[PAGE].widgets[widgetIndex].label("Flt");
+  // pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
+  // pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  // pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.lfo1FilterMode;
+  // pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
 
-  widgetIndex = pages[PAGE].addWidget(LFO2_WAVEFORM, 1* (column_w + padding), 0* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(LFO2_WAVEFORM, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("LFO2");
   pages[PAGE].widgets[widgetIndex].drawWaveform = true;
   pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.lfo2_waveform;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
-  widgetIndex = pages[PAGE].addWidget(LFO2_FREQUENCY, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(LFO2_FREQUENCY, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("Freq");
   pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.lfo2Frequency;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
-  widgetIndex = pages[PAGE].addWidget(LFO2_AMPLITUDE, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(LFO2_AMPLITUDE, 1* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("Ampl");
   pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
   pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.lfo2Level;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
-  widgetIndex = pages[PAGE].addWidget(LFO2_FILTER_MODE, 1* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
-  pages[PAGE].widgets[widgetIndex].label("Filt");
-  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
+  // widgetIndex = pages[PAGE].addWidget(LFO2_FILTER_MODE, 1* (column_w + padding), 4* (row_h + padding), column_w, row_h); 
+  // pages[PAGE].widgets[widgetIndex].label("Filt");
+  // pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
+  // pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  // pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.lfo2FilterMode;
+  // pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
+
+
+  widgetIndex = pages[PAGE].addWidget(ENV3_ATTACK, 2* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgets[widgetIndex].label("Attack");
   pages[PAGE].widgets[widgetIndex].drawVariable = true;
-  pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.lfo2FilterMode;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
+  pages[PAGE].widgets[widgetIndex].varOffsetY = 30;
+  pages[PAGE].widgets[widgetIndex].floatPrecision = 0;
+  pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.envelope3_attack;
   pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
+  widgetIndex = pages[PAGE].addWidget(ENV3_DECAY, 3* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgets[widgetIndex].label("Decay");
+  pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
+  pages[PAGE].widgets[widgetIndex].varOffsetY = 30;
+  pages[PAGE].widgets[widgetIndex].floatPrecision = 0;
+  pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.envelope3_decay;
+  pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
+
+  widgetIndex = pages[PAGE].addWidget(ENV3_SUSTAIN, 4* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgets[widgetIndex].label("Sustain");
+  pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
+  pages[PAGE].widgets[widgetIndex].varOffsetY = 30;
+  pages[PAGE].widgets[widgetIndex].floatPrecision = 1;
+  pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.envelope3_sustain;
+  pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
+
+  widgetIndex = pages[PAGE].addWidget(ENV3_RELEASE, 5* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgets[widgetIndex].label("Release");
+  pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
+  pages[PAGE].widgets[widgetIndex].varOffsetY = 30;
+  pages[PAGE].widgets[widgetIndex].floatPrecision = 0;
+  pages[PAGE].widgets[widgetIndex].var_ptr_f = &voiceBank1.patch.envelope3_release;
+  pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
 
   widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 680, 410, 120, 60);
   pages[PAGE].widgets[widgetIndex].label("<BACK");
@@ -998,7 +1095,7 @@ FLASHMEM void configurePage_wavetable2()
 
   const uint16_t rowHeight = 60;
   const uint16_t columnWidth = 160;
-  const uint16_t padding = 2;
+  const uint16_t padding = 4;
 
   widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_INDEX, 0, 0 * (rowHeight + padding), columnWidth, rowHeight);
   pages[PAGE].widgets[widgetIndex].label("wt#");
@@ -1417,10 +1514,12 @@ void animateWavetable2(bool firstCall)
 
 void animateScreenSaver(bool firstCall)
 {
+  const uint8_t mode = 1;
   static elapsedMillis animateTimer = 0;
   static uint16_t column = 0;
   static uint16_t color = SELECTED_COLOR;
-  if (animateTimer > 50)
+  static uint8_t oldNoteStatus[128];
+  if ( (mode == 0) && (animateTimer > 50) )
   {
     for (uint8_t row = 0; row < 128; row++)
     {
@@ -1437,29 +1536,67 @@ void animateScreenSaver(bool firstCall)
     }
     
   }
+  // if ( (mode == 1) && (animateTimer > 50) )
+  // {
+  //   uint16_t h = 0;
+  //   uint16_t yStart = 0;
+  //   for (uint8_t row = 0; row < 128; row++)
+  //   {
+  //     if (noteStatus[row] == 0)
+  //     {
+  //       h = h + 3;
+  //     }
+  //     else
+  //     {
+  //       tft.fillRect(column * 10, y * rowHeight, 10, rowHeight, color * (128 / 1.0 * noteStatus[row]));
+  //       h = 0;
+  //       yStart = (row + 1) * 3;
+  //     }
+  //   }
+  //   column++;
+  //       if (column > SCREEN_XRES / 10)
+  //   {
+  //     column = 0;
+  //     color = tft.Color565(random(255), random(255), random(255));
+  //   }
+  // }
 }
 
 void animateAmpEnvelope(bool firstCall)
 {
-  animateEnvelope(voiceBank1.patch.ampEnvelope_attack, voiceBank1.patch.ampEnvelope_decay, voiceBank1.patch.ampEnvelope_sustain, voiceBank1.patch.ampEnvelope_release, SELECTED_COLOR, firstCall);
+  const uint16_t x0 = 50;
+  const uint16_t y0 = 300;
+  const uint16_t w = 300;
+  const uint16_t h = 150;
+  animateEnvelope(x0, y0, w, h, voiceBank1.patch.ampEnvelope_attack, voiceBank1.patch.ampEnvelope_decay, voiceBank1.patch.ampEnvelope_sustain, voiceBank1.patch.ampEnvelope_release, SELECTED_COLOR, firstCall);
 }
 
 void animateFilterEnvelope(bool firstCall)
 {
-  animateEnvelope(voiceBank1.patch.filterEnvelope_attack, voiceBank1.patch.filterEnvelope_decay, voiceBank1.patch.filterEnvelope_sustain, voiceBank1.patch.filterEnvelope_release, SELECTED_COLOR, firstCall);
+  const uint16_t x0 = 50;
+  const uint16_t y0 = 300;
+  const uint16_t w = 300;
+  const uint16_t h = 150;
+  animateEnvelope(x0, y0, w, h, voiceBank1.patch.filterEnvelope_attack, voiceBank1.patch.filterEnvelope_decay, voiceBank1.patch.filterEnvelope_sustain, voiceBank1.patch.filterEnvelope_release, SELECTED_COLOR, firstCall);
 }
 
-void animateEnvelope(float attack, float decay, float sustain, float release, uint16_t color, bool firstCall)
+void animateEnvelope3(bool firstCall)
+{
+  const uint16_t x0 = 400;
+  const uint16_t y0 = 300; // y0 is envelope = 0
+  const uint16_t w = 300;
+  const uint16_t h = 150;
+  animateEnvelope(x0, y0, w, h, voiceBank1.patch.envelope3_attack  , voiceBank1.patch.envelope3_decay, voiceBank1.patch.envelope3_sustain, voiceBank1.patch.envelope3_release, SELECTED_COLOR, firstCall);
+}
+
+void animateEnvelope(uint16_t x0, uint16_t y0, uint16_t w, uint16_t h, float attack, float decay, float sustain, float release, uint16_t color, bool firstCall)
 {
   const uint8_t MODE = 1;
 
   static float _attack, _decay, _sustain, _release;
   static elapsedMillis timer;
-  uint16_t x0 = 50;
-  uint16_t y0 = 300;
-  const uint16_t w = 300;
-  const uint16_t h = 150;
-  const uint16_t r = 5;
+
+  uint16_t r = h >> 5;
   bool changed = ( (attack != _attack) || (decay != _decay) || (sustain != _sustain) || (release != _release));
   if (firstCall || (changed && (timer > 50)) )
   {
@@ -1473,6 +1610,7 @@ void animateEnvelope(float attack, float decay, float sustain, float release, ui
     uint16_t dx4 = release / 50;
     uint16_t dx3 = w - dx1 - dx2 - dx4; 
     uint16_t dy1 = h * sustain;
+
     if (MODE == 0)
     {
       tft.fillRect(x0, y0 - h, w + 1, h, MAIN_BG_COLOR);
@@ -1490,11 +1628,11 @@ void animateEnvelope(float attack, float decay, float sustain, float release, ui
       tft.drawFastHLine(x0 + dx1 + dx2, y0 - dy1, dx3, color); // SUSTAIN
       tft.drawLine(x0 + dx1 + dx2 + dx3, y0 - dy1, x0 + dx1 + dx2 + dx3 + dx4, y0, color); // RELEASE
 
-      tft.fillCircle(x0, y0, 5, color);
-      tft.fillCircle(x0 + dx1, y0 -h, 5, color);
-      tft.fillCircle(x0 + dx1 + dx2, y0 - dy1, 5, color);
-      tft.fillCircle(x0 + dx1 + dx2 + dx3, y0 - dy1, 5, color);
-      tft.fillCircle(x0 + dx1 + dx2 + dx3 + dx4, y0, 5, color);
+      tft.fillCircle(x0, y0, r, color);
+      tft.fillCircle(x0 + dx1, y0 -h, r, color);
+      tft.fillCircle(x0 + dx1 + dx2, y0 - dy1, r, color);
+      tft.fillCircle(x0 + dx1 + dx2 + dx3, y0 - dy1, r, color);
+      tft.fillCircle(x0 + dx1 + dx2 + dx3 + dx4, y0, r, color);
     }
   }
 }
