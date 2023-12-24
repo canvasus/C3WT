@@ -35,11 +35,11 @@
 #define IDLE_COLOR            0xe71c
 #define BORDER_COLOR          0x9cf3 
 #define NO_CONTROL_COLOR      0xb596
-#define HEADER_COLOR          0xb596
+#define HEADER_COLOR          0x677d //0xb596
 
 #define PATCHNAME_BG_COLOR    0xfbe8
 #define PATCHNAME_MAINPAGE    0xfd80
-#define MIDIEVENT_ON          0xbe1f
+#define MIDIEVENT_ON          0x07ff
 #define MIDIEVENT_OFF         0xd6da
 #define MESSAGE_COLOR         0xfe01
 #define WAVETABLE1_SELECTED   0x0726
@@ -66,9 +66,10 @@
 #define PAGE_ENVELOPE    10
 #define PAGE_FILTER      11
 #define PAGE_CONTROLS    12
+#define PAGE_SYSTEM      13
 //#define PAGE_ARPEGGIATOR 
 
-#define NR_PAGES 13
+#define NR_PAGES 14
 
 #define PAGE_MESSAGE  254
 #define N_A           255
@@ -135,9 +136,9 @@ class Widget
     uint8_t labelOffsetY = 4;
     uint8_t varOffsetX = 2;
     uint8_t varOffsetY = 4;
-    float valueMax = 127.0;
-    float valueMin = 0.0;
-    uint8_t valueScaler = 1;
+    //float valueMax = 127.0;
+    //float valueMin = 0.0;
+    //uint8_t valueScaler = 1;
     uint8_t fontSize = 16;
     uint8_t floatPrecision = 2;
     uint16_t sliderHandleRadius = 10;
@@ -159,7 +160,6 @@ class Widget
 class Page
 {
  public:
-    //ILI9341_t3 * tft =  nullptr;
     RA8875 * tft = nullptr;
     AnimateFunction animateFunction = nullptr;
     uint8_t addWidget(uint8_t id, uint16_t x, uint16_t y, uint16_t w, uint16_t h);
@@ -197,6 +197,7 @@ void configurePage_screenSaver();
 void configurePage_envelope();
 void configurePage_filter();
 void configurePage_controls();
+void configurePage_system();
 
 void setPage(uint8_t page);
 void changePatch(uint8_t callerId, int8_t delta);
@@ -213,6 +214,11 @@ void animateAmpEnvelope(bool firstCall);
 void animateFilterEnvelope(bool firstCall);
 void animateEnvelope3(bool firstCall);
 void animateEnvelope(uint16_t x0, uint16_t y0, uint16_t w, uint16_t h, float attack, float decay, float sustain, float release, uint16_t color, bool firstCall);
+void animateHomePage(bool firstCall);
+void animateUsbPcStatus(bool firstCall);
+void animateUsbDeviceStatus(bool firstCall);
+void animateMidiInput();
+void animateSystemPage(bool firstCall);
 
 int16_t getEncoderDirection(uint8_t encoderNr);
 uint8_t updateButton(uint8_t buttonNr);

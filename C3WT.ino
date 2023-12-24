@@ -8,14 +8,11 @@ void setup()
 {
   Serial.println("START");
   if (CrashReport) Serial.print(CrashReport);
-
   initSDcard();
   setupUI();
   setupAudio();
   setupMidi();
-
   changePatch(0, 0);
-  
 }
 
 void loop()

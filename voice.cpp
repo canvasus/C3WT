@@ -31,7 +31,7 @@ const unsigned int * waveTables[NR_WAVETABLES] = {AudioSamplePlesant_, AudioSamp
                                                   AudioSampleBraids01, AudioSampleBraids02, AudioSampleBraids03, AudioSampleBraids04,
                                                   AudioSamplePlaits01, AudioSamplePlaits02, AudioSamplePlaits03};
 
-String waveTableNames[NR_WAVETABLES] = {"Pleasant", "MicroWave2 ", "Learning", "Fairlight",
+const String waveTableNames[NR_WAVETABLES] = {"Pleasant", "MicroWave2 ", "Learning", "Fairlight",
                                         "Analog", "Ensoniq", "Digital", "Morphing",
                                         "PPG best", "Meravigl", "Chant",
                                         "Braids1", "Braids2", "Braids3", "Braids4",
@@ -314,8 +314,8 @@ void Voice::noteOff(uint8_t note, uint8_t velocity)
 
 void Voice::updateFrequency()
 {
-  float baseFrequency = NOTEFREQS[constrain(currentNote, 0, 127)] * (1.0 + pitchBend);
-  float baseFrequencyTransposed = NOTEFREQS[constrain(currentNote + _patch->transpose, 0, 127)] * (1.0 + pitchBend);
+  float baseFrequency = NOTEFREQS[constrain(currentNote, 0, 127)] * pow(2, pitchBend);
+  float baseFrequencyTransposed = NOTEFREQS[constrain(currentNote + _patch->transpose, 0, 127)] * pow(2, pitchBend);
   _osc1.frequency(baseFrequency * pow(2, _patch->detune / 100.0) * (1.0 + unisonDetune));
   _osc2.frequency(baseFrequencyTransposed * pow(2, -_patch->detune / 100.0) * (1.0 + unisonDetune));
   _pwm.frequency(baseFrequencyTransposed * pow(2, unisonDetune / 100.0));
@@ -565,7 +565,7 @@ void VoiceBank::configure()
     uint8_t channelId = voiceIndex % 4;
     voices[voiceIndex].configure(voiceIndex, &patch);
     _connect(voices[voiceIndex].output, 0, _voiceMixer[mixerId], channelId);
-    _voiceMixer[mixerId].gain(channelId, 0.4);
+    _voiceMixer[mixerId].gain(channelId, 0.35); // probably 1 / NR_VOICES
     _connect(_lfo1, 0, voices[voiceIndex].mod_lfo1, 0);
     _connect(_lfo2, 0, voices[voiceIndex].mod_lfo2, 0);
   }
@@ -655,6 +655,14 @@ void VoiceBank::noteOff(uint8_t note, uint8_t velocity)
   for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++)
   {
     if (voices[voiceIndex].currentNote == note) voices[voiceIndex].noteOff(note, velocity);
+  }
+}
+
+void VoiceBank::panic()
+{
+  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++)
+  {
+    voices[voiceIndex].noteOff(voices[voiceIndex].currentNote, 0);
   }
 }
 
@@ -789,6 +797,30 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       targetValueF = patch.resonance + delta * 0.05;
       patch.resonance = constrain(targetValueF, 0.0, 1.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
+      break;
+    
+    case ENV3_ATTACK:
+      if (patch.envelope3_attack < 11) targetValueF = patch.envelope3_attack + delta;
+      else targetValueF = patch.envelope3_attack + delta * 10;
+      patch.envelope3_attack = constrain(targetValueF, 0.0, 2000.0);
+      for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setEnv3();
+      break;
+    case ENV3_DECAY:
+      if (patch.envelope3_decay < 11) targetValueF = patch.envelope3_decay + delta;
+      else targetValueF = patch.envelope3_decay + delta * 10;
+      patch.envelope3_decay = constrain(targetValueF, 0.0, 2000.0);
+      for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setEnv3();
+      break;
+    case ENV3_SUSTAIN:
+      targetValueF = patch.envelope3_sustain + delta * 0.1;
+      patch.envelope3_sustain = constrain(targetValueF, 0.0, 1.0);
+      for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setEnv3();
+      break;
+    case ENV3_RELEASE:
+      if (patch.envelope3_release < 11) targetValueF = patch.envelope3_release + delta;
+      else targetValueF = patch.envelope3_release + delta * 10;
+      patch.envelope3_release = constrain(targetValueF, 0.0, 5000.0);
+      for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setEnv3();
       break;
     
 

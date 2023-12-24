@@ -14,8 +14,11 @@ MIDIDevice_BigBuffer midi1(myusb);
 //MIDIDevice_BigBuffer midi3(myusb);
 
 uint8_t noteStatus[128];
+uint8_t midiActivity = 0;
+bool usbDeviceStatus = false;
+bool usbPcStatus = false;
 
-void setupMidi()
+FLASHMEM void setupMidi()
 {
   Serial.println("MIDI SETUP");
 
@@ -46,36 +49,63 @@ void updateMidi()
   serialMIDI.read();
   midi1.read();
   //updateArpeggiator();
+  checkUsbStatus();
+}
+
+void checkUsbStatus()
+{
+  if (midi1) usbDeviceStatus = true;
+  else usbDeviceStatus = false;
+
+  if (!bitRead(USB1_PORTSC1,7)) usbPcStatus = true;
+  else usbPcStatus = false;
 }
 
 void myNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
 {
-  noteStatus[note] = velocity;
-  if(midiSettings.arp_mode == ARP_OFF) voiceBank1.noteOn(note, velocity);
-  else arpeggiator.addNote(note);
+  if (channel == midiSettings.channel)
+  {
+    noteStatus[note] = velocity;
+    if(midiSettings.arp_mode == ARP_OFF) voiceBank1.noteOn(note, velocity);
+    else arpeggiator.addNote(note);
+    midiActivity = 1;
+  }
 }
 
 void myNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
 {
-  noteStatus[note] = 0;
-  if(midiSettings.arp_mode == ARP_OFF) voiceBank1.noteOff(note, velocity);
-  else arpeggiator.removeNote(note);
+  if (channel == midiSettings.channel)
+  {
+    noteStatus[note] = 0;
+    if(midiSettings.arp_mode == ARP_OFF) voiceBank1.noteOff(note, velocity);
+    else arpeggiator.removeNote(note);
+    midiActivity = 0;
+  }
 }
 
 void myControlChange(uint8_t channel, uint8_t control, uint8_t value)
 {
-  switch (control)
+  if (channel == midiSettings.channel)
   {
-    case CC_MODWHEEL:
-      //voiceBank1.setFilterCutoff(value / 127.0);
-      voiceBank1.setParameter(FILTER_CUTOFF, value / 127.0);
-      break;
+    switch (control)
+    {
+      case CC_MODWHEEL:
+        //voiceBank1.setFilterCutoff(value / 127.0);
+        voiceBank1.setParameter(FILTER_CUTOFF, value / 127.0);
+        break;
+      case CC_PANIC:
+        voiceBank1.panic();
+        break;
+    }
   }
 }
 
 void myPitchBend(uint8_t channel, int pitchBend)
 {
-  voiceBank1.setPitchBend(pitchBend);
+  if (channel == midiSettings.channel)
+  {
+    voiceBank1.setPitchBend(pitchBend);
+  }
 }
 
 void tickMasterClock() { arpeggiator.tick(); }
@@ -91,6 +121,19 @@ void adjustBpm(uint8_t dummy, int8_t delta)
   midiSettings.oneTickUs = 1000 * 60000 / (midiSettings.bpm * 32);
   masterClockTimer.update(midiSettings.oneTickUs);
 }
+
+void adjustMidiParameter(uint8_t parameter, int8_t delta)
+{
+  int8_t targetValue_I8 = 0;
+  switch (parameter)
+  {
+    case SYS_MIDICHANNEL:
+      targetValue_I8 = midiSettings.channel + delta;
+      midiSettings.channel =  constrain(targetValue_I8, 0, 16);
+      break;
+  }
+}
+
 
 Arpeggiator::Arpeggiator(MidiSettings * settings, VoiceBank * voiceBank)
 {

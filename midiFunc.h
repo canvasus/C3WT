@@ -17,7 +17,12 @@
 
 #define NR_ARP_MODES 3
 
+#define SYS_MIDICHANNEL 0
+
 extern uint8_t noteStatus[128];
+extern uint8_t midiActivity;
+extern bool usbDeviceStatus;
+extern bool usbPcStatus;
 
 struct MidiSettings
 {
@@ -64,6 +69,8 @@ extern Arpeggiator arpeggiator;
 void setupMidi();
 void updateMidi();
 
+void checkUsbStatus();
+
 void myNoteOn(uint8_t channel, uint8_t note, uint8_t velocity);
 void myNoteOff(uint8_t channel, uint8_t note, uint8_t velocity);
 void myControlChange(uint8_t channel, uint8_t control, uint8_t value);
@@ -72,9 +79,12 @@ void myPitchBend(uint8_t channel, int pitchBend);
 void tickMasterClock();
 void updateArpeggiator();
 
+void adjustMidiParameter(uint8_t parameter, int8_t delta);
+
 void setArpeggiatorMode(uint8_t dummy, int8_t value);
 void adjustBpm(uint8_t dummy, int8_t delta);
 
 int compare (const void * a, const void * b);
 
 #define CC_MODWHEEL 1
+#define CC_PANIC    123

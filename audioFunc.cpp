@@ -29,7 +29,7 @@ AudioConnection  *   patchCords[NR_PATCHCORDS_MAINBUS];
 SM2k_AudioControlWM8731 codecControl1;
 
 VoiceBank voiceBank1;
-//VoiceBank voiceBank2;
+//VoiceBank voiceBank2; // Possible multimbrality
 
 AudioParameters audioParameters;
 

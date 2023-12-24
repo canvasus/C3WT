@@ -1,0 +1,5 @@
+Part		Low USD		Normal SEK
+------------------------------------------
+Teensy 4.1	38
+ER-TFT070M/cap	49
+Pcb
