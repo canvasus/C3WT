@@ -84,5 +84,3 @@ void setChorus();
 void setPhaser();
 void setDelay();
 void setGranular();
-
-void displayResources();

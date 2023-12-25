@@ -19,8 +19,9 @@
 
 #define FILTER_MAX_CUTOFF 13600
 
-// 112
+// 115
 #define POLY_MODE 106
+#define MONO_MODE 114
 
 #define OSC1_WAVEFORM 0
 #define OSC2_WAVEFORM 1
@@ -41,6 +42,9 @@
 #define FILTER_CUTOFF  16
 #define FILTER_RESONANCE 17
 #define FILTERENV_PWR 18
+
+#define OSC1_SYNC 112
+#define OSC2_SYNC 113
 
 #define OSC1_WAVETABLE_INDEX    102
 #define OSC1_WAVETABLE_MODE     104
@@ -164,6 +168,10 @@ struct Patch
 
   int8_t   transpose = 0;
   float detune = 0.20;
+  uint8_t mono_mode = 0;
+
+  uint8_t osc1_sync = 0;
+  uint8_t osc2_sync = 0;
 
   float osc1_level = 0.8;
   float osc2_level = 0.0;
@@ -414,6 +422,7 @@ class VoiceBank
 
   public:
     Patch patch;
+    float modWheel = 0.0;
     int16_t * currentWaveform_I16 = nullptr;
     //int16_t waveTable1_I16[256];
     //int16_t waveTable2_I16[256];

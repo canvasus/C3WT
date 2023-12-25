@@ -2,11 +2,11 @@
 
 PatchInfo patchInfo;
 String patchNameUI = "000: INIT PATCH";
-String peekPatchNameUI = "000: INIT PATCH";
+String peekPatchNameUI = "INIT PATCH";
 uint8_t currentPatchNr = 0;
 uint8_t peekPatchNr = 0;
 
-void initSDcard()
+FLASHMEM void initSDcard()
 {
   delay(200);
   Serial.print(F("Init SD card..."));
@@ -41,6 +41,8 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   strlcpy(patchInfo.name,                  // <- destination
           doc["name"] | "INIT PATCH",  // <- source
           sizeof(patchInfo.name)); 
+
+  peekPatchNameUI = patchInfo.name;
 
   patch.osc1_waveform =doc["osc1_waveform"];
   patch.osc2_waveform = doc["osc2_waveform"];
@@ -374,7 +376,8 @@ FLASHMEM void savePatch(uint8_t patchNr)
   patchNameUI = buffer;
 }
 
-uint8_t peekPatchName(uint8_t patchNr, char * buf)
+//uint8_t peekPatchName(uint8_t patchNr, char * buf)
+uint8_t peekPatchName(uint8_t patchNr)
 {
   peekPatchNr = patchNr;
   char fileName[14];
@@ -382,15 +385,18 @@ uint8_t peekPatchName(uint8_t patchNr, char * buf)
 
   File file = SD.open(fileName);
 
-  StaticJsonDocument<512> doc;
+  StaticJsonDocument<4096> doc;
 
   // // Deserialize the JSON document
   DeserializationError error = deserializeJson(doc, file);
-  if (error) Serial.println(F("Failed to read file, using default configuration"));
+  if (error) Serial.println(F("Read json failed, using default"));
 
+  char buf[PATCH_NAME_NR_CHARACTERS];
   strlcpy(buf,                  // <- destination
           doc["name"] | "INIT PATCH",  // <- source
           PATCH_NAME_NR_CHARACTERS); 
+
+  peekPatchNameUI = String(buf);
 
   return 0;
 }

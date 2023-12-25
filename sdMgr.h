@@ -24,11 +24,13 @@ struct PatchInfo
 
 extern PatchInfo patchInfo;
 extern String patchNameUI;
+extern String peekPatchNameUI;
 extern uint8_t currentPatchNr;
 extern uint8_t peekPatchNr;
 
 void initSDcard();
 void checkFileSystem();
-uint8_t peekPatchName(uint8_t patchNr, char * buf);
+//uint8_t peekPatchName(uint8_t patchNr, char * buf);
+uint8_t peekPatchName(uint8_t patchNr);
 uint8_t loadPatch(uint8_t patchNr);
 void savePatch(uint8_t patchNr);

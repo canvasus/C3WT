@@ -92,6 +92,7 @@ void myControlChange(uint8_t channel, uint8_t control, uint8_t value)
       case CC_MODWHEEL:
         //voiceBank1.setFilterCutoff(value / 127.0);
         voiceBank1.setParameter(FILTER_CUTOFF, value / 127.0);
+        voiceBank1.modWheel = value / 127.0;
         break;
       case CC_PANIC:
         voiceBank1.panic();

@@ -39,7 +39,7 @@ DMAMEM int16_t granularMemoryR[GRANULAR_MEMORY_SIZE];
 
 FLASHMEM void setupAudio()
 {
-  AudioMemory(512);
+  AudioMemory(600);
 
   codecControl1.setAddress(0x1A);
   codecControl1.enable();
@@ -133,21 +133,6 @@ void updateVoices()
   {
     timer = 0;
     voiceBank1.update();
-  }
-}
-
-void displayResources()
-{
-  static elapsedMillis timer = 0;
-  if (timer > 5000)
-  {
-    timer = 0;
-    Serial.print("Audio mem: ");
-    Serial.println(AudioMemoryUsageMax());
-    Serial.print("Audio proc: ");
-    Serial.println(AudioProcessorUsageMax());
-    AudioMemoryUsageMaxReset(); 
-    AudioProcessorUsageMaxReset(); 
   }
 }
 

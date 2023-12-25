@@ -4,7 +4,7 @@
 #include "sdMgr.h"
 #include "voice.h"
 
-void setup()
+FLASHMEM void setup()
 {
   Serial.println("START");
   if (CrashReport) Serial.print(CrashReport);

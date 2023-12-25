@@ -166,6 +166,9 @@ Voice::Voice()
 
 void Voice::update()
 {
+  //if ( (_patch->osc1_sync == 1) && _osc2.getSync() ) _osc1.sync();
+  //if ( (_patch->osc2_sync == 1) && _osc1.getSync() ) _osc2.sync();
+
   if( (waveformList[_patch->osc1_waveform] == WAVEFORM_ARBITRARY) && (osc1_waveTimer > _patch->osc1_waveTable_interval) )
   {
     osc1_waveTimer = 0;
@@ -608,6 +611,9 @@ void VoiceBank::noteOn(uint8_t note, uint8_t velocity)
   const float unisonModifiers[8] = {-0.001, 0.001, -0.002, 0.002, -0.003, 0.003, -0.004, 0.004};
   uint8_t voicesAssigned = 0;
 
+  if (patch.mono_mode > 0) for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].noteOff(voices[voiceIndex].currentNote, 0);
+  // noteManager.get
+
   // Prio 1: idle voices
   for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++)
   {
@@ -706,6 +712,10 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       patch.detune = constrain(targetValueF, 0.0, 1.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].updateFrequency();
       break;
+    case MONO_MODE:
+      targetValueI8 = patch.mono_mode + delta;
+      patch.mono_mode = constrain(targetValueI8, 0, 1);
+      break;
     case OSC1_LEVEL:
       targetValueF = patch.osc1_level + delta * 0.05;
       patch.osc1_level = constrain(targetValueF, 0.0, 2.0);
@@ -726,7 +736,16 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       patch.noise_level = constrain(targetValueF, 0.0, 2.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setOscMixer(NOISE_LEVEL);
       break;
-    
+    case OSC1_SYNC:
+      targetValueI8 = patch.osc1_sync + delta;
+      patch.osc1_sync = constrain(targetValueI8, 0, 1);
+      break;
+    case OSC2_SYNC:
+      targetValueI8 = patch.osc2_sync + delta;
+      patch.osc2_sync = constrain(targetValueI8, 0, 1);
+      break;
+
+
     case ENV_ATTACK:
       if (patch.ampEnvelope_attack < 10) targetValueF = patch.ampEnvelope_attack + delta;
       else targetValueF = patch.ampEnvelope_attack + delta * 10;
