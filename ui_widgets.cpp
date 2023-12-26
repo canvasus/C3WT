@@ -41,16 +41,22 @@ void Widget::_drawBox(bool selected)
   uint16_t colors[2] = {textColor1, textColor2};
   const uint8_t r = 6;
 
+  if(selected) tft->fillRoundRect(_x, _y, _w, _h, r, color1);
+  else tft->fillRoundRect(_x, _y, _w, _h, r, color2);
+  if (drawBorder && !selected) tft->drawRoundRect(_x, _y, _w, _h, r, color2);
+
   //if(selected) tft->fillRect(_x, _y, _w, _h, color1);
   //else tft->fillRect(_x, _y, _w, _h, color2);
   //if (drawBorder && !selected) tft->drawRect(_x, _y, _w, _h, color2);
 
-  if(selected) tft->fillRoundRect(_x, _y, _w, _h, r, color1);
-  else tft->fillRoundRect(_x, _y, _w, _h, r, color2);
-
-  if (drawBorder && !selected) tft->drawRoundRect(_x, _y, _w, _h, r, color2);
-
   tft->setTextColor(colors[selected]);
+
+  #ifndef USE_GFX_FONT
+  if (fontSize > 16)  tft->setFontScale(1);
+  else tft->setFontScale(0);
+  #endif
+
+  #ifdef USE_GFX_FONT
   switch (fontSize)
   {
     case 12:
@@ -75,6 +81,7 @@ void Widget::_drawBox(bool selected)
       tft->setFont(Arial_10);
       break;
   }
+  #endif
    
   if (drawLabel)
   {
@@ -204,4 +211,36 @@ uint8_t Page::addStatic(uint8_t id, uint16_t x, uint16_t y, uint16_t w, uint16_t
   statics[nrStatics - 1].fontSize = fontSize;
   statics[nrStatics - 1].tft = tft;
   return (nrStatics - 1);
+}
+
+uint8_t Page::draw(bool firstCall)
+{
+  // draws one element per pass
+  // returns 1 when all done
+
+  uint8_t doneDrawing = 0;
+  if (firstCall)
+  {
+    _drawStaticIndex = 0;
+    _drawWidgetIndex = 0;
+    if (clearOnFirstCall) tft->fillWindow(MAIN_BG_COLOR);
+    for (uint8_t staticId = 0; staticId < nrStatics; staticId++) statics[staticId].draw(false);
+    for (uint8_t widgetId = 0; widgetId < nrWidgets; widgetId++) widgets[widgetId].draw(widgetId == selectedId);
+  }
+
+  // if (_drawStaticIndex < nrStatics )
+  // {
+  //   statics[_drawStaticIndex++].draw(false);
+  // }
+
+  // if (_drawWidgetIndex < nrWidgets )
+  // {
+  //   statics[_drawWidgetIndex].draw(_drawWidgetIndex == selectedId);
+  //   _drawWidgetIndex++;
+  // }
+  // else doneDrawing = 1; // done
+
+  
+  return 1;
+  //return doneDrawing; 
 }

@@ -9,9 +9,10 @@
 #include <Encoder.h>
 
 #include <font_Arial.h>
+#define USE_GFX_FONT // uncomment for default ugly but fast font
 
-#define SCREEN_XRES           800
-#define SCREEN_YRES           480
+#define SCREEN_XRES 800
+#define SCREEN_YRES 480
 
 #define RA8875_CS     10  // ER-TFTM070 pin 5
 #define RA8875_RESET  9   // ER-TFTM070 pin 11
@@ -122,7 +123,7 @@ class Widget
     
     uint8_t id = 0;
     uint8_t type = WIDGET_BOX;
-    bool drawBorder = true;
+    bool drawBorder = false;
     bool drawLabel = true;
     bool drawVariable = false;
     bool drawWaveform = false;
@@ -159,6 +160,9 @@ class Widget
 
 class Page
 {
+  private:
+    uint8_t _drawStaticIndex = 0;
+    uint8_t _drawWidgetIndex = 0;
  public:
     RA8875 * tft = nullptr;
     AnimateFunction animateFunction = nullptr;
@@ -176,6 +180,7 @@ class Page
     uint8_t fontSize = 18;
     bool clearOnFirstCall = true;
     int checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType);
+    uint8_t draw(bool firstCall);
 };
 
 void setupUI();

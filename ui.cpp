@@ -59,12 +59,13 @@ void updateUI()
     static uint8_t oldPage = N_A;
     bool firstCall = (currentPage != oldPage) || forceReload;
     oldPage = currentPage;
-    switch (currentPage)
-    {
-       default:
-        updatePage(currentPage, firstCall);
-        break;
-    }
+    updatePage(currentPage, firstCall);
+    // switch (currentPage)
+    // {
+    //    default:
+    //     updatePage(currentPage, firstCall);
+    //     break;
+    // }
   }
 }
 
@@ -72,18 +73,18 @@ void updatePage(uint8_t pageId, bool firstCall)
 {
   uint8_t selectedId = pages[pageId].selectedId;
   uint8_t nrWidgets = pages[pageId].nrWidgets;
-  uint8_t nrStatics = pages[pageId].nrStatics;
+  //uint8_t nrStatics = pages[pageId].nrStatics;
   int newSelectedId = pages[pageId].selectedId;
   static elapsedMillis screenSaverTimer = 0;
+  uint8_t slask = 0;
 
   if (firstCall)
   {
     screenSaverTimer = 0;
-    if (pages[pageId].clearOnFirstCall) tft.fillWindow(MAIN_BG_COLOR);
-    for (uint8_t staticId = 0; staticId < nrStatics; staticId++) pages[pageId].statics[staticId].draw(false);
-    for (uint8_t widgetId = 0; widgetId < nrWidgets; widgetId++) pages[pageId].widgets[widgetId].draw(widgetId == selectedId);
+    pages[pageId].draw(true); // change to this later
     forceReload = false;
   }
+  //else slask = pages[pageId].draw(false);
 
   if (pages[pageId].animateFunction != nullptr) pages[pageId].animateFunction(firstCall);
 
@@ -95,7 +96,6 @@ void updatePage(uint8_t pageId, bool firstCall)
     if (touchState == CTP_FINGER_DOWN || touchState == CTP_FINGER_UP)
     {
       tft.getTScoordinates(coordinates);
-      //Serial.printf("X: %d, Y: %d\n", coordinates[0][0], coordinates[0][1]);
       newSelectedId = pages[pageId].checkTouch(coordinates[0][0], coordinates[0][1], touchState);
     }
     tft.enableCapISR(); // needed?
