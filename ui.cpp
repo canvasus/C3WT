@@ -53,19 +53,16 @@ void updateUI()
   static elapsedMillis uiTimer = 0;
   const uint8_t uiInterval = 33;
 
-  if (uiTimer > uiInterval)
+  if (pages[currentPage].draw(false) == 1) // checks if current page is done drawing
   {
-    uiTimer = 0;
-    static uint8_t oldPage = N_A;
-    bool firstCall = (currentPage != oldPage) || forceReload;
-    oldPage = currentPage;
-    updatePage(currentPage, firstCall);
-    // switch (currentPage)
-    // {
-    //    default:
-    //     updatePage(currentPage, firstCall);
-    //     break;
-    // }
+    if (uiTimer > uiInterval)
+    {
+      uiTimer = 0;
+      static uint8_t oldPage = N_A;
+      bool firstCall = (currentPage != oldPage) || forceReload;
+      oldPage = currentPage;
+      updatePage(currentPage, firstCall);
+    }
   }
 }
 
@@ -73,20 +70,17 @@ void updatePage(uint8_t pageId, bool firstCall)
 {
   uint8_t selectedId = pages[pageId].selectedId;
   uint8_t nrWidgets = pages[pageId].nrWidgets;
-  //uint8_t nrStatics = pages[pageId].nrStatics;
+
   int newSelectedId = pages[pageId].selectedId;
   static elapsedMillis screenSaverTimer = 0;
-  uint8_t slask = 0;
 
   if (firstCall)
   {
     screenSaverTimer = 0;
-    pages[pageId].draw(true); // change to this later
+    pages[pageId].draw(true);
     forceReload = false;
   }
-  //else slask = pages[pageId].draw(false);
-
-  if (pages[pageId].animateFunction != nullptr) pages[pageId].animateFunction(firstCall);
+  else pages[pageId].animate(false);
 
   if (tft.touched())
   {
@@ -101,6 +95,7 @@ void updatePage(uint8_t pageId, bool firstCall)
     tft.enableCapISR(); // needed?
   }
 
+  // This should be moved to page class:
   if ( (newSelectedId > -1) && (newSelectedId != selectedId) )
   {
     pages[pageId].widgets[selectedId].draw(false);
@@ -114,18 +109,17 @@ void updatePage(uint8_t pageId, bool firstCall)
   if (valueChange != 0 && (pages[pageId].widgets[selectedId].setI8 != nullptr))
   {
     screenSaverTimer = 0;
+    // pages[pageId].valueChange(valueChange); // NOTE: change to this later
     pages[pageId].widgets[selectedId].setI8(pages[pageId].widgets[selectedId].id, valueChange);
     pages[pageId].widgets[selectedId].draw(true);
   }
-
-  //if (updateButton(0) &&  (pages[pageId].widgets[selectedId].activateCb != nullptr) ) pages[pageId].widgets[selectedId].activateCb(selectedId);
-  //if (updateButton(1)) currentPage = pages[pageId].backPageId;
 
   if ( (screenSaverTimer > SCREEN_SAVER_TIME) && (currentPage != PAGE_SCREENSAVER) )
   {
     pages[PAGE_SCREENSAVER].widgets[0].id = currentPage;
     currentPage = PAGE_SCREENSAVER;
   }
+  //}
 }
 
 FLASHMEM void configurePage_screenSaver()
@@ -1485,7 +1479,7 @@ void animateWavetable(bool firstCall)
   static uint16_t oldLength1 = 0;
   static uint16_t oldLength2 = 0;
 
-  if (animateTimer > 85)
+  if ( (animateTimer > 85) || firstCall)
   {
     animateTimer = 0;
 
@@ -1557,7 +1551,7 @@ void animateWavetable2(bool firstCall)
     tft.drawLine(x0 + 256 + 5, yMidStart, x0 + 256 + 5 + 2 * xOffset, yMidEnd, WAVETABLE_LANES);
   }
 
-  if (animateTimer > 50)
+  if (animateTimer > 50 || firstCall)
   {
     animateTimer = 0;
   

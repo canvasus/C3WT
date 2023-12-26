@@ -163,6 +163,7 @@ class Page
   private:
     uint8_t _drawStaticIndex = 0;
     uint8_t _drawWidgetIndex = 0;
+    uint8_t _initAnimation = 0;
  public:
     RA8875 * tft = nullptr;
     AnimateFunction animateFunction = nullptr;
@@ -181,6 +182,8 @@ class Page
     bool clearOnFirstCall = true;
     int checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType);
     uint8_t draw(bool firstCall);
+    void animate(bool firstCall);
+    void valueChange(int valueChange);
 };
 
 void setupUI();

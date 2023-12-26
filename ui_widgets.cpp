@@ -218,29 +218,38 @@ uint8_t Page::draw(bool firstCall)
   // draws one element per pass
   // returns 1 when all done
 
-  uint8_t doneDrawing = 0;
   if (firstCall)
   {
     _drawStaticIndex = 0;
     _drawWidgetIndex = 0;
+    _initAnimation = 0;
     if (clearOnFirstCall) tft->fillWindow(MAIN_BG_COLOR);
-    for (uint8_t staticId = 0; staticId < nrStatics; staticId++) statics[staticId].draw(false);
-    for (uint8_t widgetId = 0; widgetId < nrWidgets; widgetId++) widgets[widgetId].draw(widgetId == selectedId);
+    return 0;
   }
 
-  // if (_drawStaticIndex < nrStatics )
-  // {
-  //   statics[_drawStaticIndex++].draw(false);
-  // }
-
-  // if (_drawWidgetIndex < nrWidgets )
-  // {
-  //   statics[_drawWidgetIndex].draw(_drawWidgetIndex == selectedId);
-  //   _drawWidgetIndex++;
-  // }
-  // else doneDrawing = 1; // done
-
+  if (_drawStaticIndex < nrStatics )
+  {
+    statics[_drawStaticIndex++].draw(false);
+    return 0;
+  }
   
-  return 1;
-  //return doneDrawing; 
+  if (_drawWidgetIndex < nrWidgets )
+  {
+    widgets[_drawWidgetIndex].draw(_drawWidgetIndex == selectedId);
+    _drawWidgetIndex++;
+    return 0;
+  }
+
+  if (_initAnimation == 0)
+  {
+    animate(true);
+    _initAnimation = 1;
+  }
+
+  return 1; // all done
+}
+
+void Page::animate(bool firstCall)
+{
+  if (animateFunction != nullptr) animateFunction(firstCall);
 }
