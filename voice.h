@@ -18,6 +18,7 @@
 #define POLY_MONO 8
 
 #define FILTER_MAX_CUTOFF 13600
+#define FILTER_OCTAVECONTROL 7
 
 // 115
 #define POLY_MODE 106
@@ -412,10 +413,9 @@ class VoiceBank
     AudioSynthWaveform _lfo2;
     AudioAnalyzePeak    _lfo1Peak;
     AudioAnalyzePeak    _lfo2Peak;
-
-    AudioFilterStateVariable _lfo1Filter;
-    AudioFilterStateVariable _lfo2Filter;
     AudioSynthWaveformDc _modDc;
+
+    
     uint16_t _connectionIndex = 0;
     void _connect(AudioStream &source, unsigned char sourceOutput, AudioStream &destination, unsigned char destinationInput);
     float _getPannedLevel(float baseLevel, uint8_t channel);

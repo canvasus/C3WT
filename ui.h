@@ -45,6 +45,8 @@
 #define MESSAGE_COLOR         0xfe01
 #define WAVETABLE1_SELECTED   0x0726
 #define WAVETABLE1_IDLE       0xb776
+#define WAVETABLE1_INRANGE    0x07ff
+#define WAVETABLE1_OUTSIDE    0x5aeb
 #define WAVETABLE2_SELECTED   0x055f
 #define WAVETABLE2_IDLE       0xcebd
 #define WAVETABLE_BAR_BG      0x8c71
@@ -68,9 +70,10 @@
 #define PAGE_FILTER      11
 #define PAGE_CONTROLS    12
 #define PAGE_SYSTEM      13
+#define PAGE_WAVETABLE3  14
 //#define PAGE_ARPEGGIATOR 
 
-#define NR_PAGES 14
+#define NR_PAGES 15
 
 #define PAGE_MESSAGE  254
 #define N_A           255
@@ -201,6 +204,7 @@ void configurePage_patchName();
 void configurePage_lfo();
 void configurePage_wavetable();
 void configurePage_wavetable2();
+void configurePage_wavetable3();
 void configurePage_screenSaver();
 void configurePage_envelope();
 void configurePage_filter();
@@ -217,6 +221,7 @@ void peekPatchNameWrapper(uint8_t index, int8_t delta);
 
 void animateWavetable(bool firstCall);
 void animateWavetable2(bool firstCall);
+void animateWavetable3(bool firstCall);
 void animateScreenSaver(bool firstCall);
 void animateAmpEnvelope(bool firstCall);
 void animateFilterEnvelope(bool firstCall);

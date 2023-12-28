@@ -30,6 +30,7 @@ void setupUI()
   configurePage_lfo();
   configurePage_wavetable();
   configurePage_wavetable2();
+  configurePage_wavetable3();
   configurePage_screenSaver();
   configurePage_envelope();
   configurePage_filter();
@@ -196,11 +197,15 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgets[widgetIndex].label("WTB2");
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_EFFECTS, 2* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PAGE_WAVETABLE3, 2* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
+  pages[PAGE].widgets[widgetIndex].label("WTB3");
+  pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
+
+  widgetIndex = pages[PAGE].addWidget(PAGE_EFFECTS, 3* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("EFX");
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_CONTROLS, 3* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PAGE_CONTROLS, 4* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgets[widgetIndex].label("CTRL");
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 
@@ -1186,6 +1191,74 @@ FLASHMEM void configurePage_wavetable2()
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 }
 
+FLASHMEM void configurePage_wavetable3()
+{
+  uint8_t PAGE = PAGE_WAVETABLE3;
+  uint8_t widgetIndex = 0;
+  uint8_t staticIndex = 0;
+  pages[PAGE].tft = &tft;
+  pages[PAGE].backPageId = PAGE_PATCH;
+  pages[PAGE].color1 = SELECTED_COLOR;
+  pages[PAGE].color2 = IDLE_COLOR;
+  pages[PAGE].animateFunction = &animateWavetable3;
+
+  const uint16_t row_h = 50;
+  const uint16_t column_w = 130;
+  const uint16_t padding = 4;
+  const uint16_t varOffsetX = 60;
+  
+  staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0* (row_h + padding), column_w, 40); 
+  pages[PAGE].statics[staticIndex].label("OSC1");
+  pages[PAGE].statics[staticIndex].color2 = HEADER_COLOR;
+
+  widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_INDEX, 0, 1 * (row_h + padding), column_w, row_h);
+  pages[PAGE].widgets[widgetIndex].label("wt#");
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
+  pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.osc1_waveTable_index;
+  pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
+
+  widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_MODE, 0, 2 * (row_h + padding), column_w, row_h);
+  pages[PAGE].widgets[widgetIndex].label("mod");
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
+  pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &voiceBank1.patch.osc1_waveTable_mode;
+  pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
+
+  widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_START, 0, 3 * (row_h + padding), column_w, row_h);
+  pages[PAGE].widgets[widgetIndex].label("strt");
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
+  pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  pages[PAGE].widgets[widgetIndex].var_ptr_u16 = &voiceBank1.patch.osc1_waveTable_start;
+  pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
+
+  widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_LENGTH, 0, 4 * (row_h + padding), column_w, row_h);
+  pages[PAGE].widgets[widgetIndex].label("len");
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
+  pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  pages[PAGE].widgets[widgetIndex].var_ptr_u16 = &voiceBank1.patch.osc1_waveTable_length;
+  pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
+  
+  widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_INTERVAL, 0, 5 * (row_h + padding), column_w, row_h);
+  pages[PAGE].widgets[widgetIndex].label("int");
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
+  pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  pages[PAGE].widgets[widgetIndex].var_ptr_u16 = &voiceBank1.patch.osc1_waveTable_interval;
+  pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
+
+  widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_STEPSIZE, 0, 6 * (row_h + padding), column_w, row_h);
+  pages[PAGE].widgets[widgetIndex].label("stp");
+  pages[PAGE].widgets[widgetIndex].varOffsetX = varOffsetX;
+  pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  pages[PAGE].widgets[widgetIndex].var_ptr_u16 = &voiceBank1.patch.osc1_waveTable_stepSize;
+  pages[PAGE].widgets[widgetIndex].setI8 = &adjustVoiceBankWrapper;
+
+
+  widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, SCREEN_XRES - column_w, SCREEN_YRES - 44, column_w, 44);
+  pages[PAGE].widgets[widgetIndex].label("<BACK");
+  pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
+}
+
 FLASHMEM void configurePage_envelope()
 {
   uint8_t PAGE = PAGE_ENVELOPE;
@@ -1586,6 +1659,80 @@ void animateWavetable2(bool firstCall)
   }
 }
 
+void animateWavetable3(bool firstCall)
+{
+  static elapsedMillis animateTimer = 0;
+  const uint16_t x0 = 150;
+  const uint16_t y0 = 26;
+  const uint16_t height = 22;
+  const uint8_t paddingX = 6;
+  const uint8_t paddingY = 6;
+  const uint8_t thumbnailSamples = 74;
+
+  static uint8_t oldWavetableIndex1 = 0;
+  static uint16_t oldStart1 = 0;
+  static uint16_t oldLength1 = 0;
+
+  static bool drawBoxes = true;
+  static bool drawName = true;
+
+  if (firstCall || (oldWavetableIndex1 != voiceBank1.patch.osc1_waveTable_index) )
+  {
+    oldWavetableIndex1 = voiceBank1.patch.osc1_waveTable_index;
+    animateTimer = 0;
+    tft.fillRect(x0, y0, SCREEN_XRES - x0, SCREEN_YRES - y0 - 60, MAIN_BG_COLOR);
+    drawBoxes = true;
+    drawName = true;
+
+    for (uint8_t waveformIndex = 0; waveformIndex < 64; waveformIndex++)
+    {
+      uint8_t row = waveformIndex / 8;
+      uint8_t column = waveformIndex % 8;
+      uint16_t xStart = x0 + column * (thumbnailSamples + paddingX);
+      uint16_t yStart = y0 + height + row * (2 * height + paddingY);
+      uint16_t startIndex = row * 8 * 256 + column * 256;
+        
+      for (uint8_t plotIndex = 0; plotIndex < thumbnailSamples; plotIndex++)
+      {
+        int16_t sampleIndex = map( plotIndex, 0, thumbnailSamples - 1, 0, 255);
+        sampleIndex = startIndex + sampleIndex;
+        int16_t sample1 = height * waveTable1_I16[sampleIndex] / 32768.0;
+        tft.drawPixel(xStart + plotIndex, yStart - sample1, WAVETABLE1_SELECTED);
+      }
+    }
+  }
+
+  if ( (oldStart1 != voiceBank1.patch.osc1_waveTable_start) || (oldLength1 != voiceBank1.patch.osc1_waveTable_length) || drawBoxes)
+  {
+    drawBoxes = false;
+    oldStart1 = voiceBank1.patch.osc1_waveTable_start;
+    oldLength1 =voiceBank1.patch.osc1_waveTable_length;
+    uint8_t waveformIndexStart = oldStart1 / 256; // 0-63
+    uint8_t waveformIndexEnd = min( (oldStart1 + oldLength1) / 256, 63);
+
+    for (uint8_t waveformIndex = 0; waveformIndex < 64; waveformIndex++)
+    {
+      uint8_t row = waveformIndex / 8;
+      uint8_t column = waveformIndex % 8;
+      uint16_t xStart = x0 + column * (thumbnailSamples + paddingX);
+      uint16_t yStart = y0 + height + row * (2 * height + paddingY);
+
+      if ( (waveformIndex >= waveformIndexStart) && (waveformIndex <= waveformIndexEnd) ) tft.drawRect(xStart - 1, yStart - height - 1, thumbnailSamples + 2, height * 2 + 2, WAVETABLE1_INRANGE);
+      else tft.drawRect(xStart - 1, yStart - height - 1, thumbnailSamples + 2, height * 2 + 2, WAVETABLE1_OUTSIDE);
+    }
+  }
+
+  if (drawName)
+  {
+    drawName = false;
+    tft.fillRoundRect(x0, 0, SCREEN_XRES - x0, 20, 3, HEADER_COLOR);
+    tft.setTextColor(MAIN_BG_COLOR);
+    tft.setFont(Arial_12);
+    tft.setCursor(x0 + 4, 4);
+    tft.print(waveTableNames[oldWavetableIndex1]);
+  }
+}
+
 void animateScreenSaver(bool firstCall)
 {
   const uint8_t mode = 3;
@@ -1596,46 +1743,102 @@ void animateScreenSaver(bool firstCall)
 
   const uint16_t column_w = 4;
   const uint16_t row_h = 4;
-  const uint16_t offset_x = 3;
-   
-  if ( (mode == 3) && (stage == 0) )
+  const uint16_t offset_x = 4;
+  
+  if (mode == 3) // Fireworks
   {
-    tft.BTE_move(0, row_h, SCREEN_XRES, SCREEN_YRES - row_h, offset_x, 0, 0, 0, false);
-    stage = 1;
+    if (stage == 0)
+    {
+      tft.BTE_move(0, row_h, SCREEN_XRES, SCREEN_YRES - row_h, offset_x, 0, 0, 0, false);
+      stage = 1;
+    }
+
+    if ( (stage == 1) && !tft.readStatus() ) stage = 2;
+
+    if (stage == 2)
+    {
+      uint16_t clear_x = 0;
+      uint16_t clear_w = 0;
+      
+      for (uint8_t note = 0; note < 128; note++)
+      {
+        if (noteStatus[note] > 0) noteStatusBuffer[note] = 100;
+        else if (noteStatusBuffer[note] > 0) noteStatusBuffer[note] = noteStatusBuffer[note] - 10;
+        
+        if (noteStatusBuffer[note] == 0)
+        {
+          clear_w = clear_w + column_w;
+        }
+
+        if (noteStatusBuffer[note] > 0)
+        {
+          tft.fillRect(clear_x, SCREEN_YRES - row_h, note * column_w, row_h, MAIN_BG_COLOR); // Clear row between events
+          
+          float fadeOut = noteStatusBuffer[note] / 100.0;
+          float noteFactor = note / 127.0;
+          color = tft.Color565(255 * (1 - noteFactor) * fadeOut, 255 * fadeOut * noteFactor, 255* fadeOut * noteFactor);
+
+          tft.fillRect(note * column_w, SCREEN_YRES - row_h, column_w, row_h, color);
+          clear_w = 0;
+          clear_x = (note + 1) * column_w;
+        }
+        if (note == 127) tft.fillRect(clear_x, SCREEN_YRES - row_h, SCREEN_XRES - clear_x, row_h, MAIN_BG_COLOR);
+      }
+      stage = 0;
+    }
   }
 
-  if ( (mode == 3) && (stage == 1) && !tft.readStatus() ) stage = 2;
-
-  if ( (mode == 3) && (stage == 2) )
+  if (mode == 4) // moving FFT
   {
-    uint16_t clear_x = 0;
-    uint16_t clear_w = 0;
-    
-    for (uint8_t note = 0; note < 128; note++)
+    if (firstCall)
     {
-      if (noteStatus[note] > 0) noteStatusBuffer[note] = 100;
-      else if (noteStatusBuffer[note] > 0) noteStatusBuffer[note] = noteStatusBuffer[note] - 10;
-      
-      if (noteStatusBuffer[note] == 0)
-      {
-        clear_w = clear_w + column_w;
-      }
-
-      if (noteStatusBuffer[note] > 0)
-      {
-        tft.fillRect(clear_x, SCREEN_YRES - row_h, note * column_w, row_h, MAIN_BG_COLOR); // Clear row between events
-        
-        float fadeOut = noteStatusBuffer[note] / 100.0;
-        float noteFactor = note / 127.0;
-        color = tft.Color565(255 * (1 - noteFactor) * fadeOut, 255 * fadeOut * noteFactor, 255* fadeOut * noteFactor);
-
-        tft.fillRect(note * column_w, SCREEN_YRES - row_h, column_w, row_h, color);
-        clear_w = 0;
-        clear_x = (note + 1) * column_w;
-      }
-      if (note == 127) tft.fillRect(clear_x, SCREEN_YRES - row_h, SCREEN_XRES - clear_x, row_h, MAIN_BG_COLOR);
+      tft.BTE_enable(true);
+      tft.setBackgroundColor(MAIN_BG_COLOR);
+      tft.setForegroundColor(MAIN_BG_COLOR);
+      tft.setTransparentColor(MAIN_BG_COLOR);
+      stage = 0;
+      return;
     }
-    stage = 0;
+
+    const uint8_t binMaxHeight = 64;
+    const uint16_t move_y = 10;
+    if (stage == 0)
+    {
+      // scroll 3d section
+      //tft.BTE_move(0, binMaxHeight, SCREEN_XRES, SCREEN_YRES - binMaxHeight, offset_x, 0, 0, 0, false);
+      tft.BTE_move(100, move_y, SCREEN_XRES - 100, SCREEN_YRES - binMaxHeight - move_y, 100 + offset_x, 0, 0, 0, false);
+      stage = 1;
+      return;
+    }
+
+    if ( (stage == 1) && !tft.readStatus() ) stage = 2;
+
+    if (stage == 2)
+    {
+      // copy latest fft with transparency
+      //tft.BTE_move(0, binMaxHeight, SCREEN_XRES, SCREEN_YRES - binMaxHeight, offset_x, 0, 0, 0, false);
+      tft.BTE_move(100, SCREEN_YRES - binMaxHeight, 300, binMaxHeight, 100, SCREEN_YRES - 2 * binMaxHeight, 0, 0, true, 224);
+      stage = 3;
+      return;
+    }
+
+    if ( (stage == 3) && !tft.readStatus() ) stage = 4;
+
+    if ( (stage == 4) && fft.available()) stage = 5;
+
+    if (stage == 5)
+    {
+      // draw here
+      tft.fillRect(100, SCREEN_YRES - binMaxHeight, 300, binMaxHeight, MAIN_BG_COLOR); // Clear row between events
+
+      for (uint8_t bin = 0; bin < 128; bin++)
+      {
+        uint8_t binValue = (uint8_t)(fft.read(bin) * binMaxHeight * pow(2, bin/127.0) );
+        //tft.fillRect(100 + (bin << 2), SCREEN_YRES - binValue - 2, 2, 2, MIDIEVENT_ON);
+        tft.drawPixel(100 + (bin << 1), SCREEN_YRES - binValue, MIDIEVENT_ON);
+      }
+      stage = 0; //
+    }
   }
 }
 
@@ -1807,7 +2010,7 @@ void animateSystemPage(bool firstCall)
     tft.setCursor(0 , SCREEN_YRES - 90);
     tft.print("Build: ");
     tft.print(__DATE__);
-    //tft.setCursor(0 , SCREEN_YRES - 90);
+    tft.print(" ");
     tft.print(__TIME__);
     tft.setCursor(0 , SCREEN_YRES - 60);
     tft.print("PRC_max: ");

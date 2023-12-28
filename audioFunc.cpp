@@ -24,6 +24,8 @@ AudioMixer4           outputMixerR;
 //AudioOutputUSB        output_usb;
 AudioOutputI2S        output_i2s;
 
+AudioAnalyzeFFT256    fft;
+
 AudioConnection  *   patchCords[NR_PATCHCORDS_MAINBUS];
 
 SM2k_AudioControlWM8731 codecControl1;
@@ -33,7 +35,7 @@ VoiceBank voiceBank1;
 
 AudioParameters audioParameters;
 
-#define GRANULAR_MEMORY_SIZE 8000 
+#define GRANULAR_MEMORY_SIZE 10000 
 DMAMEM int16_t granularMemoryL[GRANULAR_MEMORY_SIZE];
 DMAMEM int16_t granularMemoryR[GRANULAR_MEMORY_SIZE];
 
@@ -103,6 +105,9 @@ FLASHMEM void setupAudio()
   connect(outputMixerL, 0, output_i2s , 0);
   connect(outputMixerR, 0, output_i2s , 1);
 
+  connect(outputMixerL, 0, fft , 0);
+  fft.averageTogether(4);
+
   outputMixerL.gain(0, 1.0); // DRY L
   outputMixerR.gain(0, 1.0); // DRY R
   outputMixerL.gain(3, 1.0); // FX L
@@ -110,7 +115,7 @@ FLASHMEM void setupAudio()
 
   granularL.begin(granularMemoryL, GRANULAR_MEMORY_SIZE);
   granularR.begin(granularMemoryR, GRANULAR_MEMORY_SIZE);
-   
+  
   applyAudioParameters();
 }
 

@@ -142,8 +142,8 @@ void Widget::_drawWaveform(bool selected)
 
 bool Widget::checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType)
 {
-  const uint16_t xMargin = 2;
-  const uint16_t yMargin = 2;
+  const uint16_t xMargin = 1;
+  const uint16_t yMargin = 1;
   
   if (xPos < _x + xMargin) return false;      // outside left
   if (xPos > _x + _w - xMargin) return false; // outside right
@@ -153,10 +153,10 @@ bool Widget::checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType)
   switch (type)
   {
     case WIDGET_BOX:
-      if (eventType == CTP_FINGER_DOWN)
+      if (eventType == CTP_FINGER_UP)
       {
         if (activateCb) activateCb(id);
-       }
+      }
       return true;
     case WIDGET_SLIDER_V:
       {
@@ -220,6 +220,7 @@ uint8_t Page::draw(bool firstCall)
 
   if (firstCall)
   {
+    //tft->backlight(false); // seems to mess with BTE function?
     _drawStaticIndex = 0;
     _drawWidgetIndex = 0;
     _initAnimation = 0;
@@ -244,7 +245,10 @@ uint8_t Page::draw(bool firstCall)
   {
     animate(true);
     _initAnimation = 1;
+
   }
+  
+  //tft->backlight(true);
 
   return 1; // all done
 }

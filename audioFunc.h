@@ -49,7 +49,7 @@ struct AudioParameters
   float reverb_feedback = 0.0;
 
   float granular_speed = 2.0;
-  uint8_t granular_length = 100;
+  uint8_t granular_length = 90;
 
   float chorus_lfoRate = 6.0;
   
@@ -71,6 +71,7 @@ struct AudioParameters
 };
 
 extern AudioParameters audioParameters;
+extern AudioAnalyzeFFT256 fft;
 
 void setupAudio();
 void connect(AudioStream &source, unsigned char sourceOutput, AudioStream &destination, unsigned char destinationInput);

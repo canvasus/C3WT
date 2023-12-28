@@ -35,7 +35,7 @@ const String waveTableNames[NR_WAVETABLES] = {"Pleasant", "MicroWave2 ", "Learni
                                         "Analog", "Ensoniq", "Digital", "Morphing",
                                         "PPG best", "Meravigl", "Chant",
                                         "Braids1", "Braids2", "Braids3", "Braids4",
-                                        "PLaits1", "Plaits2", "Plaits3"};
+                                        "Plaits1", "Plaits2", "Plaits3"};
 
 
 Voice::Voice()
@@ -91,7 +91,7 @@ Voice::Voice()
   _envelopeDC.amplitude(1.0);
 
   _filter.frequency(FILTER_MAX_CUTOFF);
-  _filter.octaveControl(4);
+  _filter.octaveControl(FILTER_OCTAVECONTROL);
 
   // internal pitch mod mixers to main mod mixers
   _connect(_modMixer_osc1_pitch_voiceInternal, 0, _modMixer_osc1_pitch, 0);
@@ -797,7 +797,7 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
     
     case FILTERENV_PWR:
       targetValueF = patch.envToFilter + delta * 0.1;
-      patch.envToFilter = constrain(targetValueF, 0.0, 2.0);
+      patch.envToFilter = constrain(targetValueF, 0.0, 1.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].set_modMixer_filter();
       break;
 
@@ -1069,12 +1069,12 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       break;
     case LFO1_FREQUENCY:
       targetValueF = patch.lfo1Frequency + delta * 0.1;
-      patch.lfo1Frequency = constrain(targetValueF, 0.0, 10.0);
+      patch.lfo1Frequency = constrain(targetValueF, 0.0, 20.0);
       _lfo1.frequency(patch.lfo1Frequency);
       break;
     case LFO2_FREQUENCY:
       targetValueF = patch.lfo2Frequency + delta * 0.1;
-      patch.lfo2Frequency = constrain(targetValueF, 0.0, 10.0);
+      patch.lfo2Frequency = constrain(targetValueF, 0.0, 20.0);
       _lfo2.frequency(patch.lfo2Frequency);
       break;
     case LFO1_AMPLITUDE:
@@ -1262,16 +1262,13 @@ void VoiceBank::applyPatchData()
 
 void VoiceBank::importWaveTable(const unsigned int * waveTableI32, int16_t * waveTableI16)
 {
-  for (uint32_t index = 1; index < ARBITRARY_LENGTH; index++)
+  for (uint32_t index = 1; index < ARBITRARY_LENGTH; index++)  // first value is identifier so skip
   {
     const int32_t preScaler = 65536;
     int32_t sample1 = waveTableI32[index];
     int32_t sample2 = waveTableI32[index + 1];
-    //waveTableI16[2 * index] = sample1 / preScaler;
     waveTableI16[2 * index - 1] = sample1 / preScaler;
     if (index == (ARBITRARY_LENGTH - 1)) waveTableI16[2 * index] = sample1 / preScaler;
     else waveTableI16[2 * index] = (sample1 / (2* preScaler)) + (sample2 / (2* preScaler));
-    //if (index == (ARBITRARY_LENGTH - 1)) waveTableI16[2 * index + 1] = sample1 / preScaler;
-    //else waveTableI16[2 * index + 1] = (sample1 / (2* preScaler)) + (sample2 / (2* preScaler));
   }
 }
