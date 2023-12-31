@@ -166,8 +166,8 @@ Voice::Voice()
 
 void Voice::update()
 {
-  //if ( (_patch->osc1_sync == 1) && _osc2.getSync() ) _osc1.sync();
-  //if ( (_patch->osc2_sync == 1) && _osc1.getSync() ) _osc2.sync();
+  if ( (_patch->osc1_sync == 1) && _osc2.getSync() ) _osc1.sync();
+  if ( (_patch->osc2_sync == 1) && _osc1.getSync() ) _osc2.sync();
 
   if( (waveformList[_patch->osc1_waveform] == WAVEFORM_ARBITRARY) && (osc1_waveTimer > _patch->osc1_waveTable_interval) )
   {

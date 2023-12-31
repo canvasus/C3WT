@@ -133,12 +133,13 @@ FLASHMEM void connect(AudioStream &source, unsigned char sourceOutput, AudioStre
 
 void updateVoices()
 {
-  static elapsedMicros timer = 0;
-  if (timer > 1000)
-  {
-    timer = 0;
-    voiceBank1.update();
-  }
+  // static elapsedMicros timer = 0;
+  // if (timer > 1000)
+  // {
+  //   timer = 0;
+  //   voiceBank1.update();
+  // }
+  voiceBank1.update();
 }
 
 void adjustAudioParameter(uint8_t parameter, int8_t delta)

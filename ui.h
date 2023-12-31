@@ -38,6 +38,20 @@
 #define NO_CONTROL_COLOR      0xb596
 #define HEADER_COLOR          0x677d //0xb596
 
+// --- new color scheme test ----
+
+#define OSC_GENERAL_COLOR 0xbddf // light blue
+#define OSC_WT1_COLOR     0xddff // purple
+#define OSC_WT2_COLOR     0xedff // pink
+
+#define AMPENV_COLOR      0xfe4c // orange
+#define FILTER_COLOR      0xff6c // yellow
+
+#define LFO_COLOR         0xfbec // red
+#define MODULATION_COLOR  0xecb0 // lighter red
+
+// --------------
+
 #define PATCHNAME_BG_COLOR    0xfbe8
 #define PATCHNAME_MAINPAGE    0xfd80
 #define MIDIEVENT_ON          0x07ff
@@ -70,10 +84,11 @@
 #define PAGE_FILTER      11
 #define PAGE_CONTROLS    12
 #define PAGE_SYSTEM      13
-#define PAGE_WAVETABLE3  14
+#define PAGE_WAVETABLE_OSC1  14
+#define PAGE_WAVETABLE_OSC2  15
 //#define PAGE_ARPEGGIATOR 
 
-#define NR_PAGES 15
+#define NR_PAGES 16
 
 #define PAGE_MESSAGE  254
 #define N_A           255
@@ -204,7 +219,8 @@ void configurePage_patchName();
 void configurePage_lfo();
 void configurePage_wavetable();
 void configurePage_wavetable2();
-void configurePage_wavetable3();
+void configurePage_wavetableOsc1();
+void configurePage_wavetableOsc2();
 void configurePage_screenSaver();
 void configurePage_envelope();
 void configurePage_filter();
@@ -218,10 +234,14 @@ void setVoiceBankWrapper(uint8_t index, float value);
 void adjustCharacter(uint8_t charPos, int8_t delta);
 void savePatchWrapper(uint8_t index);
 void peekPatchNameWrapper(uint8_t index, int8_t delta);
+void adjustBrightness(uint8_t index, int8_t delta);
+
 
 void animateWavetable(bool firstCall);
 void animateWavetable2(bool firstCall);
-void animateWavetable3(bool firstCall);
+void animateWavetableOsc1(bool firstCall);
+void animateWavetableOsc2(bool firstCall);
+void animateWavetableMatrixView(bool firstCall, uint8_t oscillator);
 void animateScreenSaver(bool firstCall);
 void animateAmpEnvelope(bool firstCall);
 void animateFilterEnvelope(bool firstCall);
