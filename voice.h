@@ -170,6 +170,7 @@ struct Patch
   int8_t   transpose = 0;
   float detune = 0.20;
   uint8_t mono_mode = 0;
+  uint8_t polyMode = POLY_FULL;
 
   uint8_t osc1_sync = 0;
   uint8_t osc2_sync = 0;
@@ -293,7 +294,7 @@ struct Patch
   uint16_t osc2_waveTable_interval = 10;
   uint16_t osc2_waveTable_stepSize = 1;
 
-  uint8_t polyMode = POLY_FULL;
+  
 };
 
 class Voice

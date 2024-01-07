@@ -38,7 +38,7 @@ const String waveTableNames[NR_WAVETABLES] = {"Pleasant", "MicroWave2 ", "Learni
                                         "Plaits1", "Plaits2", "Plaits3"};
 
 
-Voice::Voice()
+FLASHMEM Voice::Voice()
 {
   _connectionIndex = 0;
   _connect(_modMixer_osc1_pitch, 0, _osc1, 0);
@@ -441,7 +441,8 @@ void Voice::setEnv3()
 void Voice::setFilter()
 {
   _filter.frequency( (FILTER_MAX_CUTOFF / 9) * (pow(10, _patch->cutoff) - 1) );
-  _filter.resonance(0.7 + 4.3 * _patch->resonance);
+  _filter.resonance(0.7 + 4.3 * _patch->resonance);  // Chamberlin
+  //_filter.resonance(1.8 * _patch->resonance);  // Ladder
 }
 
 void Voice::setOscMixer(uint8_t oscillatorId)

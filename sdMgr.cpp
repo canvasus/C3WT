@@ -50,6 +50,8 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
 
   patch.transpose = doc["transpose"];
   patch.detune = doc["detune"];
+  patch.polyMode = doc["polyMode"];
+  patch.mono_mode = doc["mono_mode"];
 
   patch.osc1_level = doc["osc1_level"];
   patch.osc2_level = doc["osc2_level"];
@@ -227,6 +229,9 @@ FLASHMEM void savePatch(uint8_t patchNr)
 
   doc["transpose"] = voiceBank1.patch.transpose;
   doc["detune"] = voiceBank1.patch.detune;
+  doc["polyMode"] = voiceBank1.patch.polyMode;
+  doc["mono_mode"] = voiceBank1.patch.mono_mode;
+  
 
   doc["osc1_level"] = voiceBank1.patch.osc1_level;
   doc["osc2_level"] = voiceBank1.patch.osc2_level;

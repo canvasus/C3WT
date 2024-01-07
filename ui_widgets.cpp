@@ -60,12 +60,16 @@ void Widget::_drawBox(bool selected)
   switch (fontSize)
   {
     case 0:
-      tft->setFont();
+      tft->setFontDefault();
       tft->setFontScale(0);
       break;
     case 1:
-      tft->setFont();
+      tft->setFontDefault();
       tft->setFontScale(1);
+      break;
+    case 2:
+      tft->setFontDefault();
+      tft->setFontScale(2);
       break;
     case 12:
       tft->setFont(Arial_12);
@@ -181,13 +185,21 @@ bool Widget::checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType)
   return false;
 }
 
+Page::Page()
+{
+  for (uint8_t widgetId = 0; widgetId < MAX_WIDGETS; widgetId++) widgetPointers[widgetId] = nullptr;
+  for (uint8_t staticId = 0; staticId < MAX_STATICS; staticId++) staticPointers[staticId] = nullptr;
+}
+
 int Page::checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType)
 {
   for(uint8_t widgetId = 0; widgetId < nrWidgets; widgetId++)
   {
-    if (widgets[widgetId].checkTouch(xPos, yPos, eventType) )
+    //if (widgets[widgetId].checkTouch(xPos, yPos, eventType) )
+    if (widgetPointers[widgetId]->checkTouch(xPos, yPos, eventType) )
     {
-      if (widgets[widgetId].selectOnPress) selectedId = widgetId;
+      //if (widgets[widgetId].selectOnPress) selectedId = widgetId;
+      if (widgetPointers[widgetId]->selectOnPress) selectedId = widgetId;
       return selectedId;
     }
   }
@@ -198,12 +210,15 @@ uint8_t Page::addWidget(uint8_t id, uint16_t x, uint16_t y, uint16_t w, uint16_t
 {
   nrWidgets++;
   if (nrWidgets > MAX_WIDGETS) nrWidgets = MAX_WIDGETS;
-  widgets[nrWidgets - 1].configure(x, y, w, h);
-  widgets[nrWidgets - 1].id = id;
-  widgets[nrWidgets - 1].color1 = color1;
-  widgets[nrWidgets - 1].color2 = color2;
-  widgets[nrWidgets - 1].fontSize = fontSize;
-  widgets[nrWidgets - 1].tft = tft;
+
+  widgetPointers[nrWidgets - 1] = new(Widget);
+  widgetPointers[nrWidgets - 1]->configure(x, y, w, h);
+  widgetPointers[nrWidgets - 1]->id = id;
+  widgetPointers[nrWidgets - 1]->color1 = color1;
+  widgetPointers[nrWidgets - 1]->color2 = color2;
+  widgetPointers[nrWidgets - 1]->fontSize = fontSize;
+  widgetPointers[nrWidgets - 1]->tft = tft;
+
   return (nrWidgets - 1);
 }
 
@@ -211,12 +226,14 @@ uint8_t Page::addStatic(uint8_t id, uint16_t x, uint16_t y, uint16_t w, uint16_t
 {
   nrStatics++;
   if (nrStatics > MAX_STATICS) nrStatics = MAX_STATICS;
-  statics[nrStatics - 1].configure(x, y, w, h);
-  statics[nrStatics - 1].id = id;
-  statics[nrStatics - 1].color1 = color1;
-  statics[nrStatics - 1].color2 = color2;
-  statics[nrStatics - 1].fontSize = fontSize;
-  statics[nrStatics - 1].tft = tft;
+  
+  staticPointers[nrStatics - 1] = new(Widget);
+  staticPointers[nrStatics - 1]->configure(x, y, w, h);
+  staticPointers[nrStatics - 1]->id = id;
+  staticPointers[nrStatics - 1]->color1 = color1;
+  staticPointers[nrStatics - 1]->color2 = color2;
+  staticPointers[nrStatics - 1]->fontSize = fontSize;
+  staticPointers[nrStatics - 1]->tft = tft;
   return (nrStatics - 1);
 }
 
@@ -237,13 +254,13 @@ uint8_t Page::draw(bool firstCall)
 
   if (_drawStaticIndex < nrStatics )
   {
-    statics[_drawStaticIndex++].draw(false);
+    staticPointers[_drawStaticIndex++]->draw(false);
     return 0;
   }
   
   if (_drawWidgetIndex < nrWidgets )
   {
-    widgets[_drawWidgetIndex].draw(_drawWidgetIndex == selectedId);
+    widgetPointers[_drawWidgetIndex]->draw(_drawWidgetIndex == selectedId);
     _drawWidgetIndex++;
     return 0;
   }

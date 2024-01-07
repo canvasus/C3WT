@@ -106,7 +106,7 @@
 #define WIDGET_SLIDER_V 2
 #define WIDGET_POT 3
 
-#define MAX_WIDGETS 48
+#define MAX_WIDGETS 64
 #define MAX_STATICS 16
 
 typedef void (*SetFunctionI8)(uint8_t index, int8_t value);
@@ -211,13 +211,16 @@ class Page
     uint8_t _drawWidgetIndex = 0;
     uint8_t _initAnimation = 0;
  public:
+    Page();
     RA8875 * tft = nullptr;
     AnimateFunction animateFunction = nullptr;
     uint8_t addWidget(uint8_t id, uint16_t x, uint16_t y, uint16_t w, uint16_t h);
     uint8_t addStatic(uint8_t id, uint16_t x, uint16_t y, uint16_t w, uint16_t h);
     void setAllWidgetIds(uint8_t id);
-    Widget widgets[MAX_WIDGETS];
-    Widget statics[MAX_STATICS];
+   
+    Widget * widgetPointers[MAX_WIDGETS];
+    Widget * staticPointers[MAX_STATICS];
+
     uint8_t nrWidgets = 0;
     uint8_t nrStatics = 0;
     uint8_t backPageId = 0;
@@ -265,7 +268,6 @@ void peekPatchNameWrapper(uint8_t index, int8_t delta);
 void adjustBrightness(uint8_t index, int8_t delta);
 void keyboardInput(uint8_t index);
 void setCharPosition(uint8_t index);
-
 
 void animateWavetable(bool firstCall);
 void animateWavetable2(bool firstCall);
