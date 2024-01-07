@@ -106,13 +106,41 @@
 #define WIDGET_SLIDER_V 2
 #define WIDGET_POT 3
 
-#define MAX_WIDGETS 32
+#define MAX_WIDGETS 48
 #define MAX_STATICS 16
 
 typedef void (*SetFunctionI8)(uint8_t index, int8_t value);
 typedef void (*SetFunctionF)(uint8_t index, float value);
 typedef void (*ActivateCb)(uint8_t index); 
 typedef void (*AnimateFunction)(bool firstCall);
+
+// class tftWithRemoteUI
+// {
+//   private:
+//     RA8875 * _tft = nullptr;
+
+//   public:
+//     void     brightness(uint8_t val);
+//     uint8_t  readStatus(void);
+//     void     setFont(const ILI9341_t3_font_t &f);
+//     void     setFont(const GFXfont *f = NULL);
+//     inline   uint16_t Color565(uint8_t r,uint8_t g,uint8_t b) { return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3); }
+//     void     setTextColor(uint16_t fcolor);
+//     void    	drawPixel(int16_t x, int16_t y, uint16_t color);
+//     void    	drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
+//     void    	drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
+//     void    	fillWindow(uint16_t color=_RA8875_DEFAULTBACKLIGHT);//fill the ActiveWindow with a color(default black)
+//     void		  clearScreen(uint16_t color=_RA8875_DEFAULTBACKLIGHT);//fill the entire screen (regardless ActiveWindow) with a color(default black)
+//     void    	drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color);
+//     void    	drawRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+// 	   void    	fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+//void    	drawCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color);
+//	void    	fillCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color);
+//  void    	drawTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);
+//	void    	fillTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);
+//  	void 		drawRoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, uint16_t color);//ok
+//	void 		fillRoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, uint16_t color);
+// };
 
 class Widget
 {
@@ -141,6 +169,8 @@ class Widget
     
     uint8_t id = 0;
     uint8_t type = WIDGET_BOX;
+    bool hidden = false;
+    bool selectOnPress = true;
     bool drawBorder = false;
     bool drawLabel = true;
     bool drawVariable = false;
@@ -155,9 +185,7 @@ class Widget
     uint8_t labelOffsetY = 4;
     uint8_t varOffsetX = 2;
     uint8_t varOffsetY = 4;
-    //float valueMax = 127.0;
-    //float valueMin = 0.0;
-    //uint8_t valueScaler = 1;
+
     uint8_t fontSize = 16;
     uint8_t floatPrecision = 2;
     uint16_t sliderHandleRadius = 10;
@@ -235,6 +263,8 @@ void adjustCharacter(uint8_t charPos, int8_t delta);
 void savePatchWrapper(uint8_t index);
 void peekPatchNameWrapper(uint8_t index, int8_t delta);
 void adjustBrightness(uint8_t index, int8_t delta);
+void keyboardInput(uint8_t index);
+void setCharPosition(uint8_t index);
 
 
 void animateWavetable(bool firstCall);
@@ -251,6 +281,7 @@ void animateHomePage(bool firstCall);
 void animateUsbPcStatus(bool firstCall);
 void animateUsbDeviceStatus(bool firstCall);
 void animateMidiInput();
+void animateBpm(bool firstCall);
 void animateSystemPage(bool firstCall);
 
 int16_t getEncoderDirection(uint8_t encoderNr);

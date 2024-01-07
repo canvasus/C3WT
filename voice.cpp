@@ -568,20 +568,26 @@ void VoiceBank::configure()
     uint8_t channelId = voiceIndex % 4;
     voices[voiceIndex].configure(voiceIndex, &patch);
     _connect(voices[voiceIndex].output, 0, _voiceMixer[mixerId], channelId);
-    _voiceMixer[mixerId].gain(channelId, 0.35); // probably 1 / NR_VOICES
+    _voiceMixer[mixerId].gain(channelId, 0.35); // probably (1 / NR_VOICES)
     _connect(_lfo1, 0, voices[voiceIndex].mod_lfo1, 0);
     _connect(_lfo2, 0, voices[voiceIndex].mod_lfo2, 0);
   }
   _connect(_voiceMixer[0], 0, _voiceMixer[2], 0);
   _connect(_voiceMixer[1], 0, _voiceMixer[2], 1);
 
-  _connect(_voiceMixer[2], 0, output_dry_L, 0);
-  _connect(_voiceMixer[2], 0, output_dry_R, 0);
-  _connect(_voiceMixer[2], 0, output_reverbSend_L, 0);
-  _connect(_voiceMixer[2], 0, output_reverbSend_R, 0);
-  _connect(_voiceMixer[2], 0, output_chorusSend, 0);
-  _connect(_voiceMixer[2], 0, output_delaySend, 0);
-  _connect(_voiceMixer[2], 0, output_phaserSend, 0);
+  // DC offset removal
+
+  _connect(_voiceMixer[2], 0, dcOffsetFilter, 0);
+  dcOffsetFilter.octaveControl(1.0f);
+  dcOffsetFilter.frequency(12.0f);
+
+  _connect(dcOffsetFilter, 2, output_dry_L, 0);
+  _connect(dcOffsetFilter, 2, output_dry_R, 0);
+  _connect(dcOffsetFilter, 2, output_reverbSend_L, 0);
+  _connect(dcOffsetFilter, 2, output_reverbSend_R, 0);
+  _connect(dcOffsetFilter, 2, output_chorusSend, 0);
+  _connect(dcOffsetFilter, 2, output_delaySend, 0);
+  _connect(dcOffsetFilter, 2, output_phaserSend, 0);  
 
   _voiceMixer[2].gain(0, 0.5);
   _voiceMixer[2].gain(1, 0.5);
@@ -686,6 +692,7 @@ void VoiceBank::_connect(AudioStream &source, unsigned char sourceOutput, AudioS
 void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
 {
   uint16_t targetValueU16 = 0;
+  //uint32_t targetValueI32 = 0;
   uint8_t targetValueU8 = 0;
   int8_t targetValueI8 = 0;
   float targetValueF = 0.0;
@@ -1144,7 +1151,7 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       break;
     case OSC1_WAVETABLE_STEPSIZE:
       targetValueU16 = patch.osc1_waveTable_stepSize + delta;
-      if (targetValueU16 > 256) targetValueU16 = 0;
+      if (targetValueU16 > 256) targetValueU16 = 256;
       patch.osc1_waveTable_stepSize = targetValueU16;
       break;
 
@@ -1185,7 +1192,7 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       break;
     case OSC2_WAVETABLE_STEPSIZE:
       targetValueU16 = patch.osc2_waveTable_stepSize + delta;
-      if (targetValueU16 > 256) targetValueU16 = 0;
+      if (targetValueU16 > 256) targetValueU16 = 256;
       patch.osc2_waveTable_stepSize = targetValueU16;
       break;
     case POLY_MODE:

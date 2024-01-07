@@ -55,7 +55,7 @@ FLASHMEM void setupAudio()
   connect(voiceBank1.output_reverbSend_L, 0, reverbInputMixer_L , 0);
   connect(voiceBank1.output_reverbSend_R, 0, reverbInputMixer_R , 0);
   connect(voiceBank1.output_chorusSend, 0, chorusInputMixer , 0);
-  connect(voiceBank1.output_phaserSend, 0, phaserInputMixer , 0);
+  //connect(voiceBank1.output_phaserSend, 0, phaserInputMixer , 0);
   connect(voiceBank1.output_delaySend, 0, delayInputMixer_L , 0);
   connect(voiceBank1.output_delaySend, 0, delayInputMixer_R , 0);
 

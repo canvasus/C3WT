@@ -28,7 +28,7 @@ struct MidiSettings
 {
   uint8_t channel = 1;
   uint8_t bpm = 120;
-  uint32_t oneTickUs = 1000 * 60000 / (120 * 32);
+  uint32_t oneTickUs = 1000 * 60000 / (120 * 24);
   uint16_t masterClock = 0;
   uint8_t arp_mode = ARP_OFF;
   uint16_t arp_intervalTicks = 16;
@@ -75,6 +75,10 @@ void myNoteOn(uint8_t channel, uint8_t note, uint8_t velocity);
 void myNoteOff(uint8_t channel, uint8_t note, uint8_t velocity);
 void myControlChange(uint8_t channel, uint8_t control, uint8_t value);
 void myPitchBend(uint8_t channel, int pitchBend);
+
+void myMIDIClock();
+void myMIDIClockStart();
+void myMIDIClockStop();
 
 void tickMasterClock();
 void updateArpeggiator();

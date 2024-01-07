@@ -414,7 +414,8 @@ class VoiceBank
     AudioAnalyzePeak    _lfo1Peak;
     AudioAnalyzePeak    _lfo2Peak;
     AudioSynthWaveformDc _modDc;
-
+    
+    AudioFilterStateVariable dcOffsetFilter;
     
     uint16_t _connectionIndex = 0;
     void _connect(AudioStream &source, unsigned char sourceOutput, AudioStream &destination, unsigned char destinationInput);

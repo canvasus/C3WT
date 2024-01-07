@@ -277,11 +277,11 @@ FLASHMEM void configurePage_oscillator()
   pages[PAGE].statics[staticIndex].label("MIX");
   pages[PAGE].statics[staticIndex].color2 = HEADER_COLOR;
 
-  staticIndex = pages[PAGE].addStatic(0, 2* (column_w + padding), 0* (row_h + padding), column_w, 40);
+  staticIndex = pages[PAGE].addStatic(0, 3* (column_w + padding), 0* (row_h + padding), column_w, 40);
   pages[PAGE].statics[staticIndex].label("AM");
   pages[PAGE].statics[staticIndex].color2 = HEADER_COLOR;
   
-  staticIndex = pages[PAGE].addStatic(0, 3* (column_w + padding), 0* (row_h + padding), column_w, 40);
+  staticIndex = pages[PAGE].addStatic(0, 4* (column_w + padding), 0* (row_h + padding), column_w, 40);
   pages[PAGE].statics[staticIndex].label("FM");
   pages[PAGE].statics[staticIndex].color2 = HEADER_COLOR;
 
@@ -854,12 +854,17 @@ FLASHMEM void configurePage_patchName()
   pages[PAGE].color1 = SELECTED_COLOR;
   pages[PAGE].color2 = IDLE_COLOR;
 
-  staticIndex = pages[PAGE].addStatic(0, 20, 20, 500, 200);
+  staticIndex = pages[PAGE].addStatic(0, 20, 20, 600, 400);
   pages[PAGE].statics[staticIndex].color1 = PATCHNAME_BG_COLOR;
   pages[PAGE].statics[staticIndex].color2 = PATCHNAME_BG_COLOR;
   pages[PAGE].statics[staticIndex].label("SAVE AS");
   pages[PAGE].statics[staticIndex].labelOffsetX = 2;
   pages[PAGE].statics[staticIndex].labelOffsetY = 14;
+
+  widgetIndex = pages[PAGE].addWidget(0, 150, 30, 60, 40);
+  pages[PAGE].widgets[widgetIndex].drawVariable = true;
+  pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &peekPatchNr;
+  pages[PAGE].widgets[widgetIndex].setI8 = &peekPatchNameWrapper;
 
   staticIndex = pages[PAGE].addStatic(0, 224, 30, 276, 40);
   pages[PAGE].statics[staticIndex].drawLabel = false;
@@ -870,7 +875,7 @@ FLASHMEM void configurePage_patchName()
 
   const uint8_t nr_characters = PATCH_NAME_NR_CHARACTERS - 1; //last is null termination
   const uint8_t charWidth = 40;
-  const uint8_t charHeight = 60;
+  const uint8_t charHeight = 50;
   const uint8_t padding = 6;
   for (uint8_t charPos = 0; charPos < nr_characters; charPos++)
   {
@@ -878,20 +883,44 @@ FLASHMEM void configurePage_patchName()
     pages[PAGE].widgets[widgetIndex].drawVariable = true;
     pages[PAGE].widgets[widgetIndex].var_ptr_char = &patchInfo.name[charPos];
     pages[PAGE].widgets[widgetIndex].setI8 = &adjustCharacter;
+    pages[PAGE].widgets[widgetIndex].activateCb= &setCharPosition;
     pages[PAGE].widgets[widgetIndex].varOffsetX = 6;
     pages[PAGE].widgets[widgetIndex].varOffsetY = 10;
   }
 
-  widgetIndex = pages[PAGE].addWidget(0, 150, 30, 60, 40);
-  pages[PAGE].widgets[widgetIndex].drawVariable = true;
-  pages[PAGE].widgets[widgetIndex].var_ptr_u8 = &peekPatchNr;
-  pages[PAGE].widgets[widgetIndex].setI8 = &peekPatchNameWrapper;
+  const uint8_t key_x0 = 40;
+  const uint8_t digit_y0 = 150;
+  const uint8_t ch_y0 = 210;
+  const uint8_t key_w = 40;
+  const uint8_t key_h = 50;
+  const uint8_t key_pad = 2;
 
-  widgetIndex = pages[PAGE].addWidget(0, 30, 160, 160, 50);
+  for (uint8_t digit = 0; digit < 10; digit++)
+  {
+    widgetIndex = pages[PAGE].addWidget(digit + 49 , key_x0 + digit * (key_w + key_pad), digit_y0, key_w, key_h);
+    if (digit == 9) pages[PAGE].widgets[widgetIndex].id = 48; // "0"
+    pages[PAGE].widgets[widgetIndex].label( (char)(pages[PAGE].widgets[widgetIndex].id) );
+    pages[PAGE].widgets[widgetIndex].fontSize = 0;
+    pages[PAGE].widgets[widgetIndex].selectOnPress = false;
+    pages[PAGE].widgets[widgetIndex].activateCb = &keyboardInput;
+  }
+
+  for (uint8_t ch = 0; ch < 26; ch++)
+  {
+    uint8_t row = ch / 10;
+    uint8_t col = ch % 10;
+    widgetIndex = pages[PAGE].addWidget(ch + 65 , key_x0 + col * (key_w + key_pad), ch_y0 + row * (key_h + key_pad), key_w, key_h);
+    pages[PAGE].widgets[widgetIndex].label( (char)(pages[PAGE].widgets[widgetIndex].id) );
+    pages[PAGE].widgets[widgetIndex].fontSize = 0;
+    pages[PAGE].widgets[widgetIndex].selectOnPress = false;
+    pages[PAGE].widgets[widgetIndex].activateCb = &keyboardInput;
+  }
+
+  widgetIndex = pages[PAGE].addWidget(0, 30, 360, 160, 50);
   pages[PAGE].widgets[widgetIndex].label("SAVE");
   pages[PAGE].widgets[widgetIndex].activateCb = &savePatchWrapper;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 320, 160, 160, 50);
+  widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 420, 360, 160, 50);
   pages[PAGE].widgets[widgetIndex].label("CANCEL");
   pages[PAGE].widgets[widgetIndex].activateCb = &setPage;
 
@@ -1629,17 +1658,28 @@ void adjustVoiceBankWrapper(uint8_t index, int8_t delta) { voiceBank1.adjustPara
 
 void setVoiceBankWrapper(uint8_t index, float value) { voiceBank1.setParameter(index, value); }
 
-void adjustCharacter(uint8_t charPos, int8_t delta)
+FLASHMEM void setCharPosition(uint8_t index)
+{
+  currentCharPosition = index;
+}
+
+FLASHMEM void adjustCharacter(uint8_t charPos, int8_t delta)
 {
   char temp = patchInfo.name[charPos] + delta;
-  //patchInfo.name[charPos] = patchInfo.name[charPos] + delta;
-  if (temp < 32) temp = 122;
-  if (temp > 122) temp = 32;
+  if (temp < 32) temp = 32;
+  if (temp > 122) temp = 122;
   patchInfo.name[charPos] = temp;
   if (currentPage == PAGE_PATCHNAME) pages[currentPage].widgets[charPos].draw(true);
 }
 
-void savePatchWrapper(uint8_t index)
+FLASHMEM void keyboardInput(uint8_t index)
+{
+  patchInfo.name[currentCharPosition] = index;
+  if (currentPage == PAGE_PATCHNAME) pages[currentPage].widgets[1 + currentCharPosition].draw(false); // ugly and will break!
+  if (currentCharPosition < (PATCH_NAME_NR_CHARACTERS - 1) ) currentCharPosition++;
+}
+
+FLASHMEM void savePatchWrapper(uint8_t index)
 {
   savePatch(peekPatchNr);
   currentPatchNr = peekPatchNr;
@@ -1833,12 +1873,9 @@ void animateWavetableMatrixView(bool firstCall, uint8_t oscillator)
     newLength = voiceBank1.patch.osc2_waveTable_length;
   }
 
-  //if (firstCall || (oldWavetableIndex != voiceBank1.patch.osc1_waveTable_index) )
   if (firstCall || (oldWavetableIndex != newWavetableIndex) )
   {
-    //oldWavetableIndex = voiceBank1.patch.osc1_waveTable_index;
     oldWavetableIndex = newWavetableIndex;
-    //animateTimer = 0;
     tft.fillRect(x0, y0, SCREEN_XRES - x0, SCREEN_YRES - y0 - 60, MAIN_BG_COLOR);
     drawBoxes = true;
     drawName = true;
@@ -1863,14 +1900,11 @@ void animateWavetableMatrixView(bool firstCall, uint8_t oscillator)
     }
   }
 
-  //if ( (oldStart != voiceBank1.patch.osc1_waveTable_start) || (oldLength != voiceBank1.patch.osc1_waveTable_length) || drawBoxes)
   if ( (oldStart != newStart) || (oldLength != newLength) || drawBoxes)
   {
     drawBoxes = false;
     oldStart = newStart;
     oldLength = newLength;
-    //oldStart = voiceBank1.patch.osc1_waveTable_start;
-    //oldLength =voiceBank1.patch.osc1_waveTable_length;
     uint8_t waveformIndexStart = oldStart / 256; // 0-63
     uint8_t waveformIndexEnd = min( (oldStart + oldLength) / 256, 63);
 
@@ -2086,6 +2120,7 @@ void animateHomePage(bool firstCall)
   animateUsbPcStatus(firstCall);
   animateUsbDeviceStatus(firstCall);
   animateMidiInput();
+  animateBpm(firstCall);
 }
 
 void animateUsbPcStatus(bool firstCall)
@@ -2161,6 +2196,21 @@ void animateMidiInput()
   } 
 }
 
+void animateBpm(bool firstCall)
+{
+  static uint8_t currentBpm = 120;
+  if (firstCall || ( currentBpm != midiSettings.bpm))
+  {
+    tft.setTextColor(MAIN_BG_COLOR);
+    tft.setCursor(SCREEN_XRES - 130 , 4);
+    tft.print(currentBpm);
+    currentBpm = midiSettings.bpm;
+    tft.setTextColor(MIDIEVENT_ON);
+    tft.setCursor(SCREEN_XRES - 130 , 4);
+    tft.print(currentBpm);
+  }
+}
+
 void animateSystemPage(bool firstCall)
 {
   static float audioProcessorUsageMax = 0.0;
@@ -2196,12 +2246,12 @@ void animateSystemPage(bool firstCall)
 
     tft.setCursor(offset , SCREEN_YRES - 30);
     tft.setTextColor(MAIN_BG_COLOR);
-    tft.print(audioMemoryUsageMax);
+    tft.print(audioMemoryUsageMax, 0);
 
     audioMemoryUsageMax = AudioMemoryUsageMax();
     tft.setCursor(offset , SCREEN_YRES - 30);
     tft.setTextColor(MIDIEVENT_ON);
-    tft.print(audioMemoryUsageMax);
+    tft.print(audioMemoryUsageMax, 0);
         
     AudioMemoryUsageMaxReset(); 
     AudioProcessorUsageMaxReset(); 

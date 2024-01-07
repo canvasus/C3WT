@@ -29,6 +29,10 @@ FLASHMEM void setupMidi()
   usbMIDI.setHandleNoteOff(myNoteOff);
   usbMIDI.setHandleControlChange(myControlChange);
   usbMIDI.setHandlePitchChange(myPitchBend);
+  usbMIDI.setHandleClock(myMIDIClock);
+  usbMIDI.setHandleStart(myMIDIClockStart);
+  usbMIDI.setHandleStop(myMIDIClockStop);
+
   serialMIDI.begin(1);
   serialMIDI.setHandleNoteOn(myNoteOn);
   serialMIDI.setHandleNoteOff(myNoteOff);
@@ -108,6 +112,33 @@ void myPitchBend(uint8_t channel, int pitchBend)
     voiceBank1.setPitchBend(pitchBend);
   }
 }
+
+void myMIDIClock()
+{
+  static uint8_t counter = 0;
+  static elapsedMicros midiClockTimer;
+  counter++;
+  if (counter > 23)
+  {
+    counter = 0;
+    midiSettings.oneTickUs = midiClockTimer / 24.0;
+    midiSettings.bpm = 24 * midiSettings.oneTickUs / (1000 * 60000);
+    midiClockTimer = 0;
+    Serial.println(midiSettings.oneTickUs);
+    Serial.println(midiSettings.bpm);
+  }
+}
+
+void myMIDIClockStart()
+{
+
+}
+
+void myMIDIClockStop()
+{
+
+}
+
 
 void tickMasterClock() { arpeggiator.tick(); }
 

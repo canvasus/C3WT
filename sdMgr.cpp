@@ -5,6 +5,7 @@ String patchNameUI = "000: INIT PATCH";
 String peekPatchNameUI = "INIT PATCH";
 uint8_t currentPatchNr = 0;
 uint8_t peekPatchNr = 0;
+uint8_t currentCharPosition = 0;
 
 FLASHMEM void initSDcard()
 {
@@ -140,6 +141,7 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   patch.am_frequency_multiplier = doc["am_frequency_multiplier"];
   patch.am_level = doc["am_level"];
   patch.osc_am_waveform = doc["osc_am_waveform"];
+  patch.am_fixedFrequency = doc["am_fixedFrequency"];
 
   patch.dryLevel = doc["dryLevel"];
   patch.pan = doc["pan"];
@@ -317,6 +319,9 @@ FLASHMEM void savePatch(uint8_t patchNr)
   doc["am_frequency_multiplier"] = voiceBank1.patch.am_frequency_multiplier;
   doc["am_level"] = voiceBank1.patch.am_level;
   doc["osc_am_waveform"] = voiceBank1.patch.osc_am_waveform;
+  doc["am_fixedFrequency"] = voiceBank1.patch.am_fixedFrequency;
+
+
 
   doc["dryLevel"] = voiceBank1.patch.dryLevel;
   doc["pan"] = voiceBank1.patch.pan;
@@ -376,7 +381,6 @@ FLASHMEM void savePatch(uint8_t patchNr)
   patchNameUI = buffer;
 }
 
-//uint8_t peekPatchName(uint8_t patchNr, char * buf)
 uint8_t peekPatchName(uint8_t patchNr)
 {
   peekPatchNr = patchNr;

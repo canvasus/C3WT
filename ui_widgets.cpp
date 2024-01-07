@@ -16,23 +16,26 @@ void Widget::label(String label) { label.toCharArray(_label, 8); }
 
 void Widget::draw(bool selected)
 {
-  switch (type)
+  if(!hidden)
   {
-    case WIDGET_BOX:
-      _drawBox(selected);
-      break;
-    // case WIDGET_SLIDER_H:
-    //   _drawSliderH(selected);
-    //   break;
-    case WIDGET_SLIDER_V:
-      _drawBox(selected);
-      _drawSliderV(selected);
-      _previousSliderX = _x + (_w >> 1);
-      _previousSliderY = _y + (_h >> 1);
-      break;
-    // case WIDGET_POT:
-    //   _drawPot(selected);
-    //   break;
+    switch (type)
+    {
+      case WIDGET_BOX:
+        _drawBox(selected);
+        break;
+      // case WIDGET_SLIDER_H:
+      //   _drawSliderH(selected);
+      //   break;
+      case WIDGET_SLIDER_V:
+        _drawBox(selected);
+        _drawSliderV(selected);
+        _previousSliderX = _x + (_w >> 1);
+        _previousSliderY = _y + (_h >> 1);
+        break;
+      // case WIDGET_POT:
+      //   _drawPot(selected);
+      //   break;
+    }
   }
 }
 
@@ -51,14 +54,19 @@ void Widget::_drawBox(bool selected)
 
   tft->setTextColor(colors[selected]);
 
-  #ifndef USE_GFX_FONT
-  if (fontSize > 16)  tft->setFontScale(1);
-  else tft->setFontScale(0);
-  #endif
+  //if (fontSize > 16)  tft->setFontScale(1);
+  //else tft->setFontScale(0);
 
-  #ifdef USE_GFX_FONT
   switch (fontSize)
   {
+    case 0:
+      tft->setFont();
+      tft->setFontScale(0);
+      break;
+    case 1:
+      tft->setFont();
+      tft->setFontScale(1);
+      break;
     case 12:
       tft->setFont(Arial_12);
       break;
@@ -81,7 +89,6 @@ void Widget::_drawBox(bool selected)
       tft->setFont(Arial_10);
       break;
   }
-  #endif
    
   if (drawLabel)
   {
@@ -178,10 +185,10 @@ int Page::checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType)
 {
   for(uint8_t widgetId = 0; widgetId < nrWidgets; widgetId++)
   {
-    if (widgets[widgetId].checkTouch(xPos, yPos, eventType))
+    if (widgets[widgetId].checkTouch(xPos, yPos, eventType) )
     {
-      selectedId = widgetId;
-      return widgetId;
+      if (widgets[widgetId].selectOnPress) selectedId = widgetId;
+      return selectedId;
     }
   }
   return -1;
