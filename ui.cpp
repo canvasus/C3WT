@@ -168,14 +168,16 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = labelOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 20;
-  //pages[PAGE].widgetPointers[widgetIndex]->color2 = PATCHNAME_MAINPAGE;
+  pages[PAGE].widgetPointers[widgetIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].widgetPointers[widgetIndex]->textColor1 = 0xffff;
 
   widgetIndex = pages[PAGE].addWidget(PAGE_PATCHNAME, 420, 0, 100, 60);
   pages[PAGE].widgetPointers[widgetIndex]->label("SAVE");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
-  //pages[PAGE].widgetPointers[widgetIndex]->color2 = PATCHNAME_MAINPAGE;
+  pages[PAGE].widgetPointers[widgetIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].widgetPointers[widgetIndex]->textColor1 = 0xffff;
 
   widgetIndex = pages[PAGE].addWidget(PAGE_SCREENSAVER, SCREEN_XRES - 40, SCREEN_YRES - 40, 40, 40);
   pages[PAGE].widgetPointers[widgetIndex]->label("*");
@@ -193,29 +195,31 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xd6bf;
 
   widgetIndex = pages[PAGE].addWidget(PAGE_WAVETABLE_OSC1, 0* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
-  pages[PAGE].widgetPointers[widgetIndex]->label("WTB1");
+  pages[PAGE].widgetPointers[widgetIndex]->label("WT1");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xb5be;
 
   widgetIndex = pages[PAGE].addWidget(PAGE_WAVETABLE_OSC2, 0* (column_w + padding), 4* (row_h + padding), column_w, row_h); 
-  pages[PAGE].widgetPointers[widgetIndex]->label("WTB2");
+  pages[PAGE].widgetPointers[widgetIndex]->label("WT2");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->color2 = 0x9d1f;
 
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_ENVELOPE, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
+  //widgetIndex = pages[PAGE].addWidget(PAGE_ENVELOPE, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PAGE_ENVELOPE, 1* (column_w + padding), 2* (row_h + padding), column_w, 3 * row_h + 2 * padding); 
   pages[PAGE].widgetPointers[widgetIndex]->label("ENV");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xafff;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_FILTER, 2* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
-  pages[PAGE].widgetPointers[widgetIndex]->label("FILT");
+  //widgetIndex = pages[PAGE].addWidget(PAGE_FILTER, 2* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PAGE_FILTER, 2* (column_w + padding), 2* (row_h + padding), column_w, 3 * row_h + 2 * padding); 
+  pages[PAGE].widgetPointers[widgetIndex]->label("FLT");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
@@ -227,17 +231,18 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
-  pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xfe30;
+  pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xc398;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_MODULATION, 3* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
+  //widgetIndex = pages[PAGE].addWidget(PAGE_MODULATION, 3* (column_w + padding), 3* (row_h + padding), column_w, row_h);
+  widgetIndex = pages[PAGE].addWidget(PAGE_MODULATION, 3* (column_w + padding), 3* (row_h + padding), column_w, 2 * row_h + padding); 
   pages[PAGE].widgetPointers[widgetIndex]->label("MOD");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
-  pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xfdad;
+  pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xc518;
 
-
-  widgetIndex = pages[PAGE].addWidget(PAGE_EFFECTS, 4* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
+  //widgetIndex = pages[PAGE].addWidget(PAGE_EFFECTS, 4* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PAGE_EFFECTS, 4* (column_w + padding), 2* (row_h + padding), column_w, 3 * row_h + 2 * padding); 
   pages[PAGE].widgetPointers[widgetIndex]->label("EFX");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
@@ -246,7 +251,7 @@ FLASHMEM void configurePage_patch()
   
 
   widgetIndex = pages[PAGE].addWidget(PAGE_CONTROLS, 1* (column_w + padding), 6* (row_h + padding), column_w, row_h); 
-  pages[PAGE].widgetPointers[widgetIndex]->label("CTRL");
+  pages[PAGE].widgetPointers[widgetIndex]->label("CTL");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
@@ -272,22 +277,36 @@ FLASHMEM void configurePage_oscillator()
   const uint16_t column_w = 136;
   const uint16_t row_h = 60;
   const uint8_t padding = 4;
+  const uint8_t labelOffsetX = 10;
+  const uint8_t labelOffsetY = 8;
 
   staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0* (row_h + padding), column_w, 40);
   pages[PAGE].staticPointers[staticIndex]->label("OSC");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetX = labelOffsetX;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetY = labelOffsetY;
 
   staticIndex = pages[PAGE].addStatic(0, 1* (column_w + padding), 0* (row_h + padding), column_w, 40);
   pages[PAGE].staticPointers[staticIndex]->label("MIX");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetX = labelOffsetX;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetY = labelOffsetY;
 
   staticIndex = pages[PAGE].addStatic(0, 3* (column_w + padding), 0* (row_h + padding), column_w, 40);
   pages[PAGE].staticPointers[staticIndex]->label("AM");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetX = labelOffsetX;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetY = labelOffsetY;
   
   staticIndex = pages[PAGE].addStatic(0, 4* (column_w + padding), 0* (row_h + padding), column_w, 40);
   pages[PAGE].staticPointers[staticIndex]->label("FM");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetX = labelOffsetX;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetY = labelOffsetY;
 
   // staticIndex = pages[PAGE].addStatic(0, 4* (column_w + padding), 0* (row_h + padding), column_w, 40);
   // pages[PAGE].staticPointers[staticIndex]->label("SYNC");
@@ -661,22 +680,27 @@ FLASHMEM void configurePage_effects()
   staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0* (row_h + padding), column_w, 40); 
   pages[PAGE].staticPointers[staticIndex]->label("MIX");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = 0xffff;
 
   staticIndex = pages[PAGE].addStatic(0, 1* (column_w + padding), 0* (row_h + padding), column_w, 40); 
   pages[PAGE].staticPointers[staticIndex]->label("REVERB");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = 0xffff;
   
   staticIndex = pages[PAGE].addStatic(0, 2* (column_w + padding), 0* (row_h + padding), column_w, 40); 
   pages[PAGE].staticPointers[staticIndex]->label("CHORUS");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = 0xffff;
 
   staticIndex = pages[PAGE].addStatic(0, 3* (column_w + padding), 0* (row_h + padding), column_w, 40); 
   pages[PAGE].staticPointers[staticIndex]->label("DELAY");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = 0xffff;
 
   staticIndex = pages[PAGE].addStatic(0, 4* (column_w + padding), 0* (row_h + padding), column_w, 40); 
   pages[PAGE].staticPointers[staticIndex]->label("PHASER");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = 0xffff;
 
 
   widgetIndex = pages[PAGE].addWidget(EFX_SEND_DRY, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h);
@@ -951,14 +975,17 @@ FLASHMEM void configurePage_lfo()
   staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0* (row_h + padding), column_w, 40); 
   pages[PAGE].staticPointers[staticIndex]->label("LFO1");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
 
   staticIndex = pages[PAGE].addStatic(0, 1* (column_w + padding), 0* (row_h + padding), column_w, 40); 
   pages[PAGE].staticPointers[staticIndex]->label("LFO2");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
 
   staticIndex = pages[PAGE].addStatic(0, 2* (column_w + padding), 0* (row_h + padding), SCREEN_XRES - 2* (column_w + padding), 40); 
   pages[PAGE].staticPointers[staticIndex]->label("ENV3");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
   
   widgetIndex = pages[PAGE].addWidget(LFO1_WAVEFORM, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("Wfm");
@@ -1285,6 +1312,7 @@ FLASHMEM void configurePage_wavetableOsc1()
   staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0* (row_h + padding), column_w, 40); 
   pages[PAGE].staticPointers[staticIndex]->label("OSC1");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
 
   widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_INDEX, 0, 1 * (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("wt#");
@@ -1353,6 +1381,7 @@ FLASHMEM void configurePage_wavetableOsc2()
   staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0* (row_h + padding), column_w, 40); 
   pages[PAGE].staticPointers[staticIndex]->label("OSC2");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
 
   widgetIndex = pages[PAGE].addWidget(OSC2_WAVETABLE_INDEX, 0, 1 * (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("wt#");
@@ -1420,6 +1449,7 @@ FLASHMEM void configurePage_envelope()
   staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0* (row_h + padding), 4* (column_w + padding), 40); 
   pages[PAGE].staticPointers[staticIndex]->label("AMP ENV");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
 
   widgetIndex = pages[PAGE].addWidget(ENV_ATTACK, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Attack");
@@ -1480,10 +1510,12 @@ FLASHMEM void configurePage_filter()
   staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0* (row_h + padding), 5* (column_w + padding), 40); 
   pages[PAGE].staticPointers[staticIndex]->label("FLT ENV");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
 
   staticIndex = pages[PAGE].addStatic(0, 3* (column_w + padding), 3* (row_h + padding), 2* (column_w + padding), 40); 
   pages[PAGE].staticPointers[staticIndex]->label("FLT PAR");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
 
   widgetIndex = pages[PAGE].addWidget(FILTER_ATTACK, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Attack");
@@ -1930,7 +1962,7 @@ void animateWavetableMatrixView(bool firstCall, uint8_t oscillator)
   {
     drawName = false;
     tft.fillRoundRect(x0, 0, SCREEN_XRES - x0, 20, 3, HEADER_COLOR);
-    tft.setTextColor(MAIN_BG_COLOR);
+    tft.setTextColor(HEADER_TEXT_COLOR);
     tft.setFont(Arial_12);
     tft.setCursor(x0 + 4, 4);
     tft.print(waveTableNames[newWavetableIndex]);

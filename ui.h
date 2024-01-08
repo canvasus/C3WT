@@ -36,7 +36,8 @@
 #define IDLE_COLOR            0xe71c
 #define BORDER_COLOR          0x9cf3 
 #define NO_CONTROL_COLOR      0xb596
-#define HEADER_COLOR          0x677d //0xb596
+#define HEADER_COLOR          0x6c35 //0x03db // 0x677d //0xb596
+#define HEADER_TEXT_COLOR     0xffff
 
 // --- new color scheme test ----
 
