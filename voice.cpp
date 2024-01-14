@@ -166,8 +166,8 @@ FLASHMEM Voice::Voice()
 
 void Voice::update()
 {
-  if ( (_patch->osc1_sync == 1) && _osc2.getSync() ) _osc1.sync();
-  if ( (_patch->osc2_sync == 1) && _osc1.getSync() ) _osc2.sync();
+  //if ( (_patch->osc1_sync == 1) && _osc2.getSync() ) _osc1.sync();
+  //if ( (_patch->osc2_sync == 1) && _osc1.getSync() ) _osc2.sync();
 
   if( (waveformList[_patch->osc1_waveform] == WAVEFORM_ARBITRARY) && (osc1_waveTimer > _patch->osc1_waveTable_interval) )
   {
@@ -224,8 +224,8 @@ void Voice::_updateWaveTable1_morph()
 {
   if (_scanDirection1 == RIGHT)
   {
-    _waveOffset1 = _waveOffset1 + _patch->osc1_waveTable_stepSize;
-    if (_waveOffset1 >= (_patch->osc1_waveTable_start + _patch->osc1_waveTable_length) ) _scanDirection1 = LEFT;
+    _waveOffset1 = min(_waveOffset1 + _patch->osc1_waveTable_stepSize, _patch->osc1_waveTable_start + _patch->osc1_waveTable_length);
+    if ( (_waveOffset1 >= (_patch->osc1_waveTable_start + _patch->osc1_waveTable_length) ) && (_patch->osc1_waveTable_movement == WAVETABLE_PLAYMODE_UPDOWN) ) _scanDirection1 = LEFT;
     if (_waveOffset1 > (WAVETABLE_LENGTH - 257) ) _waveOffset1 = WAVETABLE_LENGTH - 257;
   }
   else if (_scanDirection1 == LEFT)
@@ -302,6 +302,18 @@ void Voice::noteOn(uint8_t note, uint8_t velocity)
 {
   currentNote = note;
   updateFrequency();
+
+  if (_patch->osc1_waveTable_movement == WAVETABLE_PLAYMODE_ONESHOT_UP)
+  {
+    _waveOffset1 = _patch->osc1_waveTable_start;
+    _scanDirection1 = RIGHT;
+  }
+  if (_patch->osc2_waveTable_movement == WAVETABLE_PLAYMODE_ONESHOT_UP)
+  {
+    _waveOffset2 = _patch->osc1_waveTable_start;
+    _scanDirection2 = RIGHT;
+  } 
+  
   _ampEnvelope.noteOn();
   _filterEnvelope.noteOn();
   _envelope3.noteOn();
@@ -611,6 +623,7 @@ void VoiceBank::update()
 {
   // update audiostream --> number modulation etc
   for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].update();
+  
 }
 
 void VoiceBank::noteOn(uint8_t note, uint8_t velocity)
@@ -726,22 +739,22 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       break;
     case OSC1_LEVEL:
       targetValueF = patch.osc1_level + delta * 0.05;
-      patch.osc1_level = constrain(targetValueF, 0.0, 2.0);
+      patch.osc1_level = constrain(targetValueF, 0.0, 1.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setOscMixer(OSC1_LEVEL);
       break;
     case OSC2_LEVEL:
       targetValueF = patch.osc2_level + delta * 0.05;
-      patch.osc2_level = constrain(targetValueF, 0.0, 2.0);
+      patch.osc2_level = constrain(targetValueF, 0.0, 1.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setOscMixer(OSC2_LEVEL);
       break;
     case PULSE_LEVEL:
       targetValueF = patch.pulse_level + delta * 0.05;
-      patch.pulse_level = constrain(targetValueF, 0.0, 2.0);
+      patch.pulse_level = constrain(targetValueF, 0.0, 1.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setOscMixer(PULSE_LEVEL);
       break;
     case NOISE_LEVEL:
       targetValueF = patch.noise_level + delta * 0.05;
-      patch.noise_level = constrain(targetValueF, 0.0, 2.0);
+      patch.noise_level = constrain(targetValueF, 0.0, 1.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setOscMixer(NOISE_LEVEL);
       break;
     case OSC1_SYNC:
@@ -1155,6 +1168,11 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       if (targetValueU16 > 256) targetValueU16 = 256;
       patch.osc1_waveTable_stepSize = targetValueU16;
       break;
+    case OSC1_WAVETABLE_MOVEMENT:
+      targetValueU8 = patch.osc1_waveTable_movement + delta;
+      targetValueU8 = constrain(targetValueU8, 0,1);
+      patch.osc1_waveTable_movement = targetValueU8;
+      break;
 
     case OSC2_WAVETABLE_INDEX:
       targetValueI8 = patch.osc2_waveTable_index + delta;
@@ -1196,6 +1214,13 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       if (targetValueU16 > 256) targetValueU16 = 256;
       patch.osc2_waveTable_stepSize = targetValueU16;
       break;
+    case OSC2_WAVETABLE_MOVEMENT:
+      targetValueU8 = patch.osc2_waveTable_movement + delta;
+      targetValueU8 = constrain(targetValueU8, 0,1);
+      patch.osc2_waveTable_movement = targetValueU8;
+      break;
+
+
     case POLY_MODE:
       if (delta > 0) targetValueU8 = patch.polyMode << 1;
       else targetValueU8 = patch.polyMode >> 1;

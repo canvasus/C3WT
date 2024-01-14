@@ -26,7 +26,7 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   File file = SD.open(fileName);
   if (!file) return FILE_NOT_EXIST;
 
-  StaticJsonDocument<4096> doc;
+  StaticJsonDocument<4896> doc;
   Patch patch;
   AudioParameters tempAudioPar;
 
@@ -158,6 +158,7 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   patch.osc1_waveTable_length = doc["osc1_waveTable_length"];
   patch.osc1_waveTable_interval = doc["osc1_waveTable_interval"];
   patch.osc1_waveTable_stepSize = doc["osc1_waveTable_stepSize"];
+  patch.osc1_waveTable_movement = doc["osc1_waveTable_movement"];
 
   patch.osc2_waveTable_mode = doc["osc2_waveTable_mode"];
   patch.osc2_waveTable_index = doc["osc2_waveTable_index"];
@@ -165,6 +166,7 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   patch.osc2_waveTable_length = doc["osc2_waveTable_length"];
   patch.osc2_waveTable_interval = doc["osc2_waveTable_interval"];
   patch.osc2_waveTable_stepSize = doc["osc2_waveTable_stepSize"];
+  patch.osc2_waveTable_movement = doc["osc2_waveTable_movement"];
   
   // AUDIO PARAMETERS
   tempAudioPar.hpVolume =doc["hpVolume"];
@@ -219,7 +221,7 @@ FLASHMEM void savePatch(uint8_t patchNr)
     return;
   }
 
-  StaticJsonDocument<4096> doc;
+  StaticJsonDocument<4896> doc;
 
   // Set the values in the document
   doc["name"] = patchInfo.name;
@@ -341,13 +343,15 @@ FLASHMEM void savePatch(uint8_t patchNr)
   doc["osc1_waveTable_length"] = voiceBank1.patch.osc1_waveTable_length;
   doc["osc1_waveTable_interval"] = voiceBank1.patch.osc1_waveTable_interval;
   doc["osc1_waveTable_stepSize"] = voiceBank1.patch.osc1_waveTable_stepSize;
-
+  doc["osc1_waveTable_movement"] = voiceBank1.patch.osc1_waveTable_movement;
+  
   doc["osc2_waveTable_mode"] = voiceBank1.patch.osc2_waveTable_mode;
   doc["osc2_waveTable_index"] = voiceBank1.patch.osc2_waveTable_index;
   doc["osc2_waveTable_start"] = voiceBank1.patch.osc2_waveTable_start;
   doc["osc2_waveTable_length"] = voiceBank1.patch.osc2_waveTable_length;
   doc["osc2_waveTable_interval"] = voiceBank1.patch.osc2_waveTable_interval;
   doc["osc2_waveTable_stepSize"] = voiceBank1.patch.osc2_waveTable_stepSize;
+  doc["osc2_waveTable_movement"] = voiceBank1.patch.osc2_waveTable_movement;
 
   // AUDIO PARAMETERS
   doc["hpVolume"] = audioParameters.hpVolume;

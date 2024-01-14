@@ -20,7 +20,7 @@
 #define FILTER_MAX_CUTOFF 13600
 #define FILTER_OCTAVECONTROL 7
 
-// 115
+// 117
 #define POLY_MODE 106
 #define MONO_MODE 114
 
@@ -53,6 +53,7 @@
 #define OSC1_WAVETABLE_LENGTH   95
 #define OSC1_WAVETABLE_INTERVAL 96
 #define OSC1_WAVETABLE_STEPSIZE 97
+#define OSC1_WAVETABLE_MOVEMENT 115
 
 #define OSC2_WAVETABLE_INDEX    103
 #define OSC2_WAVETABLE_MODE     105
@@ -60,6 +61,7 @@
 #define OSC2_WAVETABLE_LENGTH   99
 #define OSC2_WAVETABLE_INTERVAL 100
 #define OSC2_WAVETABLE_STEPSIZE 101
+#define OSC2_WAVETABLE_MOVEMENT 116
 
 #define ENV3_ATTACK  108
 #define ENV3_DECAY   109
@@ -152,6 +154,9 @@
 #define NR_WAVETABLES 18
 #define WAVETABLE_MODE_PHASESCAN  0
 #define WAVETABLE_MODE_MORPH      1
+
+#define WAVETABLE_PLAYMODE_UPDOWN     0
+#define WAVETABLE_PLAYMODE_ONESHOT_UP 1
 
 #define WAVETABLE_LENGTH 2 * (ARBITRARY_LENGTH - 1)
 
@@ -286,6 +291,7 @@ struct Patch
   uint16_t osc1_waveTable_length = 255;
   uint16_t osc1_waveTable_interval = 10;
   uint16_t osc1_waveTable_stepSize = 1;
+  uint8_t osc1_waveTable_movement = WAVETABLE_PLAYMODE_UPDOWN;
   
   uint8_t osc2_waveTable_mode = 0;
   uint8_t osc2_waveTable_index = 0;
@@ -293,6 +299,7 @@ struct Patch
   uint16_t osc2_waveTable_length = 255;
   uint16_t osc2_waveTable_interval = 10;
   uint16_t osc2_waveTable_stepSize = 1;
+  uint8_t osc2_waveTable_movement = WAVETABLE_PLAYMODE_UPDOWN;
 
   
 };
@@ -426,8 +433,7 @@ class VoiceBank
     Patch patch;
     float modWheel = 0.0;
     int16_t * currentWaveform_I16 = nullptr;
-    //int16_t waveTable1_I16[256];
-    //int16_t waveTable2_I16[256];
+
     uint8_t waveTableScanMode = 0;
     uint16_t waveTableScanStep = 1;
     uint16_t waveTableScanInterval = 10;
@@ -440,6 +446,8 @@ class VoiceBank
     AudioAmplifier  output_chorusSend;
     AudioAmplifier  output_delaySend;
     AudioAmplifier  output_phaserSend;
+
+    AudioSynthWaveformSine overTone;
 
     void update();
     void configure();

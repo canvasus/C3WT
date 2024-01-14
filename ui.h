@@ -9,7 +9,7 @@
 #include <Encoder.h>
 
 #include <font_Arial.h>
-#define USE_GFX_FONT // uncomment for default ugly but fast font
+//#define USE_GFX_FONT // uncomment for default ugly but fast font
 
 #define SCREEN_XRES 800
 #define SCREEN_YRES 480
@@ -32,12 +32,22 @@
 #define SCREEN_SAVER_TIME 120 * 1000
 
 #define MAIN_BG_COLOR         0x0000
-#define SELECTED_COLOR        0x07e0
+#define SELECTED_COLOR        0x001f // 0x07e0
 #define IDLE_COLOR            0xe71c
 #define BORDER_COLOR          0x9cf3 
 #define NO_CONTROL_COLOR      0xb596
 #define HEADER_COLOR          0x6c35 //0x03db // 0x677d //0xb596
 #define HEADER_TEXT_COLOR     0xffff
+
+#define GENERAL_TEXT_COLOR_IDLE      0x0000
+#define GENERAL_TEXT_COLOR_SELECTED  0xffff
+
+#define HBAR_ACTIVE_IDLE_COLOR      0x6c35
+#define HBAR_ACTIVE_SELECTED_COLOR  0x6c35
+#define HBAR_BG_IDLE_COLOR          0x630c
+#define HBAR_BG_SELECTED_COLOR      0x630c
+#define HBAR_BORDER_COLOR           BORDER_COLOR
+
 
 // --- new color scheme test ----
 
@@ -106,6 +116,8 @@
 #define WIDGET_SLIDER_H 1
 #define WIDGET_SLIDER_V 2
 #define WIDGET_POT 3
+#define WIDGET_BOX_HBAR 4
+#define WIDGET_BOX_POT 5
 
 #define MAX_WIDGETS 64
 #define MAX_STATICS 16
@@ -156,9 +168,14 @@ class Widget
 
     char _label[8];
     void _drawBox(bool selected);
+
+    void _configureText(bool selected);
+    void _drawText(bool selected);
     void _drawSliderV(bool selected);
-    //void _drawSliderH(bool selected);
-    //void _drawPot(bool selected);
+
+    void _drawHbar(bool selected);
+    void _drawPot(bool selected);
+
     void _drawWaveform(bool selected);
     void _drawArray(bool selected);
   public:
@@ -180,8 +197,8 @@ class Widget
     
     uint16_t color1 = 0;
     uint16_t color2 = 0;
-    uint16_t textColor1 = 0;
-    uint16_t textColor2 = 0;
+    uint16_t textColor1 = GENERAL_TEXT_COLOR_IDLE;
+    uint16_t textColor2 = GENERAL_TEXT_COLOR_SELECTED;
     uint8_t labelOffsetX = 2;
     uint8_t labelOffsetY = 4;
     uint8_t varOffsetX = 2;
@@ -193,6 +210,9 @@ class Widget
     uint16_t slider_header_h = 0;
     uint16_t slider_footer_h = 0;
     
+    float varMin = 0.0;
+    float varMax = 1.0;
+
     SetFunctionI8 setI8 = nullptr;
     SetFunctionF setF = nullptr;
 

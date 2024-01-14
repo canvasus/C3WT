@@ -26,6 +26,8 @@ AudioOutputI2S        output_i2s;
 
 AudioAnalyzeFFT256    fft;
 
+
+
 AudioConnection  *   patchCords[NR_PATCHCORDS_MAINBUS];
 
 SM2k_AudioControlWM8731 codecControl1;
@@ -35,7 +37,7 @@ VoiceBank voiceBank1;
 
 AudioParameters audioParameters;
 
-#define GRANULAR_MEMORY_SIZE 10000 
+#define GRANULAR_MEMORY_SIZE 8000 
 DMAMEM int16_t granularMemoryL[GRANULAR_MEMORY_SIZE];
 DMAMEM int16_t granularMemoryR[GRANULAR_MEMORY_SIZE];
 
