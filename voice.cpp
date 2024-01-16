@@ -160,8 +160,11 @@ FLASHMEM Voice::Voice()
   _osc1.arbitraryWaveform(&waveTable1_I16[0], AWFREQ);
   _osc2.arbitraryWaveform(&waveTable2_I16[0], AWFREQ);
 
-  _osc_AM.arbitraryWaveform(PARABOLIC_WAVE, AWFREQ);
-  _osc_FM.arbitraryWaveform(PARABOLIC_WAVE, AWFREQ);
+  _osc_AM.arbitraryWaveform(&waveTable1_I16[0], AWFREQ);
+  _osc_FM.arbitraryWaveform(&waveTable1_I16[0], AWFREQ);
+
+  //_osc_AM.arbitraryWaveform(PARABOLIC_WAVE, AWFREQ);
+  //_osc_FM.arbitraryWaveform(PARABOLIC_WAVE, AWFREQ);
 }
 
 void Voice::update()

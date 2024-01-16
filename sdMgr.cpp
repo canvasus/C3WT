@@ -194,8 +194,10 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
 
   file.close();
 
-  voiceBank1.patch =  patch;
-  voiceBank1.applyPatchData();
+  voiceBanks[currentVoiceBank]->patch = patch;
+  voiceBanks[currentVoiceBank]->applyPatchData();
+  //voiceBank1.patch =  patch;
+  //voiceBank1.applyPatchData();
   
   audioParameters = tempAudioPar;
   applyAudioParameters();
@@ -226,132 +228,132 @@ FLASHMEM void savePatch(uint8_t patchNr)
   // Set the values in the document
   doc["name"] = patchInfo.name;
 
-  doc["osc1_waveform"] = voiceBank1.patch.osc1_waveform;
-  doc["osc2_waveform"] = voiceBank1.patch.osc2_waveform;
+  doc["osc1_waveform"] = voiceBanks[currentVoiceBank]->patch.osc1_waveform;
+  doc["osc2_waveform"] = voiceBanks[currentVoiceBank]->patch.osc2_waveform;
 
-  doc["transpose"] = voiceBank1.patch.transpose;
-  doc["detune"] = voiceBank1.patch.detune;
-  doc["polyMode"] = voiceBank1.patch.polyMode;
-  doc["mono_mode"] = voiceBank1.patch.mono_mode;
+  doc["transpose"] = voiceBanks[currentVoiceBank]->patch.transpose;
+  doc["detune"] = voiceBanks[currentVoiceBank]->patch.detune;
+  doc["polyMode"] = voiceBanks[currentVoiceBank]->patch.polyMode;
+  doc["mono_mode"] = voiceBanks[currentVoiceBank]->patch.mono_mode;
   
 
-  doc["osc1_level"] = voiceBank1.patch.osc1_level;
-  doc["osc2_level"] = voiceBank1.patch.osc2_level;
-  doc["pulse_level"] = voiceBank1.patch.pulse_level;
-  doc["noise_level"] = voiceBank1.patch.noise_level;
+  doc["osc1_level"] = voiceBanks[currentVoiceBank]->patch.osc1_level;
+  doc["osc2_level"] = voiceBanks[currentVoiceBank]->patch.osc2_level;
+  doc["pulse_level"] = voiceBanks[currentVoiceBank]->patch.pulse_level;
+  doc["noise_level"] = voiceBanks[currentVoiceBank]->patch.noise_level;
 
-  doc["phaseModulation"] = voiceBank1.patch.phaseModulation;
-  doc["frequencyModulation"] = voiceBank1.patch.frequencyModulation;
+  doc["phaseModulation"] = voiceBanks[currentVoiceBank]->patch.phaseModulation;
+  doc["frequencyModulation"] = voiceBanks[currentVoiceBank]->patch.frequencyModulation;
 
-  doc["ampEnvelope_attack"] = voiceBank1.patch.ampEnvelope_attack;
-  doc["ampEnvelope_decay"] = voiceBank1.patch.ampEnvelope_decay;
-  doc["ampEnvelope_sustain"] = voiceBank1.patch.ampEnvelope_sustain;
-  doc["ampEnvelope_release"] = voiceBank1.patch.ampEnvelope_release;
+  doc["ampEnvelope_attack"] = voiceBanks[currentVoiceBank]->patch.ampEnvelope_attack;
+  doc["ampEnvelope_decay"] = voiceBanks[currentVoiceBank]->patch.ampEnvelope_decay;
+  doc["ampEnvelope_sustain"] = voiceBanks[currentVoiceBank]->patch.ampEnvelope_sustain;
+  doc["ampEnvelope_release"] = voiceBanks[currentVoiceBank]->patch.ampEnvelope_release;
 
-  doc["filterEnvelope_attack"] = voiceBank1.patch.filterEnvelope_attack;
-  doc["filterEnvelope_decay"] = voiceBank1.patch.filterEnvelope_decay;
-  doc["filterEnvelope_sustain"] = voiceBank1.patch.filterEnvelope_sustain;
-  doc["filterEnvelope_release"] = voiceBank1.patch.filterEnvelope_release;
-  doc["octaveControl"] = voiceBank1.patch.octaveControl;
-  doc["envToFilter"] = voiceBank1.patch.envToFilter;
-  doc["cutoff"] = voiceBank1.patch.cutoff;
-  doc["resonance"] = voiceBank1.patch.resonance;
+  doc["filterEnvelope_attack"] = voiceBanks[currentVoiceBank]->patch.filterEnvelope_attack;
+  doc["filterEnvelope_decay"] = voiceBanks[currentVoiceBank]->patch.filterEnvelope_decay;
+  doc["filterEnvelope_sustain"] = voiceBanks[currentVoiceBank]->patch.filterEnvelope_sustain;
+  doc["filterEnvelope_release"] = voiceBanks[currentVoiceBank]->patch.filterEnvelope_release;
+  doc["octaveControl"] = voiceBanks[currentVoiceBank]->patch.octaveControl;
+  doc["envToFilter"] = voiceBanks[currentVoiceBank]->patch.envToFilter;
+  doc["cutoff"] = voiceBanks[currentVoiceBank]->patch.cutoff;
+  doc["resonance"] = voiceBanks[currentVoiceBank]->patch.resonance;
   
-  doc["envelope3_attack"] = voiceBank1.patch.envelope3_attack;
-  doc["envelope3_decay"] = voiceBank1.patch.envelope3_decay;
-  doc["envelope3_sustain"] = voiceBank1.patch.envelope3_sustain;
-  doc["envelope3_release"] = voiceBank1.patch.envelope3_release;
+  doc["envelope3_attack"] = voiceBanks[currentVoiceBank]->patch.envelope3_attack;
+  doc["envelope3_decay"] = voiceBanks[currentVoiceBank]->patch.envelope3_decay;
+  doc["envelope3_sustain"] = voiceBanks[currentVoiceBank]->patch.envelope3_sustain;
+  doc["envelope3_release"] = voiceBanks[currentVoiceBank]->patch.envelope3_release;
   
-  doc["mod_env3_osc1_pitch"] = voiceBank1.patch.mod_env3_osc1_pitch;
-  doc["mod_env3_osc2_pitch"] = voiceBank1.patch.mod_env3_osc2_pitch;
-  doc["mod_env3_osc1_phase"] = voiceBank1.patch.mod_env3_osc1_phase;
-  doc["mod_env3_osc2_phase"] = voiceBank1.patch.mod_env3_osc2_phase;
-  doc["mod_env3_filter_cutoff"] = voiceBank1.patch.mod_env3_filter_cutoff;
-  doc["mod_env3_pwm"] = voiceBank1.patch.mod_env3_pwm;
-  doc["mod_env3_am_pitch"] = voiceBank1.patch.mod_env3_am_pitch;
-  doc["mod_env3_fm_pitch"] = voiceBank1.patch.mod_env3_fm_pitch;
+  doc["mod_env3_osc1_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_env3_osc1_pitch;
+  doc["mod_env3_osc2_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_env3_osc2_pitch;
+  doc["mod_env3_osc1_phase"] = voiceBanks[currentVoiceBank]->patch.mod_env3_osc1_phase;
+  doc["mod_env3_osc2_phase"] = voiceBanks[currentVoiceBank]->patch.mod_env3_osc2_phase;
+  doc["mod_env3_filter_cutoff"] = voiceBanks[currentVoiceBank]->patch.mod_env3_filter_cutoff;
+  doc["mod_env3_pwm"] = voiceBanks[currentVoiceBank]->patch.mod_env3_pwm;
+  doc["mod_env3_am_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_env3_am_pitch;
+  doc["mod_env3_fm_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_env3_fm_pitch;
 
-  doc["mod_env3_lfo1_ampl"] = voiceBank1.patch.mod_env3_lfo1_amplitude;
-  doc["mod_env3_lfo2_ampl"] = voiceBank1.patch.mod_env3_lfo2_amplitude;
+  doc["mod_env3_lfo1_ampl"] = voiceBanks[currentVoiceBank]->patch.mod_env3_lfo1_amplitude;
+  doc["mod_env3_lfo2_ampl"] = voiceBanks[currentVoiceBank]->patch.mod_env3_lfo2_amplitude;
 
-  doc["mod_lfo1_osc1_pitch"] = voiceBank1.patch.mod_lfo1_osc1_pitch;
-  doc["mod_lfo1_osc2_pitch"] = voiceBank1.patch.mod_lfo1_osc2_pitch;
-  doc["mod_lfo1_osc1_phase"] = voiceBank1.patch.mod_lfo1_osc1_phase;
-  doc["mod_lfo1_osc2_phase"] = voiceBank1.patch.mod_lfo1_osc2_phase;
-  doc["mod_lfo1_filter_cutoff"] = voiceBank1.patch.mod_lfo1_filter_cutoff;
-  doc["mod_lfo1_pwm"] = voiceBank1.patch.mod_lfo1_pwm;
-  doc["mod_lfo1_am_pitch"] = voiceBank1.patch.mod_lfo1_am_pitch;
-  doc["mod_lfo1_fm_pitch"] = voiceBank1.patch.mod_lfo1_fm_pitch;
+  doc["mod_lfo1_osc1_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_lfo1_osc1_pitch;
+  doc["mod_lfo1_osc2_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_lfo1_osc2_pitch;
+  doc["mod_lfo1_osc1_phase"] = voiceBanks[currentVoiceBank]->patch.mod_lfo1_osc1_phase;
+  doc["mod_lfo1_osc2_phase"] = voiceBanks[currentVoiceBank]->patch.mod_lfo1_osc2_phase;
+  doc["mod_lfo1_filter_cutoff"] = voiceBanks[currentVoiceBank]->patch.mod_lfo1_filter_cutoff;
+  doc["mod_lfo1_pwm"] = voiceBanks[currentVoiceBank]->patch.mod_lfo1_pwm;
+  doc["mod_lfo1_am_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_lfo1_am_pitch;
+  doc["mod_lfo1_fm_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_lfo1_fm_pitch;
 
-  doc["mod_lfo2_osc1_pitch"] = voiceBank1.patch.mod_lfo2_osc1_pitch;
-  doc["mod_lfo2_osc2_pitch"] = voiceBank1.patch.mod_lfo2_osc2_pitch;
-  doc["mod_lfo2_osc1_phase"] = voiceBank1.patch.mod_lfo2_osc1_phase;
-  doc["mod_lfo2_osc2_phase"] = voiceBank1.patch.mod_lfo2_osc2_phase;
-  doc["mod_lfo2_filter_cutoff"] = voiceBank1.patch.mod_lfo2_filter_cutoff;
-  doc["mod_lfo2_pwm"] = voiceBank1.patch.mod_lfo2_pwm;
-  doc["mod_lfo2_am_pitch"] = voiceBank1.patch.mod_lfo2_am_pitch;
-  doc["mod_lfo2_fm_pitch"] = voiceBank1.patch.mod_lfo2_fm_pitch;
+  doc["mod_lfo2_osc1_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_lfo2_osc1_pitch;
+  doc["mod_lfo2_osc2_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_lfo2_osc2_pitch;
+  doc["mod_lfo2_osc1_phase"] = voiceBanks[currentVoiceBank]->patch.mod_lfo2_osc1_phase;
+  doc["mod_lfo2_osc2_phase"] = voiceBanks[currentVoiceBank]->patch.mod_lfo2_osc2_phase;
+  doc["mod_lfo2_filter_cutoff"] = voiceBanks[currentVoiceBank]->patch.mod_lfo2_filter_cutoff;
+  doc["mod_lfo2_pwm"] = voiceBanks[currentVoiceBank]->patch.mod_lfo2_pwm;
+  doc["mod_lfo2_am_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_lfo2_am_pitch;
+  doc["mod_lfo2_fm_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_lfo2_fm_pitch;
 
-  doc["mod_osc1_osc2_pitch"] = voiceBank1.patch.mod_osc1_osc2_pitch;
-  doc["mod_osc2_osc1_pitch"] = voiceBank1.patch.mod_osc2_osc1_pitch;
-  doc["mod_osc1_osc2_phase"] = voiceBank1.patch.mod_osc1_osc2_phase;
-  doc["mod_osc2_osc1_phase"] = voiceBank1.patch.mod_osc2_osc1_phase;
+  doc["mod_osc1_osc2_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_osc1_osc2_pitch;
+  doc["mod_osc2_osc1_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_osc2_osc1_pitch;
+  doc["mod_osc1_osc2_phase"] = voiceBanks[currentVoiceBank]->patch.mod_osc1_osc2_phase;
+  doc["mod_osc2_osc1_phase"] = voiceBanks[currentVoiceBank]->patch.mod_osc2_osc1_phase;
 
-  doc["mod_velocity_osc1_pitch"] = voiceBank1.patch.mod_velocity_osc1_pitch;
-  doc["mod_velocity_osc2_pitch"] = voiceBank1.patch.mod_velocity_osc2_pitch;
-  doc["mod_velocity_osc1_phase"] = voiceBank1.patch.mod_velocity_osc1_phase;
-  doc["mod_velocity_osc2_phase"] = voiceBank1.patch.mod_velocity_osc2_phase;
-  doc["mod_velocity_filter_cutoff"] = voiceBank1.patch.mod_velocity_filter_cutoff;
-  doc["mod_velocity_pwm"] = voiceBank1.patch.mod_velocity_pwm;
+  doc["mod_velocity_osc1_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_velocity_osc1_pitch;
+  doc["mod_velocity_osc2_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_velocity_osc2_pitch;
+  doc["mod_velocity_osc1_phase"] = voiceBanks[currentVoiceBank]->patch.mod_velocity_osc1_phase;
+  doc["mod_velocity_osc2_phase"] = voiceBanks[currentVoiceBank]->patch.mod_velocity_osc2_phase;
+  doc["mod_velocity_filter_cutoff"] = voiceBanks[currentVoiceBank]->patch.mod_velocity_filter_cutoff;
+  doc["mod_velocity_pwm"] = voiceBanks[currentVoiceBank]->patch.mod_velocity_pwm;
 
-  doc["mod_wheel_osc1_pitch"] = voiceBank1.patch.mod_wheel_osc1_pitch;
-  doc["mod_wheel_osc2_pitch"] = voiceBank1.patch.mod_wheel_osc2_pitch;
-  doc["mod_wheel_osc1_phase"] = voiceBank1.patch.mod_wheel_osc1_phase;
-  doc["mod_wheel_osc2_phase"] = voiceBank1.patch.mod_wheel_osc2_phase;
-  doc["mod_wheel_filter_cutoff"] = voiceBank1.patch.mod_wheel_filter_cutoff;
-  doc["mod_wheel_pwm"] = voiceBank1.patch.mod_wheel_pwm;
+  doc["mod_wheel_osc1_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_wheel_osc1_pitch;
+  doc["mod_wheel_osc2_pitch"] = voiceBanks[currentVoiceBank]->patch.mod_wheel_osc2_pitch;
+  doc["mod_wheel_osc1_phase"] = voiceBanks[currentVoiceBank]->patch.mod_wheel_osc1_phase;
+  doc["mod_wheel_osc2_phase"] = voiceBanks[currentVoiceBank]->patch.mod_wheel_osc2_phase;
+  doc["mod_wheel_filter_cutoff"] = voiceBanks[currentVoiceBank]->patch.mod_wheel_filter_cutoff;
+  doc["mod_wheel_pwm"] = voiceBanks[currentVoiceBank]->patch.mod_wheel_pwm;
 
-  doc["lfo1Frequency"] = voiceBank1.patch.lfo1Frequency;
-  doc["lfo2Frequency"] = voiceBank1.patch.lfo2Frequency;
-  doc["lfo1_waveform"] = voiceBank1.patch.lfo1_waveform;
-  doc["lfo2_waveform"] = voiceBank1.patch.lfo2_waveform;
-  doc["lfo1Level"] = voiceBank1.patch.lfo1Level;
-  doc["lfo2Level"] = voiceBank1.patch.lfo2Level;
+  doc["lfo1Frequency"] = voiceBanks[currentVoiceBank]->patch.lfo1Frequency;
+  doc["lfo2Frequency"] = voiceBanks[currentVoiceBank]->patch.lfo2Frequency;
+  doc["lfo1_waveform"] = voiceBanks[currentVoiceBank]->patch.lfo1_waveform;
+  doc["lfo2_waveform"] = voiceBanks[currentVoiceBank]->patch.lfo2_waveform;
+  doc["lfo1Level"] = voiceBanks[currentVoiceBank]->patch.lfo1Level;
+  doc["lfo2Level"] = voiceBanks[currentVoiceBank]->patch.lfo2Level;
 
-  doc["fm_frequency_multiplier"] = voiceBank1.patch.fm_frequency_multiplier;
-  doc["fm_level"] = voiceBank1.patch.fm_level;
-  doc["osc_fm_waveform"] = voiceBank1.patch.osc_fm_waveform;
-  doc["fm_offset"] = voiceBank1.patch.fm_offset;
+  doc["fm_frequency_multiplier"] = voiceBanks[currentVoiceBank]->patch.fm_frequency_multiplier;
+  doc["fm_level"] = voiceBanks[currentVoiceBank]->patch.fm_level;
+  doc["osc_fm_waveform"] = voiceBanks[currentVoiceBank]->patch.osc_fm_waveform;
+  doc["fm_offset"] = voiceBanks[currentVoiceBank]->patch.fm_offset;
 
-  doc["am_frequency_multiplier"] = voiceBank1.patch.am_frequency_multiplier;
-  doc["am_level"] = voiceBank1.patch.am_level;
-  doc["osc_am_waveform"] = voiceBank1.patch.osc_am_waveform;
-  doc["am_fixedFrequency"] = voiceBank1.patch.am_fixedFrequency;
+  doc["am_frequency_multiplier"] = voiceBanks[currentVoiceBank]->patch.am_frequency_multiplier;
+  doc["am_level"] = voiceBanks[currentVoiceBank]->patch.am_level;
+  doc["osc_am_waveform"] = voiceBanks[currentVoiceBank]->patch.osc_am_waveform;
+  doc["am_fixedFrequency"] = voiceBanks[currentVoiceBank]->patch.am_fixedFrequency;
 
 
 
-  doc["dryLevel"] = voiceBank1.patch.dryLevel;
-  doc["pan"] = voiceBank1.patch.pan;
-  doc["reverbSend"] = voiceBank1.patch.reverbSend;
-  doc["chorusSend"] = voiceBank1.patch.chorusSend;
-  doc["delaySend"] = voiceBank1.patch.delaySend;
-  doc["phaserSend"] = voiceBank1.patch.phaserSend;
+  doc["dryLevel"] = voiceBanks[currentVoiceBank]->patch.dryLevel;
+  doc["pan"] = voiceBanks[currentVoiceBank]->patch.pan;
+  doc["reverbSend"] = voiceBanks[currentVoiceBank]->patch.reverbSend;
+  doc["chorusSend"] = voiceBanks[currentVoiceBank]->patch.chorusSend;
+  doc["delaySend"] = voiceBanks[currentVoiceBank]->patch.delaySend;
+  doc["phaserSend"] = voiceBanks[currentVoiceBank]->patch.phaserSend;
 
-  doc["osc1_waveTable_mode"] = voiceBank1.patch.osc1_waveTable_mode;
-  doc["osc1_waveTable_index"] = voiceBank1.patch.osc1_waveTable_index;
-  doc["osc1_waveTable_start"] = voiceBank1.patch.osc1_waveTable_start;
-  doc["osc1_waveTable_length"] = voiceBank1.patch.osc1_waveTable_length;
-  doc["osc1_waveTable_interval"] = voiceBank1.patch.osc1_waveTable_interval;
-  doc["osc1_waveTable_stepSize"] = voiceBank1.patch.osc1_waveTable_stepSize;
-  doc["osc1_waveTable_movement"] = voiceBank1.patch.osc1_waveTable_movement;
+  doc["osc1_waveTable_mode"] = voiceBanks[currentVoiceBank]->patch.osc1_waveTable_mode;
+  doc["osc1_waveTable_index"] = voiceBanks[currentVoiceBank]->patch.osc1_waveTable_index;
+  doc["osc1_waveTable_start"] = voiceBanks[currentVoiceBank]->patch.osc1_waveTable_start;
+  doc["osc1_waveTable_length"] = voiceBanks[currentVoiceBank]->patch.osc1_waveTable_length;
+  doc["osc1_waveTable_interval"] = voiceBanks[currentVoiceBank]->patch.osc1_waveTable_interval;
+  doc["osc1_waveTable_stepSize"] = voiceBanks[currentVoiceBank]->patch.osc1_waveTable_stepSize;
+  doc["osc1_waveTable_movement"] = voiceBanks[currentVoiceBank]->patch.osc1_waveTable_movement;
   
-  doc["osc2_waveTable_mode"] = voiceBank1.patch.osc2_waveTable_mode;
-  doc["osc2_waveTable_index"] = voiceBank1.patch.osc2_waveTable_index;
-  doc["osc2_waveTable_start"] = voiceBank1.patch.osc2_waveTable_start;
-  doc["osc2_waveTable_length"] = voiceBank1.patch.osc2_waveTable_length;
-  doc["osc2_waveTable_interval"] = voiceBank1.patch.osc2_waveTable_interval;
-  doc["osc2_waveTable_stepSize"] = voiceBank1.patch.osc2_waveTable_stepSize;
-  doc["osc2_waveTable_movement"] = voiceBank1.patch.osc2_waveTable_movement;
+  doc["osc2_waveTable_mode"] = voiceBanks[currentVoiceBank]->patch.osc2_waveTable_mode;
+  doc["osc2_waveTable_index"] = voiceBanks[currentVoiceBank]->patch.osc2_waveTable_index;
+  doc["osc2_waveTable_start"] = voiceBanks[currentVoiceBank]->patch.osc2_waveTable_start;
+  doc["osc2_waveTable_length"] = voiceBanks[currentVoiceBank]->patch.osc2_waveTable_length;
+  doc["osc2_waveTable_interval"] = voiceBanks[currentVoiceBank]->patch.osc2_waveTable_interval;
+  doc["osc2_waveTable_stepSize"] = voiceBanks[currentVoiceBank]->patch.osc2_waveTable_stepSize;
+  doc["osc2_waveTable_movement"] = voiceBanks[currentVoiceBank]->patch.osc2_waveTable_movement;
 
   // AUDIO PARAMETERS
   doc["hpVolume"] = audioParameters.hpVolume;

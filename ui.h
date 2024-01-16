@@ -292,6 +292,7 @@ void adjustBrightness(uint8_t index, int8_t delta);
 void keyboardInput(uint8_t index);
 void setCharPosition(uint8_t index);
 void copyWavetableSettings(uint8_t index);
+void setActiveVoiceBank(uint8_t index, int8_t delta);
 
 void animateWavetable(bool firstCall);
 void animateWavetable2(bool firstCall);

@@ -160,7 +160,18 @@ FLASHMEM void configurePage_patch()
   const uint8_t labelOffsetX = 10;
   const uint8_t labelOffsetY = 15;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_PATCHNAME, 0, 0, 400, 60);
+  widgetIndex = pages[PAGE].addWidget(0, 0, 0, 80, 60);
+  pages[PAGE].widgetPointers[widgetIndex]->drawLabel = false;
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &currentVoiceBank;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &setActiveVoiceBank;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = labelOffsetX;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = labelOffsetY;
+  pages[PAGE].widgetPointers[widgetIndex]->fontSize = 20;
+  pages[PAGE].widgetPointers[widgetIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].widgetPointers[widgetIndex]->textColor1 = 0xffff;
+
+  widgetIndex = pages[PAGE].addWidget(PAGE_PATCHNAME, 84, 0, 400, 60);
   pages[PAGE].widgetPointers[widgetIndex]->drawLabel = false;
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_str = &patchNameUI;
@@ -171,7 +182,7 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgetPointers[widgetIndex]->color2 = HEADER_COLOR;
   pages[PAGE].widgetPointers[widgetIndex]->textColor1 = 0xffff;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_PATCHNAME, 420, 0, 100, 60);
+  widgetIndex = pages[PAGE].addWidget(PAGE_PATCHNAME, 504, 0, 100, 60);
   pages[PAGE].widgetPointers[widgetIndex]->label("SAVE");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
@@ -249,14 +260,13 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgetPointers[widgetIndex]->label("SYS");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
-  pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
+  pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = 5;
 
   widgetIndex = pages[PAGE].addWidget(PAGE_CONTROLS, 1* (column_w + padding), SCREEN_YRES - 40, column_w, 40); 
   pages[PAGE].widgetPointers[widgetIndex]->label("CTL");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
-  pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
-
+  pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = 5;
 }
 
 FLASHMEM void configurePage_oscillator()
@@ -2053,6 +2063,14 @@ FLASHMEM void adjustBrightness(uint8_t index, int8_t delta)
 FLASHMEM void copyWavetableSettings(uint8_t index)
 {
 
+}
+
+FLASHMEM void setActiveVoiceBank(uint8_t index, int8_t delta)
+{
+  currentVoiceBank = currentVoiceBank + delta;
+  currentVoiceBank = constrain(currentVoiceBank, 0, 1);
+  //update page pointers
+  // redraw current page
 }
 
 // --- Animation functions ---

@@ -1,3 +1,4 @@
+#include "midi_Defs.h"
 #include "midiFunc.h"
 
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, serialMIDI);
@@ -33,7 +34,7 @@ FLASHMEM void setupMidi()
   usbMIDI.setHandleStart(myMIDIClockStart);
   usbMIDI.setHandleStop(myMIDIClockStop);
 
-  serialMIDI.begin(1);
+  serialMIDI.begin(MIDI_CHANNEL_OMNI);
   serialMIDI.setHandleNoteOn(myNoteOn);
   serialMIDI.setHandleNoteOff(myNoteOff);
   serialMIDI.setHandleControlChange(myControlChange);
