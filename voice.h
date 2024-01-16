@@ -445,7 +445,7 @@ class VoiceBank
     AudioAmplifier  output_reverbSend_R;
     AudioAmplifier  output_chorusSend;
     AudioAmplifier  output_delaySend;
-    AudioAmplifier  output_phaserSend;
+    //AudioAmplifier  output_phaserSend;
 
     AudioSynthWaveformSine overTone;
 

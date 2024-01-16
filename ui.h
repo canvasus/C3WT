@@ -19,7 +19,7 @@
 #define RA8875_MOSI   11  // ER-TFTM070 pin 7
 #define RA8875_MISO   12  // ER-TFTM070 pin 6
 #define RA8875_SCLK   13  // ER-TFTM070 pin 8
-#define RA8875_INT    32  // FT5206 interrupt, ER-TFTM070 pin 
+#define RA8875_INT    32  // FT5206 interrupt, ER-TFTM070 pin 33
 
 #define MAXTOUCHLIMIT   1 // 1...5
 #define CTP_FINGER_UP   1
@@ -279,6 +279,8 @@ void configurePage_filter();
 void configurePage_controls();
 void configurePage_system();
 
+void updateVarPointers(uint8_t bankId);
+
 void setPage(uint8_t page);
 void changePatch(uint8_t callerId, int8_t delta);
 void adjustVoiceBankWrapper(uint8_t index, int8_t delta);
@@ -289,6 +291,7 @@ void peekPatchNameWrapper(uint8_t index, int8_t delta);
 void adjustBrightness(uint8_t index, int8_t delta);
 void keyboardInput(uint8_t index);
 void setCharPosition(uint8_t index);
+void copyWavetableSettings(uint8_t index);
 
 void animateWavetable(bool firstCall);
 void animateWavetable2(bool firstCall);
@@ -306,6 +309,7 @@ void animateUsbDeviceStatus(bool firstCall);
 void animateMidiInput();
 void animateBpm(bool firstCall);
 void animateSystemPage(bool firstCall);
+void animateMeter(bool firstCall);
 
 int16_t getEncoderDirection(uint8_t encoderNr);
 uint8_t updateButton(uint8_t buttonNr);

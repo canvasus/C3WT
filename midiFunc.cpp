@@ -74,6 +74,14 @@ void myNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
     else arpeggiator.addNote(note);
     midiActivity = 1;
   }
+
+  if (channel == midiSettings.channel2)
+  {
+    //noteStatus[note] = velocity;
+    voiceBank2.noteOn(note, velocity);
+    //else arpeggiator.addNote(note);
+    midiActivity = 1;
+  }
 }
 
 void myNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
@@ -83,6 +91,13 @@ void myNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
     noteStatus[note] = 0;
     if(midiSettings.arp_mode == ARP_OFF) voiceBank1.noteOff(note, velocity);
     else arpeggiator.removeNote(note);
+    midiActivity = 0;
+  }
+
+  if (channel == midiSettings.channel2)
+  {
+    //noteStatus[note] = 0;
+    voiceBank2.noteOff(note, velocity);
     midiActivity = 0;
   }
 }
@@ -162,6 +177,10 @@ void adjustMidiParameter(uint8_t parameter, int8_t delta)
     case SYS_MIDICHANNEL:
       targetValue_I8 = midiSettings.channel + delta;
       midiSettings.channel =  constrain(targetValue_I8, 0, 16);
+      break;
+    case SYS_MIDICHANNEL2:
+      targetValue_I8 = midiSettings.channel2 + delta;
+      midiSettings.channel2 =  constrain(targetValue_I8, 0, 16);
       break;
   }
 }

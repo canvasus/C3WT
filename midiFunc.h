@@ -17,7 +17,8 @@
 
 #define NR_ARP_MODES 3
 
-#define SYS_MIDICHANNEL 0
+#define SYS_MIDICHANNEL   0
+#define SYS_MIDICHANNEL2  1
 
 extern uint8_t noteStatus[128];
 extern uint8_t midiActivity;
@@ -27,6 +28,7 @@ extern bool usbPcStatus;
 struct MidiSettings
 {
   uint8_t channel = 1;
+  uint8_t channel2 = 2;
   uint8_t bpm = 120;
   uint32_t oneTickUs = 1000 * 60000 / (120 * 24);
   uint16_t masterClock = 0;

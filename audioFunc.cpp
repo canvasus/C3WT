@@ -14,7 +14,9 @@ AudioMixer4           reverbInputMixer_L;
 AudioMixer4           reverbInputMixer_R;
 AudioMixer4           delayInputMixer_L;
 AudioMixer4           delayInputMixer_R;
-AudioMixer4           phaserInputMixer;
+//AudioMixer4           phaserInputMixer;
+
+AudioAmplifier        chorusPhaserBoost;
 
 AudioMixer4           fxReturnMixerL;
 AudioMixer4           fxReturnMixerR;
@@ -25,21 +27,26 @@ AudioMixer4           outputMixerR;
 AudioOutputI2S        output_i2s;
 
 AudioAnalyzeFFT256    fft;
-
-
+AudioAnalyzePeak      peakL;
+AudioAnalyzePeak      peakR;
 
 AudioConnection  *   patchCords[NR_PATCHCORDS_MAINBUS];
 
 SM2k_AudioControlWM8731 codecControl1;
 
 VoiceBank voiceBank1;
-//VoiceBank voiceBank2; // Possible multimbrality
+VoiceBank voiceBank2; // Possible multimbrality
+
+VoiceBank * voiceBanks[1] = {&voiceBank1};
+uint8_t currentVoiceBank = 0;
 
 AudioParameters audioParameters;
 
 #define GRANULAR_MEMORY_SIZE 8000 
 DMAMEM int16_t granularMemoryL[GRANULAR_MEMORY_SIZE];
 DMAMEM int16_t granularMemoryR[GRANULAR_MEMORY_SIZE];
+
+float peakLevels[2];
 
 FLASHMEM void setupAudio()
 {
@@ -50,24 +57,23 @@ FLASHMEM void setupAudio()
   codecControl1.inputLevel(0.0);
   
   voiceBank1.configure();
-  //voiceBank2.configure();
+  voiceBank2.configure();
 
   connect(voiceBank1.output_dry_L, 0, outputMixerL , 0);
   connect(voiceBank1.output_dry_R, 0, outputMixerR , 0);
   connect(voiceBank1.output_reverbSend_L, 0, reverbInputMixer_L , 0);
   connect(voiceBank1.output_reverbSend_R, 0, reverbInputMixer_R , 0);
   connect(voiceBank1.output_chorusSend, 0, chorusInputMixer , 0);
-  //connect(voiceBank1.output_phaserSend, 0, phaserInputMixer , 0);
   connect(voiceBank1.output_delaySend, 0, delayInputMixer_L , 0);
   connect(voiceBank1.output_delaySend, 0, delayInputMixer_R , 0);
 
-  // connect(voiceBank2.output_dry_L, 0, outputMixerL , 1);
-  // connect(voiceBank2.output_dry_R, 0, outputMixerR , 1);
-  // connect(voiceBank2.output_reverbSend_L, 0, reverbInputMixer_L , 1);
-  // connect(voiceBank2.output_reverbSend_R, 0, reverbInputMixer_R , 1);
-  // connect(voiceBank2.output_chorusSend, 0, chorusInputMixer , 1);
-  // connect(voiceBank2.output_phaserSend, 0, phaserInputMixer , 1);
-  // connect(voiceBank2.output_delaySend, 0, delayInputMixer , 1);
+  connect(voiceBank2.output_dry_L, 0, outputMixerL , 1);
+  connect(voiceBank2.output_dry_R, 0, outputMixerR , 1);
+  connect(voiceBank2.output_reverbSend_L, 0, reverbInputMixer_L , 1);
+  connect(voiceBank2.output_reverbSend_R, 0, reverbInputMixer_R , 1);
+  connect(voiceBank2.output_chorusSend, 0, chorusInputMixer , 1);
+  connect(voiceBank2.output_delaySend, 0, delayInputMixer_L , 0);
+  connect(voiceBank2.output_delaySend, 0, delayInputMixer_R , 0);
 
   // REVERB ROUTING
   connect(reverbInputMixer_L, 0, reverb , 0);
@@ -79,22 +85,18 @@ FLASHMEM void setupAudio()
   connect(granularL, 0, reverbInputMixer_L , 3);
   connect(granularR, 0, reverbInputMixer_R , 3);
 
-  // PHASER ROUTING
-  //connect(phaserInputMixer, 0, phaser , 0); // phaser is mono
-  //connect(phaser, 0, fxReturnMixerL, 2);
-  //connect(phaser, 1, fxReturnMixerR, 2);
-
   // PHASER + CHORUS ROUTING
   connect(chorusInputMixer, 0, phaser , 0); 
-  connect(phaser, 0, chorus , 0); 
-  //connect(chorusInputMixer, 0, chorus , 0);
+  connect(phaser, 0, chorusPhaserBoost , 0); 
+  connect(chorusPhaserBoost, 0, chorus , 0); 
   connect(chorus, 0, fxReturnMixerL, 1);
   connect(chorus, 1, fxReturnMixerR, 1);
+  chorusPhaserBoost.gain(1.5);
 
   // DELAY ROUTING
   connect(delayInputMixer_L, 0, delayL, 0);
   connect(delayInputMixer_R, 0, delayR, 0);
-  connect(delayL, 0, delayInputMixer_R , 2); // ping pong L -R
+  connect(delayL, 0, delayInputMixer_R , 2); // ping pong L - R
   connect(delayR, 0, delayInputMixer_L , 2); // ping pong R - L
   connect(delayL, 0, delayInputMixer_L , 3); // feedback L 
   connect(delayR, 0, delayInputMixer_R , 3); // feedback R
@@ -109,6 +111,9 @@ FLASHMEM void setupAudio()
 
   connect(outputMixerL, 0, fft , 0);
   fft.averageTogether(4);
+
+  connect(outputMixerL, 0, peakL , 0);
+  connect(outputMixerR, 0, peakR , 0);
 
   outputMixerL.gain(0, 1.0); // DRY L
   outputMixerR.gain(0, 1.0); // DRY R
@@ -135,13 +140,14 @@ FLASHMEM void connect(AudioStream &source, unsigned char sourceOutput, AudioStre
 
 void updateVoices()
 {
-  // static elapsedMicros timer = 0;
-  // if (timer > 1000)
-  // {
-  //   timer = 0;
-  //   voiceBank1.update();
-  // }
+  if (peakL.available() && peakR.available())
+  {
+    peakLevels[0] = 0.5 * peakLevels[0] + 0.5 * peakL.read();
+    peakLevels[1] = 0.5 * peakLevels[1] + 0.5 * peakR.read();
+  } 
+
   voiceBank1.update();
+  voiceBank2.update();
 }
 
 void adjustAudioParameter(uint8_t parameter, int8_t delta)

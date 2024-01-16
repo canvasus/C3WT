@@ -209,7 +209,6 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgetPointers[widgetIndex]->color2 = 0x9d1f;
 
 
-  //widgetIndex = pages[PAGE].addWidget(PAGE_ENVELOPE, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   widgetIndex = pages[PAGE].addWidget(PAGE_ENVELOPE, 1* (column_w + padding), 2* (row_h + padding), column_w, 3 * row_h + 2 * padding); 
   pages[PAGE].widgetPointers[widgetIndex]->label("ENV");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
@@ -217,14 +216,12 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xafff;
 
-  //widgetIndex = pages[PAGE].addWidget(PAGE_FILTER, 2* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   widgetIndex = pages[PAGE].addWidget(PAGE_FILTER, 2* (column_w + padding), 2* (row_h + padding), column_w, 3 * row_h + 2 * padding); 
   pages[PAGE].widgetPointers[widgetIndex]->label("FLT");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xb7f5;
-
 
   widgetIndex = pages[PAGE].addWidget(PAGE_LFO, 3* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("LFO");
@@ -233,7 +230,6 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xc398;
 
-  //widgetIndex = pages[PAGE].addWidget(PAGE_MODULATION, 3* (column_w + padding), 3* (row_h + padding), column_w, row_h);
   widgetIndex = pages[PAGE].addWidget(PAGE_MODULATION, 3* (column_w + padding), 3* (row_h + padding), column_w, 2 * row_h + padding); 
   pages[PAGE].widgetPointers[widgetIndex]->label("MOD");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
@@ -241,7 +237,6 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xc518;
 
-  //widgetIndex = pages[PAGE].addWidget(PAGE_EFFECTS, 4* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   widgetIndex = pages[PAGE].addWidget(PAGE_EFFECTS, 4* (column_w + padding), 2* (row_h + padding), column_w, 3 * row_h + 2 * padding); 
   pages[PAGE].widgetPointers[widgetIndex]->label("EFX");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
@@ -250,14 +245,14 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xfff0;
   
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_CONTROLS, 1* (column_w + padding), 6* (row_h + padding), column_w, row_h); 
-  pages[PAGE].widgetPointers[widgetIndex]->label("CTL");
+  widgetIndex = pages[PAGE].addWidget(PAGE_SYSTEM, 0* (column_w + padding), SCREEN_YRES - 40, column_w, 40); 
+  pages[PAGE].widgetPointers[widgetIndex]->label("SYS");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_SYSTEM, 0* (column_w + padding), 6* (row_h + padding), column_w, row_h); 
-  pages[PAGE].widgetPointers[widgetIndex]->label("SYS");
+  widgetIndex = pages[PAGE].addWidget(PAGE_CONTROLS, 1* (column_w + padding), SCREEN_YRES - 40, column_w, 40); 
+  pages[PAGE].widgetPointers[widgetIndex]->label("CTL");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
@@ -448,8 +443,6 @@ FLASHMEM void configurePage_oscillator()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
 
   
-
-
   widgetIndex = pages[PAGE].addWidget(FM_WAVEFORM, 4* (column_w + padding), 1* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Wfm");
   pages[PAGE].widgetPointers[widgetIndex]->drawWaveform = true;
@@ -1512,6 +1505,13 @@ FLASHMEM void configurePage_wavetableOsc2()
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
 
 
+
+  //widgetIndex = pages[PAGE].addWidget(0, 1 * (column_w + padding), SCREEN_YRES - 44, column_w, 44);
+  //pages[PAGE].widgetPointers[widgetIndex]->label("cp1");
+  //pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
+  //pages[PAGE].widgetPointers[widgetIndex]->activateCb = &copyWavetableSettings;
+
+
   widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, SCREEN_XRES - column_w, SCREEN_YRES - 44, column_w, 44);
   pages[PAGE].widgetPointers[widgetIndex]->label("<BACK");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
@@ -1720,13 +1720,23 @@ FLASHMEM void configurePage_system()
   const uint8_t padding = 4;
 
   widgetIndex = pages[PAGE].addWidget(SYS_MIDICHANNEL, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h);
-  pages[PAGE].widgetPointers[widgetIndex]->label("Channel");
+  pages[PAGE].widgetPointers[widgetIndex]->label("Ch 1");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.channel;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_MIDICHANNEL2, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Ch 2");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.channel2;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
 
   widgetIndex = pages[PAGE].addWidget(0, 3* (column_w + padding), 1* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Bright");
@@ -1758,6 +1768,220 @@ FLASHMEM void configurePage_system()
   // pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bpm;
   // pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustBpm;
 //}
+
+FLASHMEM void updateVarPointers(uint8_t bankId)
+{
+  for(uint8_t pageId = 0; pageId < NR_PAGES; pageId++)
+  {
+    uint8_t widgetId = 0;
+    while (pages[pageId].widgetPointers[widgetId] != nullptr)
+    {
+      switch(pages[pageId].widgetPointers[widgetId++]->id)
+      {
+        case OSC1_WAVEFORM:
+          break;
+        case OSC2_WAVEFORM:
+          break;
+        case TRANSPOSE:
+          break;
+        case DETUNE:
+          break;
+        case OSC1_LEVEL:
+          break;
+        case OSC2_LEVEL:
+          break;
+        case PULSE_LEVEL:
+          break;
+        case NOISE_LEVEL:
+          break;
+        case ENV_ATTACK:
+          break;
+        case ENV_DECAY:
+          break;
+        case ENV_SUSTAIN:
+          break;
+        case ENV_RELEASE:
+          break;
+        case FILTER_ATTACK:
+          break;
+        case FILTER_DECAY:
+          break;
+        case FILTER_SUSTAIN:
+          break;
+        case FILTER_RELEASE:
+          break;
+        case FILTER_CUTOFF:
+          break;
+        case FILTER_RESONANCE:
+          break;
+        case FILTERENV_PWR:
+          break;
+        case OSC1_SYNC:
+          break;
+        case OSC2_SYNC:
+          break;
+        case OSC1_WAVETABLE_INDEX:
+          break;
+        case OSC1_WAVETABLE_MODE:
+          break;
+        case OSC1_WAVETABLE_START:
+          break;
+        case OSC1_WAVETABLE_LENGTH:
+          break;
+        case OSC1_WAVETABLE_INTERVAL:
+          break;
+        case OSC1_WAVETABLE_STEPSIZE:
+          break;
+        case OSC1_WAVETABLE_MOVEMENT:
+          break;
+        case OSC2_WAVETABLE_INDEX:
+          break;
+        case OSC2_WAVETABLE_MODE:
+          break;
+        case OSC2_WAVETABLE_START:
+          break;
+        case OSC2_WAVETABLE_LENGTH:
+          break;
+        case OSC2_WAVETABLE_INTERVAL:
+          break;
+        case OSC2_WAVETABLE_STEPSIZE:
+          break;
+        case OSC2_WAVETABLE_MOVEMENT:
+          break;
+
+        case ENV3_ATTACK:
+          break;
+        case ENV3_DECAY:
+          break;
+        case ENV3_SUSTAIN:
+          break;
+        case ENV3_RELEASE:
+          break;
+
+        case MOD_ENV3_OSC1_PITCH:
+          break;
+        case MOD_ENV3_OSC2_PITCH:
+          break;
+        case MOD_ENV3_OSC1_PHASE:
+          break;
+        case MOD_ENV3_OSC2_PHASE:
+          break;
+        case MOD_ENV3_FILTER_CUTOFF:
+          break;
+        case MOD_ENV3_PWM:
+          break;
+        case MOD_ENV3_AM_PITCH:
+          break;
+        case MOD_ENV3_FM_PITCH:
+          break;
+        case MOD_ENV3_LFO1_AMPLITUDE:
+          break;
+        case MOD_ENV3_LFO2_AMPLITUDE:
+          break;
+
+        case MOD_LFO1_OSC1_PITCH:
+          break;
+        case MOD_LFO1_OSC2_PITCH:
+          break;
+        case MOD_LFO1_OSC1_PHASE:
+          break;
+        case MOD_LFO1_OSC2_PHASE:
+          break;
+        case MOD_LFO1_FILTER_CUTOFF:
+          break;
+        case MOD_LFO1_PWM:
+          break;
+        case MOD_LFO1_AM_PITCH:
+          break;
+        case MOD_LFO1_FM_PITCH:
+          break;
+
+        case MOD_LFO2_OSC1_PITCH:
+          break;
+        case MOD_LFO2_OSC2_PITCH:
+          break;
+        case MOD_LFO2_OSC1_PHASE:
+          break;
+        case MOD_LFO2_OSC2_PHASE:
+          break;
+        case MOD_LFO2_FILTER_CUTOFF:
+          break;
+        case MOD_LFO2_PWM:
+          break;
+        case MOD_LFO2_AM_PITCH:
+          break;
+        case MOD_LFO2_FM_PITCH:
+          break;
+
+        case MOD_VEL_OSC1_PITCH:
+          break;
+        case MOD_VEL_OSC2_PITCH:
+          break;
+        case MOD_VEL_OSC1_PHASE:
+          break;
+        case MOD_VEL_OSC2_PHASE:
+          break;
+        case MOD_VEL_FILTER_CUTOFF:
+          break;
+        case MOD_VEL_PWM:
+          break;
+
+        case MOD_WHL_OSC1_PITCH:
+          break;
+        case MOD_WHL_OSC2_PITCH:
+          break;
+        case MOD_WHL_OSC1_PHASE:
+          break;
+        case MOD_WHL_OSC2_PHASE:
+          break;
+        case MOD_WHL_FILTER_CUTOFF:
+          break;
+        case MOD_WHL_PWM:
+          break;
+
+        case MOD_OSC1_OSC2_PITCH:
+          break;
+        case MOD_OSC1_OSC2_PHASE:
+          break;
+        case MOD_OSC2_OSC1_PITCH:
+          break;
+        case MOD_OSC2_OSC1_PHASE:
+          break;
+
+        case AM_FREQ_MULTIPLIER:
+          break;
+        case AM_LEVEL:
+          break;
+        case AM_WAVEFORM:
+          break;
+        case AM_FIXEDFREQUENCY:
+          break;
+
+        case FM_FREQ_MULTIPLIER:
+          break;
+        case FM_LEVEL:
+          break;
+        case FM_WAVEFORM:
+          break;
+        case FM_OFFSET:
+          break;
+
+        case EFX_SEND_DRY:
+          break;
+        case EFX_SEND_REVERB:
+          break;
+        case EFX_SEND_CHORUS:
+          break;
+        case EFX_SEND_PHASER:
+          break;
+        case EFX_SEND_DELAY:
+          break;
+      }
+    }
+  }
+}
+    
+
 
 // --- Widget callback functions ---
 
@@ -1820,10 +2044,15 @@ void peekPatchNameWrapper(uint8_t index, int8_t delta)
   pages[PAGE_PATCHNAME].staticPointers[1]->draw(false);
 }
 
-void adjustBrightness(uint8_t index, int8_t delta)
+FLASHMEM void adjustBrightness(uint8_t index, int8_t delta)
 {
   brightness = brightness + delta;
   tft.brightness(brightness);
+}
+
+FLASHMEM void copyWavetableSettings(uint8_t index)
+{
+
 }
 
 // --- Animation functions ---
@@ -2245,6 +2474,7 @@ void animateHomePage(bool firstCall)
   animateUsbDeviceStatus(firstCall);
   animateMidiInput();
   animateBpm(firstCall);
+  animateMeter(firstCall);
 }
 
 void animateUsbPcStatus(bool firstCall)
@@ -2339,6 +2569,28 @@ void animateBpm(bool firstCall)
     tft.setTextColor(MIDIEVENT_ON);
     tft.setCursor(SCREEN_XRES - 130 , 4);
     tft.print(currentBpm);
+  }
+}
+
+void animateMeter(bool firstCall)
+{
+  const uint8_t meter_w = 80;
+  const uint8_t meter_h = 10;
+  const uint16_t x0 = 700;
+  const uint16_t y0 = 30;
+  const uint16_t meter_color = MIDIEVENT_ON;
+  static elapsedMillis timer;
+
+  if (timer > 50)
+  {
+    timer = 0;
+    float barWidthL = peakLevels[0] * meter_w;
+    float barWidthR = peakLevels[1] * meter_w;
+    tft.fillRect(x0, y0, barWidthL, meter_h, meter_color);
+    tft.fillRect(x0 + barWidthL, y0, meter_w - barWidthL, meter_h, MAIN_BG_COLOR);
+    
+    tft.fillRect(x0, y0 + meter_h + 2, barWidthR, meter_h, meter_color);
+    tft.fillRect(x0 + barWidthR, y0 + meter_h + 2, meter_w - barWidthR, meter_h, MAIN_BG_COLOR);
   }
 }
 

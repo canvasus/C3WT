@@ -34,7 +34,9 @@
 #define DELAY_PINGPONG 1
 
 extern VoiceBank voiceBank1;
-//extern VoiceBank voiceBank2;
+extern VoiceBank voiceBank2;
+extern VoiceBank * voiceBanks[1];
+extern uint8_t currentVoiceBank;
 
 struct AudioParameters
 {
@@ -72,6 +74,7 @@ struct AudioParameters
 
 extern AudioParameters audioParameters;
 extern AudioAnalyzeFFT256 fft;
+extern float peakLevels[2];
 
 void setupAudio();
 void connect(AudioStream &source, unsigned char sourceOutput, AudioStream &destination, unsigned char destinationInput);

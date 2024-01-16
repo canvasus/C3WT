@@ -237,7 +237,6 @@ void Voice::_updateWaveTable1_morph()
 
   float crossFade = (_waveOffset1 % 256) / 256.0;
     
-  //uint16_t firstWaveStartPoint = _patch->osc1_waveTable_start + ((_waveOffset1) / 256) * 256;
   uint16_t firstWaveStartPoint = (_waveOffset1 / 256) * 256;
   uint16_t secondWaveStartPoint = firstWaveStartPoint + 256;
   for (uint16_t index = 0; index < 256; index++)
@@ -254,8 +253,8 @@ void Voice::_updateWaveTable2_morph()
 {
   if (_scanDirection2 == RIGHT)
   {
-    _waveOffset2 = _waveOffset2 + _patch->osc2_waveTable_stepSize;
-    if (_waveOffset2 >= (_patch->osc2_waveTable_start + _patch->osc2_waveTable_length) ) _scanDirection2 = LEFT;
+    _waveOffset2 = min(_waveOffset2 + _patch->osc2_waveTable_stepSize, _patch->osc2_waveTable_start + _patch->osc2_waveTable_length);
+    if ( (_waveOffset2 >= (_patch->osc2_waveTable_start + _patch->osc2_waveTable_length) ) && (_patch->osc2_waveTable_movement == WAVETABLE_PLAYMODE_UPDOWN) ) _scanDirection2 = LEFT;
     if (_waveOffset2 > (WAVETABLE_LENGTH - 257) ) _waveOffset2 = WAVETABLE_LENGTH - 257;
   }
   else if (_scanDirection2 == LEFT)
@@ -267,7 +266,6 @@ void Voice::_updateWaveTable2_morph()
 
   float crossFade = (_waveOffset2 % 256) / 256.0;
     
-  //uint16_t firstWaveStartPoint = _patch->osc1_waveTable_start + ((_waveOffset1) / 256) * 256;
   uint16_t firstWaveStartPoint = (_waveOffset2 / 256) * 256;
   uint16_t secondWaveStartPoint = firstWaveStartPoint + 256;
   for (uint16_t index = 0; index < 256; index++)
@@ -600,7 +598,7 @@ void VoiceBank::configure()
   _connect(dcOffsetFilter, 2, output_reverbSend_R, 0);
   _connect(dcOffsetFilter, 2, output_chorusSend, 0);
   _connect(dcOffsetFilter, 2, output_delaySend, 0);
-  _connect(dcOffsetFilter, 2, output_phaserSend, 0);  
+ // _connect(dcOffsetFilter, 2, output_phaserSend, 0);  
 
   _voiceMixer[2].gain(0, 0.5);
   _voiceMixer[2].gain(1, 0.5);
@@ -1067,11 +1065,11 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       patch.chorusSend = constrain(targetValueF, 0.0, 2.0);
       output_chorusSend.gain(patch.chorusSend);
       break;
-    case EFX_SEND_PHASER:
-      targetValueF = patch.phaserSend + delta * 0.05;
-      patch.phaserSend = constrain(targetValueF, 0.0, 2.0);
-      output_phaserSend.gain(patch.phaserSend);
-      break;
+    //case EFX_SEND_PHASER:
+      //targetValueF = patch.phaserSend + delta * 0.05;
+      //patch.phaserSend = constrain(targetValueF, 0.0, 2.0);
+      //output_phaserSend.gain(patch.phaserSend);
+      //break;
     case EFX_SEND_DELAY:
       targetValueF = patch.delaySend + delta * 0.05;
       patch.delaySend = constrain(targetValueF, 0.0, 2.0);
@@ -1275,7 +1273,7 @@ void VoiceBank::setEfx()
   output_reverbSend_L.gain(patch.reverbSend);
   output_reverbSend_R.gain(patch.reverbSend);
   output_chorusSend.gain(patch.chorusSend);
-  output_phaserSend.gain(patch.phaserSend);
+  //output_phaserSend.gain(patch.phaserSend);
   output_delaySend.gain(patch.delaySend);
 }
 
