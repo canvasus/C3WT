@@ -70,7 +70,7 @@
 #define MESSAGE_COLOR         0xfe01
 #define WAVETABLE1_SELECTED   0x0726
 #define WAVETABLE1_IDLE       0xb776
-#define WAVETABLE1_INRANGE    0x07ff
+#define WAVETABLE1_INRANGE    0xfda0 //0x07ff
 #define WAVETABLE1_OUTSIDE    0x5aeb
 #define WAVETABLE2_SELECTED   0x055f
 #define WAVETABLE2_IDLE       0xcebd
@@ -97,9 +97,10 @@
 #define PAGE_SYSTEM      13
 #define PAGE_WAVETABLE_OSC1  14
 #define PAGE_WAVETABLE_OSC2  15
+#define PAGE_MIX             16
 //#define PAGE_ARPEGGIATOR 
 
-#define NR_PAGES 16
+#define NR_PAGES 17
 
 #define PAGE_MESSAGE  254
 #define N_A           255
@@ -238,6 +239,7 @@ class Page
     uint8_t addWidget(uint8_t id, uint16_t x, uint16_t y, uint16_t w, uint16_t h);
     uint8_t addStatic(uint8_t id, uint16_t x, uint16_t y, uint16_t w, uint16_t h);
     void setAllWidgetIds(uint8_t id);
+    void clear();
    
     Widget * widgetPointers[MAX_WIDGETS];
     Widget * staticPointers[MAX_STATICS];
@@ -278,12 +280,15 @@ void configurePage_envelope();
 void configurePage_filter();
 void configurePage_controls();
 void configurePage_system();
+void configurePage_mix();
 
 void updateVarPointers(uint8_t bankId);
 
 void setPage(uint8_t page);
 void changePatch(uint8_t callerId, int8_t delta);
 void adjustVoiceBankWrapper(uint8_t index, int8_t delta);
+void adjustVoiceBank1Wrapper(uint8_t index, int8_t delta);
+void adjustVoiceBank2Wrapper(uint8_t index, int8_t delta);
 void setVoiceBankWrapper(uint8_t index, float value);
 void adjustCharacter(uint8_t charPos, int8_t delta);
 void savePatchWrapper(uint8_t index);

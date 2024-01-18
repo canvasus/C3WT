@@ -387,6 +387,14 @@ uint8_t Page::addStatic(uint8_t id, uint16_t x, uint16_t y, uint16_t w, uint16_t
   return (nrStatics - 1);
 }
 
+void Page::clear()
+{
+  for (uint8_t staticId = 0; staticId < nrStatics; staticId++) delete staticPointers[staticId];
+  for (uint8_t widgetId = 0; widgetId < nrWidgets; widgetId++) delete widgetPointers[widgetId];
+  nrWidgets = 0;
+  nrStatics = 0;
+}
+
 uint8_t Page::draw(bool firstCall)
 {
   // draws one element per pass

@@ -1,9 +1,9 @@
 #include "sdMgr.h"
 
 PatchInfo patchInfo;
-String patchNameUI = "000: INIT PATCH";
+String patchNameUI[NR_VOICEBANKS] = {"000: INIT PATCH", "000: INIT PATCH"};
 String peekPatchNameUI = "INIT PATCH";
-uint8_t currentPatchNr = 0;
+uint8_t currentPatchNr[NR_VOICEBANKS] = {0, 0};
 uint8_t peekPatchNr = 0;
 uint8_t currentCharPosition = 0;
 
@@ -204,8 +204,8 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
 
   char  buffer[16];
   sprintf(buffer, "%03d: %s", patchNr, patchInfo.name);
-  patchNameUI = buffer;
-  currentPatchNr = patchNr;
+  patchNameUI[currentVoiceBank] = buffer;
+  currentPatchNr[currentVoiceBank] = patchNr;
   peekPatchNr = patchNr;
   return LOAD_OK;
 }
@@ -389,7 +389,7 @@ FLASHMEM void savePatch(uint8_t patchNr)
  
   char  buffer[16];
   sprintf(buffer, "%03d: %s", patchNr, patchInfo.name);
-  patchNameUI = buffer;
+  patchNameUI[currentVoiceBank] = buffer;
 }
 
 uint8_t peekPatchName(uint8_t patchNr)

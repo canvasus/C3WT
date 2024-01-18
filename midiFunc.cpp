@@ -116,6 +116,7 @@ void myControlChange(uint8_t channel, uint8_t control, uint8_t value)
         break;
       case CC_PANIC:
         voiceBank1.panic();
+        voiceBank2.panic();
         break;
     }
   }

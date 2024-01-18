@@ -7,7 +7,7 @@
 
 #define CS_SD BUILTIN_SDCARD
 
-#define NR_PATCHES 64
+#define NR_PATCHES 100
 #define PATCH_NAME_NR_CHARACTERS 11
 
 #define LOAD_OK         0
@@ -23,9 +23,9 @@ struct PatchInfo
 #define DATA_SIZE sizeof(Patch) + sizeof(AudioParameters)
 
 extern PatchInfo patchInfo;
-extern String patchNameUI;
+extern String patchNameUI[NR_VOICEBANKS];
 extern String peekPatchNameUI;
-extern uint8_t currentPatchNr;
+extern uint8_t currentPatchNr[NR_VOICEBANKS];
 extern uint8_t peekPatchNr;
 extern uint8_t currentCharPosition;
 

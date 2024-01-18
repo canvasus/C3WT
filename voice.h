@@ -158,12 +158,17 @@
 #define WAVETABLE_PLAYMODE_UPDOWN     0
 #define WAVETABLE_PLAYMODE_ONESHOT_UP 1
 
-#define WAVETABLE_LENGTH 2 * (ARBITRARY_LENGTH - 1)
+//#define WAVETABLE_LENGTH 2 * (ARBITRARY_LENGTH - 1)
+#define WAVETABLE_LENGTH 8192
 
 const uint8_t MAX_WAVEFORM_INDEX = 3;
 
 extern int16_t waveTable1_I16[WAVETABLE_LENGTH];
 extern int16_t waveTable2_I16[WAVETABLE_LENGTH];
+extern int16_t waveTable3_I16[WAVETABLE_LENGTH];
+extern int16_t waveTable4_I16[WAVETABLE_LENGTH];
+
+extern int16_t * activeWaveTables[4];
 
 extern const String waveTableNames[NR_WAVETABLES];
 
@@ -343,8 +348,6 @@ class Voice
     AudioMixer4                   _lfo2_amplitudeModulationMixer;
     AudioEffectMultiply           _lfo2_amplitudeModulation;
   
-    // Wavetables
-
     AudioConnection  *   _patchCords[NR_PATCHCORDS_VOICE];
     uint16_t _connectionIndex = 0;
     Patch * _patch;
@@ -374,6 +377,8 @@ class Voice
     AudioAmplifier  mod_lfo2;
     AudioAmplifier  mod_dc;
 
+    int16_t *activeWaveTable1;
+    int16_t *activeWaveTable2;
     int16_t waveTableMorph1_I16[256];
     int16_t waveTableMorph2_I16[256];
 
@@ -431,15 +436,10 @@ class VoiceBank
 
   public:
     Patch patch;
+    uint8_t id = 0;
     float modWheel = 0.0;
     int16_t * currentWaveform_I16 = nullptr;
-
-    //int16_t waveTable1_I16[WAVETABLE_LENGTH];
-    //int16_t waveTable2_I16[WAVETABLE_LENGTH];
-    uint8_t waveTableScanMode = 0;
-    uint16_t waveTableScanStep = 1;
-    uint16_t waveTableScanInterval = 10;
-    uint8_t waveTableVoiceSyncMode = 0;
+    uint8_t voicesActive = 0;
 
     AudioAmplifier  output_dry_L;
     AudioAmplifier  output_dry_R;
@@ -465,5 +465,4 @@ class VoiceBank
     void importWaveTable(const unsigned int * waveTableI32, int16_t * waveTableI16);
 };
 
-//const int16_t PARABOLIC_WAVE[256] = { -26092, -26053, -25939, -25748, -25486, -25153, -24753, -24289, -23768, -23192, -22570, -21905, -21204, -20472, -19715, -18940, -18153, -17356, -16558, -15761, -14969, -14186, -13415, -12658, -11916, -11192, -10485, -9795, -9123, -8466, -7824, -7196, -6579, -5972, -5373, -4779, -4191, -3602, -3015, -2426, -1836, -1240, -642, -38, 569, 1182, 1798, 2417, 3039, 3661, 4283, 4903, 5520, 6133, 6740, 7339, 7928, 8509, 9078, 9637, 10183, 10717, 11238, 11746, 12242, 12726, 13199, 13662, 14114, 14558, 14994, 15423, 15846, 16263, 16676, 17085, 17490, 17893, 18292, 18689, 19082, 19473, 19859, 20241, 20619, 20990, 21356, 21714, 22065, 22406, 22737, 23058, 23369, 23668, 23953, 24227, 24489, 24738, 24974, 25198, 25410, 25610, 25799, 25978, 26146, 26305, 26456, 26599, 26733, 26861, 26982, 27098, 27207, 27311, 27410, 27503, 27591, 27673, 27749, 27820, 27884, 27942, 27992, 28000, 28000, 28000, 28000, 28000, 28000, 28000, 28000, 28000, 28000, 28000, 27992, 27942, 27884, 27820, 27749, 27673, 27591, 27503, 27410, 27311, 27207, 27098, 26982, 26861, 26733, 26599, 26456, 26305, 26146, 25978, 25799, 25610, 25410, 25198, 24974, 24738, 24489, 24227, 23953, 23668, 23369, 23058, 22737, 22406, 22065, 21714, 21356, 20990, 20619, 20241, 19859, 19473, 19082, 18689, 18292, 17893, 17490, 17085, 16676, 16263, 15846, 15423, 14994, 14558, 14114, 13662, 13199, 12726, 12242, 11746, 11238, 10717, 10183, 9637, 9078, 8509, 7928, 7339, 6740, 6133, 5520, 4903, 4283, 3661, 3039, 2417, 1798, 1182, 569, -38, -642, -1240, -1836, -2426, -3015, -3602, -4191, -4779, -5373, -5972, -6579, -7196, -7824, -8466, -9123, -9795, -10485, -11192, -11916, -12658, -13415, -14186, -14969, -15761, -16558, -17356, -18153, -18940, -19715, -20472, -21204, -21905, -22570, -23192, -23768, -24289, -24753, -25153, -25486, -25748, -25939, -26053};
 const float AWFREQ = 172.0f;

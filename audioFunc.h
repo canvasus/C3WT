@@ -33,6 +33,7 @@
 #define DELAY_NORMAL 0
 #define DELAY_PINGPONG 1
 
+#define NR_VOICEBANKS 2
 extern VoiceBank voiceBank1;
 extern VoiceBank voiceBank2;
 extern VoiceBank * voiceBanks[2];

@@ -14,7 +14,6 @@ AudioMixer4           reverbInputMixer_L;
 AudioMixer4           reverbInputMixer_R;
 AudioMixer4           delayInputMixer_L;
 AudioMixer4           delayInputMixer_R;
-//AudioMixer4           phaserInputMixer;
 
 AudioAmplifier        chorusPhaserBoost;
 
@@ -27,8 +26,8 @@ AudioMixer4           outputMixerR;
 AudioOutputI2S        output_i2s;
 
 AudioAnalyzeFFT256    fft;
-AudioAnalyzePeak      peakL;
-AudioAnalyzePeak      peakR;
+AudioAnalyzePeak      peak1;
+AudioAnalyzePeak      peak2;
 
 AudioConnection  *   patchCords[NR_PATCHCORDS_MAINBUS];
 
@@ -56,6 +55,8 @@ FLASHMEM void setupAudio()
   codecControl1.enable();
   codecControl1.inputLevel(0.0);
   
+  voiceBank1.id = 0;
+  voiceBank2.id = 1;
   voiceBank1.configure();
   voiceBank2.configure();
 
@@ -72,8 +73,8 @@ FLASHMEM void setupAudio()
   connect(voiceBank2.output_reverbSend_L, 0, reverbInputMixer_L , 1);
   connect(voiceBank2.output_reverbSend_R, 0, reverbInputMixer_R , 1);
   connect(voiceBank2.output_chorusSend, 0, chorusInputMixer , 1);
-  connect(voiceBank2.output_delaySend, 0, delayInputMixer_L , 0);
-  connect(voiceBank2.output_delaySend, 0, delayInputMixer_R , 0);
+  connect(voiceBank2.output_delaySend, 0, delayInputMixer_L , 1);
+  connect(voiceBank2.output_delaySend, 0, delayInputMixer_R , 1);
 
   // REVERB ROUTING
   connect(reverbInputMixer_L, 0, reverb , 0);
@@ -82,6 +83,8 @@ FLASHMEM void setupAudio()
   connect(reverb, 1, fxReturnMixerR , 0);
   connect(voiceBank1.output_reverbSend_L, 0, granularL , 0);
   connect(voiceBank1.output_reverbSend_R, 0, granularR , 0);
+  //connect(reverb, 0, granularL , 0);
+  //connect(reverb, 1, granularR , 0);
   connect(granularL, 0, reverbInputMixer_L , 3);
   connect(granularR, 0, reverbInputMixer_R , 3);
 
@@ -112,11 +115,16 @@ FLASHMEM void setupAudio()
   connect(outputMixerL, 0, fft , 0);
   fft.averageTogether(4);
 
-  connect(outputMixerL, 0, peakL , 0);
-  connect(outputMixerR, 0, peakR , 0);
+  //connect(voiceBank1.output_dry_R, 0, peak1 , 0);
+  //connect(voiceBank2.output_dry_R, 0, peak2 , 0);
 
-  outputMixerL.gain(0, 1.0); // DRY L
-  outputMixerR.gain(0, 1.0); // DRY R
+  connect(voiceBank1.output_dry_L, 0, peak1 , 0);
+  connect(voiceBank2.output_dry_L, 0, peak2 , 0);
+
+  outputMixerL.gain(0, 0.9); // Voicebank 1 DRY L
+  outputMixerR.gain(0, 0.9); // Voicebank 1 DRY R
+  outputMixerL.gain(1, 0.9); // Voicebank 2 DRY L
+  outputMixerR.gain(1, 0.9); // Voicebank 2 DRY R
   outputMixerL.gain(3, 1.0); // FX L
   outputMixerR.gain(3, 1.0); // FX R
 
@@ -138,13 +146,18 @@ FLASHMEM void connect(AudioStream &source, unsigned char sourceOutput, AudioStre
   }
 }
 
+elapsedMillis peakTimer;
+
 void updateVoices()
 {
-  if (peakL.available() && peakR.available())
+  if (peakTimer > 20)
   {
-    peakLevels[0] = 0.5 * peakLevels[0] + 0.5 * peakL.read();
-    peakLevels[1] = 0.5 * peakLevels[1] + 0.5 * peakR.read();
-  } 
+    peakTimer = 0;
+    if (peak1.available()) peakLevels[0] = 0.5 * peakLevels[0] + 0.5 * peak1.read();
+    else if (peakLevels[0] > 0) peakLevels[0] = peakLevels[0] - 0.01;
+    if (peak2.available()) peakLevels[1] = 0.5 * peakLevels[1] + 0.5 * peak2.read();
+    else if (peakLevels[1] > 0) peakLevels[1] = peakLevels[1] - 0.01;
+  }
 
   voiceBank1.update();
   voiceBank2.update();
@@ -273,13 +286,13 @@ void setReverb()
 
 void setReverbInputMixer()
 {
-  reverbInputMixer_L.gain(0, 1.0);
-  reverbInputMixer_L.gain(1, 0.0);
+  reverbInputMixer_L.gain(0, 1.0); // VoiceBank1
+  reverbInputMixer_L.gain(1, 1.0); // VoiceBank2
   reverbInputMixer_L.gain(2, 0.0);
   reverbInputMixer_L.gain(3, audioParameters.reverb_feedback);
   
-  reverbInputMixer_R.gain(0, 1.0);
-  reverbInputMixer_R.gain(1, 0.0);
+  reverbInputMixer_R.gain(0, 1.0); // VoiceBank1
+  reverbInputMixer_R.gain(1, 1.0); // VoiceBank2
   reverbInputMixer_R.gain(2, 0.0);
   reverbInputMixer_R.gain(3, audioParameters.reverb_feedback);
 }
