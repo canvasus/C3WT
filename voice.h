@@ -20,7 +20,7 @@
 #define FILTER_MAX_CUTOFF 13600
 #define FILTER_OCTAVECONTROL 7
 
-// 117
+// 118
 #define POLY_MODE 106
 #define MONO_MODE 114
 
@@ -43,6 +43,8 @@
 #define FILTER_CUTOFF  16
 #define FILTER_RESONANCE 17
 #define FILTERENV_PWR 18
+
+#define HPFILTER_CUTOFF 117
 
 #define OSC1_SYNC 112
 #define OSC2_SYNC 113
@@ -157,8 +159,6 @@
 
 #define WAVETABLE_PLAYMODE_UPDOWN     0
 #define WAVETABLE_PLAYMODE_ONESHOT_UP 1
-
-//#define WAVETABLE_LENGTH 2 * (ARBITRARY_LENGTH - 1)
 #define WAVETABLE_LENGTH 8192
 
 const uint8_t MAX_WAVEFORM_INDEX = 3;
@@ -207,6 +207,8 @@ struct Patch
 
   float cutoff = 1.0;
   float resonance = 0.0;
+
+  float hpfilter_cutoff = 0.0;
 
   float envelope3_attack = 0.0;
   float envelope3_decay = 200;

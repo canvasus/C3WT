@@ -74,6 +74,7 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   patch.envToFilter = doc["envToFilter"];
   patch.cutoff = doc["cutoff"];
   patch.resonance = doc["resonance"];
+  patch.hpfilter_cutoff = doc["hpfilter_cutoff"]; 
   
   patch.envelope3_attack = doc["envelope3_attack"];
   patch.envelope3_decay = doc["envelope3_decay"];
@@ -196,11 +197,12 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
 
   voiceBanks[currentVoiceBank]->patch = patch;
   voiceBanks[currentVoiceBank]->applyPatchData();
-  //voiceBank1.patch =  patch;
-  //voiceBank1.applyPatchData();
-  
-  audioParameters = tempAudioPar;
-  applyAudioParameters();
+    
+  if (currentVoiceBank == 0)  // NOTE TEMPORARY FIX
+  {
+    audioParameters = tempAudioPar;
+    applyAudioParameters();
+  }
 
   char  buffer[16];
   sprintf(buffer, "%03d: %s", patchNr, patchInfo.name);
@@ -235,8 +237,7 @@ FLASHMEM void savePatch(uint8_t patchNr)
   doc["detune"] = voiceBanks[currentVoiceBank]->patch.detune;
   doc["polyMode"] = voiceBanks[currentVoiceBank]->patch.polyMode;
   doc["mono_mode"] = voiceBanks[currentVoiceBank]->patch.mono_mode;
-  
-
+ 
   doc["osc1_level"] = voiceBanks[currentVoiceBank]->patch.osc1_level;
   doc["osc2_level"] = voiceBanks[currentVoiceBank]->patch.osc2_level;
   doc["pulse_level"] = voiceBanks[currentVoiceBank]->patch.pulse_level;
@@ -258,7 +259,8 @@ FLASHMEM void savePatch(uint8_t patchNr)
   doc["envToFilter"] = voiceBanks[currentVoiceBank]->patch.envToFilter;
   doc["cutoff"] = voiceBanks[currentVoiceBank]->patch.cutoff;
   doc["resonance"] = voiceBanks[currentVoiceBank]->patch.resonance;
-  
+  doc["hpfilter_cutoff"] = voiceBanks[currentVoiceBank]->patch.hpfilter_cutoff;
+    
   doc["envelope3_attack"] = voiceBanks[currentVoiceBank]->patch.envelope3_attack;
   doc["envelope3_decay"] = voiceBanks[currentVoiceBank]->patch.envelope3_decay;
   doc["envelope3_sustain"] = voiceBanks[currentVoiceBank]->patch.envelope3_sustain;
@@ -378,6 +380,7 @@ FLASHMEM void savePatch(uint8_t patchNr)
   doc["chorus_masterLevel"] = audioParameters.chorus_masterLevel;
   doc["delay_masterLevel"] = audioParameters.delay_masterLevel;
   doc["phaser_masterLevel"] = audioParameters.phaser_masterLevel;
+  
 
   // Serialize JSON to file
   if (serializeJson(doc, file) == 0) {

@@ -46,6 +46,7 @@ DMAMEM int16_t granularMemoryL[GRANULAR_MEMORY_SIZE];
 DMAMEM int16_t granularMemoryR[GRANULAR_MEMORY_SIZE];
 
 float peakLevels[2];
+float mainLoopTime = 0;
 
 FLASHMEM void setupAudio()
 {
@@ -146,10 +147,13 @@ FLASHMEM void connect(AudioStream &source, unsigned char sourceOutput, AudioStre
   }
 }
 
-elapsedMillis peakTimer;
-
 void updateVoices()
 {
+  static elapsedMillis peakTimer;
+  static elapsedMicros mainLoopTimer;
+  static uint32_t counter;
+  static uint32_t totalTime;
+
   if (peakTimer > 20)
   {
     peakTimer = 0;
@@ -161,6 +165,16 @@ void updateVoices()
 
   voiceBank1.update();
   voiceBank2.update();
+  
+  totalTime = totalTime + mainLoopTimer;
+  mainLoopTimer = 0;
+  counter++;
+  if (counter > 1000)
+  {
+    counter = 0;
+    mainLoopTime = totalTime / 1000.0;
+    totalTime = 0;
+  }
 }
 
 void adjustAudioParameter(uint8_t parameter, int8_t delta)
@@ -328,11 +342,15 @@ void setDelay()
   {
     delayL.delay(0, audioParameters.delay_time);
     delayR.delay(0, audioParameters.delay_time - 1);
-    delayInputMixer_L.gain(0, 1.0); //direct input
-    delayInputMixer_R.gain(0, 1.0);
-    delayInputMixer_L.gain(2, 0.0); // ping pong
-    delayInputMixer_R.gain(2, 0.0);
-    delayInputMixer_L.gain(3, audioParameters.delay_feedback);
+    delayInputMixer_L.gain(0, 1.0); //direct input bank 1 L
+    delayInputMixer_R.gain(0, 1.0); //direct input bank 1 R
+    delayInputMixer_L.gain(1, 1.0); //direct input bank 2 L
+    delayInputMixer_R.gain(1, 1.0); //direct input bank 2 R
+
+    delayInputMixer_L.gain(2, 0.0); // ping pong off
+    delayInputMixer_R.gain(2, 0.0); // ping pong off
+
+    delayInputMixer_L.gain(3, audioParameters.delay_feedback); // feedback
     delayInputMixer_R.gain(3, audioParameters.delay_feedback);
   }
 
@@ -340,10 +358,14 @@ void setDelay()
   {
     delayL.delay(0, audioParameters.delay_time);
     delayR.delay(0, audioParameters.delay_time);
-    delayInputMixer_L.gain(1, 1.0); //direct input
+    delayInputMixer_L.gain(0, 1.0); //direct input bank 1, to L only
     delayInputMixer_R.gain(0, 0.0);
-    delayInputMixer_L.gain(2, audioParameters.delay_feedback);
-    delayInputMixer_R.gain(2, audioParameters.delay_feedback);
+    delayInputMixer_L.gain(1, 1.0); //direct input bank 2, to L only
+    delayInputMixer_R.gain(1, 0.0);
+    
+    delayInputMixer_L.gain(2, audioParameters.delay_feedback);  // ping pong Right to Left
+    delayInputMixer_R.gain(2, 1.0);                             // ping pong Left to Right
+    
     delayInputMixer_L.gain(3, 0.0);
     delayInputMixer_R.gain(3, 0.0);
   }

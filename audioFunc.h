@@ -38,6 +38,7 @@ extern VoiceBank voiceBank1;
 extern VoiceBank voiceBank2;
 extern VoiceBank * voiceBanks[2];
 extern uint8_t currentVoiceBank;
+extern float mainLoopTime;
 
 struct AudioParameters
 {

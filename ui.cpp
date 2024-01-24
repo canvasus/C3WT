@@ -825,76 +825,32 @@ FLASHMEM void configurePage_effects()
   const uint16_t column_w = 140;
   const uint16_t row_h = 50;
   const uint8_t padding = 4;
-  //const uint16_t varOffsetX = 80;
   const uint16_t varOffsetX = 4;
   const uint16_t varOffsetY = 24;
    
-  // staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0* (row_h + padding), column_w, 40); 
-  // pages[PAGE].staticPointers[staticIndex]->label("MIX");
-  // pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
-  // pages[PAGE].staticPointers[staticIndex]->textColor1 = 0xffff;
-
-  staticIndex = pages[PAGE].addStatic(0, 1* (column_w + padding), 0* (row_h + padding), column_w, 40); 
+  staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0* (row_h + padding), column_w, 40); 
   pages[PAGE].staticPointers[staticIndex]->label("REVERB");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
   pages[PAGE].staticPointers[staticIndex]->textColor1 = 0xffff;
   
-  staticIndex = pages[PAGE].addStatic(0, 2* (column_w + padding), 0* (row_h + padding), column_w, 40); 
+  staticIndex = pages[PAGE].addStatic(0, 1* (column_w + padding), 0* (row_h + padding), column_w, 40); 
   pages[PAGE].staticPointers[staticIndex]->label("CHORUS");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
   pages[PAGE].staticPointers[staticIndex]->textColor1 = 0xffff;
 
-  staticIndex = pages[PAGE].addStatic(0, 3* (column_w + padding), 0* (row_h + padding), column_w, 40); 
+  staticIndex = pages[PAGE].addStatic(0, 2* (column_w + padding), 0* (row_h + padding), column_w, 40); 
   pages[PAGE].staticPointers[staticIndex]->label("DELAY");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
   pages[PAGE].staticPointers[staticIndex]->textColor1 = 0xffff;
 
-  staticIndex = pages[PAGE].addStatic(0, 4* (column_w + padding), 0* (row_h + padding), column_w, 40); 
+  staticIndex = pages[PAGE].addStatic(0, 3* (column_w + padding), 0* (row_h + padding), column_w, 40); 
   pages[PAGE].staticPointers[staticIndex]->label("PHASER");
   pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
   pages[PAGE].staticPointers[staticIndex]->textColor1 = 0xffff;
 
 
-  // widgetIndex = pages[PAGE].addWidget(EFX_SEND_DRY, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h);
-  // pages[PAGE].widgetPointers[widgetIndex]->label("Dry");
-  // pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
-  // pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
-  // pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.dryLevel;
-  // pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
-  // pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
-  // pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
-
-  // widgetIndex = pages[PAGE].addWidget(EFX_SEND_REVERB, 0* (column_w + padding), 2* (row_h + padding), column_w, row_h);
-  // pages[PAGE].widgetPointers[widgetIndex]->label("Rev");
-  // pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
-  // pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
-  // pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.reverbSend;
-  // pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
-  // pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
-  // pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
-
-  // widgetIndex = pages[PAGE].addWidget(EFX_SEND_CHORUS, 0* (column_w + padding), 3* (row_h + padding), column_w, row_h);
-  // pages[PAGE].widgetPointers[widgetIndex]->label("Ch/Ph");
-  // pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
-  // pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
-  // pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.chorusSend;
-  // pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
-  // pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
-  // pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
-
-  // widgetIndex = pages[PAGE].addWidget(EFX_SEND_DELAY, 0* (column_w + padding), 4* (row_h + padding), column_w, row_h);
-  // pages[PAGE].widgetPointers[widgetIndex]->label("Del");
-  // pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
-  // pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
-  // pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.delaySend;
-  // pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
-  // pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
-  // pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
-
-
-  widgetIndex = pages[PAGE].addWidget(REVERB_SIZE, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(REVERB_SIZE, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("Size");
-  //pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.reverb_size;
@@ -902,9 +858,8 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(REVERB_HIDAMP, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(REVERB_HIDAMP, 0* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("HiD");
-  //pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.reverb_hidamp;
@@ -912,9 +867,8 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(REVERB_LODAMP, 1* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(REVERB_LODAMP, 0* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("LoD");
-  //pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.reverb_lodamp;
@@ -922,9 +876,8 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(REVERB_LOWPASS, 1* (column_w + padding), 4* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(REVERB_LOWPASS, 0* (column_w + padding), 4* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("LoP");
-  //pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.reverb_lowpass;
@@ -932,9 +885,8 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(REVERB_DIFFUSION, 1* (column_w + padding), 5* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(REVERB_DIFFUSION, 0* (column_w + padding), 5* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("Diff");
-  //pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.reverb_diffusion;
@@ -942,9 +894,8 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(REVERB_FEEDBACK, 1* (column_w + padding), 6* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(REVERB_FEEDBACK, 0* (column_w + padding), 6* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("Shimr");
-  //pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.reverb_feedback;
@@ -952,9 +903,8 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(GRANULAR_SPEED, 1* (column_w + padding), 7* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(GRANULAR_SPEED, 0* (column_w + padding), 7* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("Pitch");
-  //pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.granular_speed;
@@ -964,9 +914,8 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
 
-  widgetIndex = pages[PAGE].addWidget(CHORUS_LFORATE, 2* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(CHORUS_LFORATE, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("Rate");
-  //pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.chorus_lfoRate;
@@ -976,7 +925,7 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
 
-  widgetIndex = pages[PAGE].addWidget(DELAY_TYPE, 3* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(DELAY_TYPE, 2* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("Type");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
@@ -986,9 +935,8 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
   
 
-  widgetIndex = pages[PAGE].addWidget(DELAY_TIME, 3* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(DELAY_TIME, 2* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("Time");
-  //pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
@@ -998,9 +946,8 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgetPointers[widgetIndex]->varMax = 400;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(DELAY_FEEDBACK, 3* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(DELAY_FEEDBACK, 2* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("Feed");
-  //pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.delay_feedback;
@@ -1009,9 +956,8 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
 
-  widgetIndex = pages[PAGE].addWidget(PHASER_MIX, 4* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PHASER_MIX, 3* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("Mix");
-  //pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.phaser_mix;
@@ -1019,9 +965,8 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(PHASER_LFORATE, 4* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PHASER_LFORATE, 3* (column_w + padding), 2* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("Rate");
-  //pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.phaser_lfoRate;
@@ -1029,9 +974,8 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(PHASER_STAGES, 4* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PHASER_STAGES, 3* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("Stgs");
-  //pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &audioParameters.phaser_stages;
@@ -1040,9 +984,8 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgetPointers[widgetIndex]->varMax = 12.0;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(PHASER_FEEDBACK, 4* (column_w + padding), 4* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PHASER_FEEDBACK, 3* (column_w + padding), 4* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("Feed");
-  //pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.phaser_feedback;
@@ -1050,9 +993,8 @@ FLASHMEM void configurePage_effects()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(PHASER_DEPTH, 4* (column_w + padding), 5* (row_h + padding), column_w, row_h); 
+  widgetIndex = pages[PAGE].addWidget(PHASER_DEPTH, 3* (column_w + padding), 5* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("Dept");
-  //pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.phaser_depth;
@@ -1807,6 +1749,15 @@ FLASHMEM void configurePage_filter()
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.resonance;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
 
+  widgetIndex = pages[PAGE].addWidget(HPFILTER_CUTOFF, 3* (column_w + padding), 5* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Hp");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 70;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 2;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.hpfilter_cutoff;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
+
   widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 680, 410, 120, 60);
   pages[PAGE].widgetPointers[widgetIndex]->label("<BACK");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
@@ -1850,7 +1801,7 @@ FLASHMEM void configurePage_system()
 {
   uint8_t PAGE = PAGE_SYSTEM;
   uint8_t widgetIndex = 0;
-  //uint8_t staticIndex = 0;
+  uint8_t staticIndex = 0;
 
   pages[PAGE].clear();
   pages[PAGE].tft = &tft;
@@ -1862,24 +1813,95 @@ FLASHMEM void configurePage_system()
   const uint16_t column_w = 140;
   const uint16_t row_h = 60;
   const uint8_t padding = 4;
+  const uint8_t labelOffsetX = 10;
+  const uint8_t labelOffsetY = 8;
 
-  widgetIndex = pages[PAGE].addWidget(SYS_MIDICHANNEL, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h);
-  pages[PAGE].widgetPointers[widgetIndex]->label("A ch");
+  staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0* (row_h + padding), column_w, 40);
+  pages[PAGE].staticPointers[staticIndex]->label("BANK A");
+  pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetX = labelOffsetX;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetY = labelOffsetY;
+
+  staticIndex = pages[PAGE].addStatic(0, 1* (column_w + padding), 0* (row_h + padding), column_w, 40);
+  pages[PAGE].staticPointers[staticIndex]->label("BANK B");
+  pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetX = labelOffsetX;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetY = labelOffsetY;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_MIDICHANNEL, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Ch");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
-  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.channel;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_A_channel;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
 
-  widgetIndex = pages[PAGE].addWidget(SYS_MIDICHANNEL2, 0* (column_w + padding), 2* (row_h + padding), column_w, row_h);
-  pages[PAGE].widgetPointers[widgetIndex]->label("B ch");
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_MIDICHANNEL, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Ch");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
-  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.channel2;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_B_channel;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_LIMIT_LOW, 0* (column_w + padding), 2* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Low");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_A_lowLimit;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_LIMIT_LOW, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Low");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_B_lowLimit;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_LIMIT_HIGH, 0* (column_w + padding), 3* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("High");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_A_highLimit;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_LIMIT_HIGH, 1* (column_w + padding), 3* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("High");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_B_highLimit;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_TRANSPOSE, 0* (column_w + padding), 4* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Trp");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_i8 = &midiSettings.bank_A_transpose;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_TRANSPOSE, 1* (column_w + padding), 4* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Trp");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_i8 = &midiSettings.bank_B_transpose;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
 
 
   widgetIndex = pages[PAGE].addWidget(0, 3* (column_w + padding), 1* (row_h + padding), column_w, row_h);
@@ -1912,220 +1934,6 @@ FLASHMEM void configurePage_system()
   // pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bpm;
   // pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustBpm;
 //}
-
-// FLASHMEM void updateVarPointers(uint8_t bankId)
-// {
-//   for(uint8_t pageId = 0; pageId < NR_PAGES; pageId++)
-//   {
-//     uint8_t widgetId = 0;
-//     while (pages[pageId].widgetPointers[widgetId] != nullptr)
-//     {
-//       switch(pages[pageId].widgetPointers[widgetId++]->id)
-//       {
-//         case OSC1_WAVEFORM:
-//           break;
-//         case OSC2_WAVEFORM:
-//           break;
-//         case TRANSPOSE:
-//           break;
-//         case DETUNE:
-//           break;
-//         case OSC1_LEVEL:
-//           break;
-//         case OSC2_LEVEL:
-//           break;
-//         case PULSE_LEVEL:
-//           break;
-//         case NOISE_LEVEL:
-//           break;
-//         case ENV_ATTACK:
-//           break;
-//         case ENV_DECAY:
-//           break;
-//         case ENV_SUSTAIN:
-//           break;
-//         case ENV_RELEASE:
-//           break;
-//         case FILTER_ATTACK:
-//           break;
-//         case FILTER_DECAY:
-//           break;
-//         case FILTER_SUSTAIN:
-//           break;
-//         case FILTER_RELEASE:
-//           break;
-//         case FILTER_CUTOFF:
-//           break;
-//         case FILTER_RESONANCE:
-//           break;
-//         case FILTERENV_PWR:
-//           break;
-//         case OSC1_SYNC:
-//           break;
-//         case OSC2_SYNC:
-//           break;
-//         case OSC1_WAVETABLE_INDEX:
-//           break;
-//         case OSC1_WAVETABLE_MODE:
-//           break;
-//         case OSC1_WAVETABLE_START:
-//           break;
-//         case OSC1_WAVETABLE_LENGTH:
-//           break;
-//         case OSC1_WAVETABLE_INTERVAL:
-//           break;
-//         case OSC1_WAVETABLE_STEPSIZE:
-//           break;
-//         case OSC1_WAVETABLE_MOVEMENT:
-//           break;
-//         case OSC2_WAVETABLE_INDEX:
-//           break;
-//         case OSC2_WAVETABLE_MODE:
-//           break;
-//         case OSC2_WAVETABLE_START:
-//           break;
-//         case OSC2_WAVETABLE_LENGTH:
-//           break;
-//         case OSC2_WAVETABLE_INTERVAL:
-//           break;
-//         case OSC2_WAVETABLE_STEPSIZE:
-//           break;
-//         case OSC2_WAVETABLE_MOVEMENT:
-//           break;
-
-//         case ENV3_ATTACK:
-//           break;
-//         case ENV3_DECAY:
-//           break;
-//         case ENV3_SUSTAIN:
-//           break;
-//         case ENV3_RELEASE:
-//           break;
-
-//         case MOD_ENV3_OSC1_PITCH:
-//           break;
-//         case MOD_ENV3_OSC2_PITCH:
-//           break;
-//         case MOD_ENV3_OSC1_PHASE:
-//           break;
-//         case MOD_ENV3_OSC2_PHASE:
-//           break;
-//         case MOD_ENV3_FILTER_CUTOFF:
-//           break;
-//         case MOD_ENV3_PWM:
-//           break;
-//         case MOD_ENV3_AM_PITCH:
-//           break;
-//         case MOD_ENV3_FM_PITCH:
-//           break;
-//         case MOD_ENV3_LFO1_AMPLITUDE:
-//           break;
-//         case MOD_ENV3_LFO2_AMPLITUDE:
-//           break;
-
-//         case MOD_LFO1_OSC1_PITCH:
-//           break;
-//         case MOD_LFO1_OSC2_PITCH:
-//           break;
-//         case MOD_LFO1_OSC1_PHASE:
-//           break;
-//         case MOD_LFO1_OSC2_PHASE:
-//           break;
-//         case MOD_LFO1_FILTER_CUTOFF:
-//           break;
-//         case MOD_LFO1_PWM:
-//           break;
-//         case MOD_LFO1_AM_PITCH:
-//           break;
-//         case MOD_LFO1_FM_PITCH:
-//           break;
-
-//         case MOD_LFO2_OSC1_PITCH:
-//           break;
-//         case MOD_LFO2_OSC2_PITCH:
-//           break;
-//         case MOD_LFO2_OSC1_PHASE:
-//           break;
-//         case MOD_LFO2_OSC2_PHASE:
-//           break;
-//         case MOD_LFO2_FILTER_CUTOFF:
-//           break;
-//         case MOD_LFO2_PWM:
-//           break;
-//         case MOD_LFO2_AM_PITCH:
-//           break;
-//         case MOD_LFO2_FM_PITCH:
-//           break;
-
-//         case MOD_VEL_OSC1_PITCH:
-//           break;
-//         case MOD_VEL_OSC2_PITCH:
-//           break;
-//         case MOD_VEL_OSC1_PHASE:
-//           break;
-//         case MOD_VEL_OSC2_PHASE:
-//           break;
-//         case MOD_VEL_FILTER_CUTOFF:
-//           break;
-//         case MOD_VEL_PWM:
-//           break;
-
-//         case MOD_WHL_OSC1_PITCH:
-//           break;
-//         case MOD_WHL_OSC2_PITCH:
-//           break;
-//         case MOD_WHL_OSC1_PHASE:
-//           break;
-//         case MOD_WHL_OSC2_PHASE:
-//           break;
-//         case MOD_WHL_FILTER_CUTOFF:
-//           break;
-//         case MOD_WHL_PWM:
-//           break;
-
-//         case MOD_OSC1_OSC2_PITCH:
-//           break;
-//         case MOD_OSC1_OSC2_PHASE:
-//           break;
-//         case MOD_OSC2_OSC1_PITCH:
-//           break;
-//         case MOD_OSC2_OSC1_PHASE:
-//           break;
-
-//         case AM_FREQ_MULTIPLIER:
-//           break;
-//         case AM_LEVEL:
-//           break;
-//         case AM_WAVEFORM:
-//           break;
-//         case AM_FIXEDFREQUENCY:
-//           break;
-
-//         case FM_FREQ_MULTIPLIER:
-//           break;
-//         case FM_LEVEL:
-//           break;
-//         case FM_WAVEFORM:
-//           break;
-//         case FM_OFFSET:
-//           break;
-
-//         case EFX_SEND_DRY:
-//           break;
-//         case EFX_SEND_REVERB:
-//           break;
-//         case EFX_SEND_CHORUS:
-//           break;
-//         case EFX_SEND_PHASER:
-//           break;
-//         case EFX_SEND_DELAY:
-//           break;
-//       }
-//     }
-//   }
-// }
-    
-
 
 // --- Widget callback functions ---
 
@@ -2786,34 +2594,61 @@ void animateSystemPage(bool firstCall)
 {
   static float audioProcessorUsageMax = 0.0;
   static float audioMemoryUsageMax = 0.0;
+  static float tempMon = 0.0;
+  static float loop = 0.0;
   static elapsedMillis timer = 0;
-  const uint16_t offset = 135;
+  const uint16_t offset = 90;
 
   if (firstCall)
   {
     tft.setTextColor(MIDIEVENT_ON);
-    tft.setCursor(0 , SCREEN_YRES - 90);
+    tft.setCursor(0 , SCREEN_YRES - 150);
     tft.print("Build: ");
     tft.print(__DATE__);
     tft.print(" ");
     tft.print(__TIME__);
+    tft.setCursor(0 , SCREEN_YRES - 120);
+    tft.print("LOOP: ");
+    tft.setCursor(0 , SCREEN_YRES - 90);
+    tft.print("TEMP: ");
     tft.setCursor(0 , SCREEN_YRES - 60);
-    tft.print("PRC_max: ");
+    tft.print("PRC: ");
     tft.setCursor(0 , SCREEN_YRES - 30);
-    tft.print("MEM_max: ");
+    tft.print("MEM: ");
   }
 
   if (timer > 1000) 
   {
     timer = 0;
+    
+    tft.setCursor(offset , SCREEN_YRES - 120);
+    tft.setTextColor(MAIN_BG_COLOR);
+    tft.print(loop, 2);
+   
+    loop = mainLoopTime;
+    tft.setCursor(offset , SCREEN_YRES - 120);
+    tft.setTextColor(MIDIEVENT_ON);
+    tft.print(loop, 2);
+
+    tft.setCursor(offset , SCREEN_YRES - 90);
+    tft.setTextColor(MAIN_BG_COLOR);
+    tft.print(tempMon, 0);
+   
+    tempMon = tempmonGetTemp();
+    tft.setCursor(offset , SCREEN_YRES - 90);
+    tft.setTextColor(MIDIEVENT_ON);
+    tft.print(tempMon, 0);
+
+
     tft.setCursor(offset , SCREEN_YRES - 60);
     tft.setTextColor(MAIN_BG_COLOR);
     tft.print(audioProcessorUsageMax, 0);
-    
+   
     audioProcessorUsageMax = AudioProcessorUsageMax();
     tft.setCursor(offset , SCREEN_YRES - 60);
     tft.setTextColor(MIDIEVENT_ON);
     tft.print(audioProcessorUsageMax, 0);
+
 
     tft.setCursor(offset , SCREEN_YRES - 30);
     tft.setTextColor(MAIN_BG_COLOR);

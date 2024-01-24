@@ -17,8 +17,15 @@
 
 #define NR_ARP_MODES 3
 
-#define SYS_MIDICHANNEL   0
-#define SYS_MIDICHANNEL2  1
+#define SYS_BANK_A_MIDICHANNEL  0
+#define SYS_BANK_B_MIDICHANNEL  1
+#define SYS_BANK_A_LIMIT_LOW    2
+#define SYS_BANK_A_LIMIT_HIGH   3
+#define SYS_BANK_B_LIMIT_LOW    4
+#define SYS_BANK_B_LIMIT_HIGH   5
+#define SYS_BANK_A_TRANSPOSE    6
+#define SYS_BANK_B_TRANSPOSE    7
+
 
 extern uint8_t noteStatus[128];
 extern uint8_t midiActivity;
@@ -27,8 +34,15 @@ extern bool usbPcStatus;
 
 struct MidiSettings
 {
-  uint8_t channel = 1;
-  uint8_t channel2 = 2;
+  uint8_t bank_A_channel = 1;
+  uint8_t bank_B_channel = 2;
+  uint8_t bank_A_lowLimit = 0;
+  uint8_t bank_A_highLimit = 127;
+  uint8_t bank_B_lowLimit = 0;
+  uint8_t bank_B_highLimit = 127;
+  int8_t bank_A_transpose = 0;
+  int8_t bank_B_transpose = 0;
+
   uint8_t bpm = 120;
   uint32_t oneTickUs = 1000 * 60000 / (120 * 24);
   uint16_t masterClock = 0;

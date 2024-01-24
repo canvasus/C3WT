@@ -609,7 +609,7 @@ void VoiceBank::configure()
 
   _connect(_voiceMixer[2], 0, dcOffsetFilter, 0);
   dcOffsetFilter.octaveControl(1.0f);
-  dcOffsetFilter.frequency(12.0f);
+  dcOffsetFilter.frequency(patch.hpfilter_cutoff);
 
   _connect(dcOffsetFilter, 2, output_dry_L, 0);
   _connect(dcOffsetFilter, 2, output_dry_R, 0);
@@ -1167,7 +1167,7 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
     case OSC1_WAVETABLE_START:
     {
       targetValueU16 = patch.osc1_waveTable_start + delta * 64;
-      uint16_t maxValue = 2 * ARBITRARY_LENGTH - patch.osc1_waveTable_length - 1;
+      uint16_t maxValue = 2 * WAVETABLE_LENGTH - patch.osc1_waveTable_length - 1;
       if (targetValueU16 > maxValue) targetValueU16 = 0;
       patch.osc1_waveTable_start = targetValueU16;
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].set_osc1_waveOffset();
@@ -1176,7 +1176,7 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
     case OSC1_WAVETABLE_LENGTH:
     {
       targetValueU16 = patch.osc1_waveTable_length + delta * 16;
-      uint16_t maxValue = WAVETABLE_LENGTH - patch.osc1_waveTable_start - 1;
+      uint16_t maxValue = 2* WAVETABLE_LENGTH - patch.osc1_waveTable_start - 1;
       if (targetValueU16 > maxValue) targetValueU16 = 0;
       patch.osc1_waveTable_length = targetValueU16;
       break;
@@ -1213,7 +1213,7 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
     case OSC2_WAVETABLE_START:
     {
       targetValueU16 = patch.osc2_waveTable_start + delta * 64;
-      uint16_t maxValue = 2 * ARBITRARY_LENGTH - patch.osc2_waveTable_length - 1;
+      uint16_t maxValue = 2 * WAVETABLE_LENGTH - patch.osc2_waveTable_length - 1;
       if (targetValueU16 > maxValue) targetValueU16 = 0;
       patch.osc2_waveTable_start = targetValueU16;
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].set_osc2_waveOffset();
@@ -1222,7 +1222,7 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
     case OSC2_WAVETABLE_LENGTH:
     {
       targetValueU16 = patch.osc2_waveTable_length + delta * 16;
-      uint16_t maxValue = 2 * ARBITRARY_LENGTH - patch.osc2_waveTable_start - 1;
+      uint16_t maxValue = 2 * WAVETABLE_LENGTH - patch.osc2_waveTable_start - 1;
       if (targetValueU16 > maxValue) targetValueU16 = 0;
       patch.osc2_waveTable_length = targetValueU16;
       break;
@@ -1250,6 +1250,12 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       if (targetValueU8 < 1) targetValueU8 = 1;
       if (targetValueU8 > 8) targetValueU8 = 8;
       patch.polyMode = targetValueU8;
+      break;
+    
+    case HPFILTER_CUTOFF:
+      targetValueF = patch.hpfilter_cutoff + delta * 0.02;
+      patch.hpfilter_cutoff = constrain(targetValueF, 0.0, 1.0);
+      dcOffsetFilter.frequency(12.0 + patch.hpfilter_cutoff * 400.0);
       break;
   }
 }
@@ -1310,6 +1316,7 @@ void VoiceBank::applyPatchData()
   _lfo2.amplitude(patch.lfo2Level);
   _lfo1.frequency(patch.lfo1Frequency);
   _lfo2.frequency(patch.lfo2Frequency);
+  dcOffsetFilter.frequency(patch.hpfilter_cutoff);
   setEfx();
   //importWaveTable(waveTables[patch.osc1_waveTable_index], waveTable1_I16);
   //importWaveTable(waveTables[patch.osc2_waveTable_index], waveTable2_I16);

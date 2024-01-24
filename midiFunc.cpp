@@ -68,18 +68,23 @@ void checkUsbStatus()
 
 void myNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
 {
-  if (channel == midiSettings.channel)
+  if ( (channel == midiSettings.bank_A_channel)
+        && (note >= midiSettings.bank_A_lowLimit)
+        && (note <= midiSettings.bank_A_highLimit) )
   {
     noteStatus[note] = velocity;
-    if(midiSettings.arp_mode == ARP_OFF) voiceBank1.noteOn(note, velocity);
-    else arpeggiator.addNote(note);
+    voiceBank1.noteOn(note + midiSettings.bank_A_transpose, velocity);
+    //if(midiSettings.arp_mode == ARP_OFF) voiceBank1.noteOn(note, velocity);
+    //else arpeggiator.addNote(note);
     midiActivity = 1;
   }
 
-  if (channel == midiSettings.channel2)
+  if ( (channel == midiSettings.bank_B_channel)
+        && (note >= midiSettings.bank_B_lowLimit)
+        && (note <= midiSettings.bank_B_highLimit) )
   {
-    //noteStatus[note] = velocity;
-    voiceBank2.noteOn(note, velocity);
+    noteStatus[note] = velocity;
+    voiceBank2.noteOn(note + midiSettings.bank_B_transpose, velocity);
     //else arpeggiator.addNote(note);
     midiActivity = 1;
   }
@@ -87,25 +92,30 @@ void myNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
 
 void myNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
 {
-  if (channel == midiSettings.channel)
+   if ( (channel == midiSettings.bank_A_channel)
+        && (note >= midiSettings.bank_A_lowLimit)
+        && (note <= midiSettings.bank_A_highLimit) )
   {
     noteStatus[note] = 0;
-    if(midiSettings.arp_mode == ARP_OFF) voiceBank1.noteOff(note, velocity);
-    else arpeggiator.removeNote(note);
+    voiceBank1.noteOff(note + midiSettings.bank_A_transpose, velocity);
+    //if(midiSettings.arp_mode == ARP_OFF) 
+    //else arpeggiator.removeNote(note);
     midiActivity = 0;
   }
 
-  if (channel == midiSettings.channel2)
+  if ( (channel == midiSettings.bank_B_channel)
+        && (note >= midiSettings.bank_B_lowLimit)
+        && (note <= midiSettings.bank_B_highLimit) )
   {
-    //noteStatus[note] = 0;
-    voiceBank2.noteOff(note, velocity);
+    noteStatus[note] = 0;
+    voiceBank2.noteOff(note + midiSettings.bank_B_transpose, velocity);
     midiActivity = 0;
   }
 }
 
 void myControlChange(uint8_t channel, uint8_t control, uint8_t value)
 {
-  if (channel == midiSettings.channel)
+  if (channel == midiSettings.bank_A_channel)
   {
     switch (control)
     {
@@ -113,21 +123,35 @@ void myControlChange(uint8_t channel, uint8_t control, uint8_t value)
         //voiceBank1.setFilterCutoff(value / 127.0);
         voiceBank1.setParameter(FILTER_CUTOFF, value / 127.0);
         voiceBank1.modWheel = value / 127.0;
-        break;
+        return;
+    }
+  }
+
+  if (channel == midiSettings.bank_B_channel)
+  {
+    switch (control)
+    {
+      case CC_MODWHEEL:
+        //voiceBank1.setFilterCutoff(value / 127.0);
+        voiceBank2.setParameter(FILTER_CUTOFF, value / 127.0);
+        voiceBank2.modWheel = value / 127.0;
+        return;
+    }
+  }
+
+  switch (control)
+    {
       case CC_PANIC:
         voiceBank1.panic();
         voiceBank2.panic();
-        break;
+        return;
     }
-  }
 }
 
 void myPitchBend(uint8_t channel, int pitchBend)
 {
-  if (channel == midiSettings.channel)
-  {
-    voiceBank1.setPitchBend(pitchBend);
-  }
+  if (channel == midiSettings.bank_A_channel) voiceBank1.setPitchBend(pitchBend);
+  if (channel == midiSettings.bank_B_channel) voiceBank1.setPitchBend(pitchBend);
 }
 
 void myMIDIClock()
@@ -176,13 +200,37 @@ void adjustMidiParameter(uint8_t parameter, int8_t delta)
   int8_t targetValue_I8 = 0;
   switch (parameter)
   {
-    case SYS_MIDICHANNEL:
-      targetValue_I8 = midiSettings.channel + delta;
-      midiSettings.channel =  constrain(targetValue_I8, 0, 16);
+    case SYS_BANK_A_MIDICHANNEL:
+      targetValue_I8 = midiSettings.bank_A_channel + delta;
+      midiSettings.bank_A_channel =  constrain(targetValue_I8, 0, 16);
       break;
-    case SYS_MIDICHANNEL2:
-      targetValue_I8 = midiSettings.channel2 + delta;
-      midiSettings.channel2 =  constrain(targetValue_I8, 0, 16);
+    case SYS_BANK_B_MIDICHANNEL:
+      targetValue_I8 = midiSettings.bank_B_channel + delta;
+      midiSettings.bank_B_channel =  constrain(targetValue_I8, 0, 16);
+      break;
+    case SYS_BANK_A_LIMIT_LOW:
+      targetValue_I8 = midiSettings.bank_A_lowLimit + delta;
+      midiSettings.bank_A_lowLimit =  constrain(targetValue_I8, 0, midiSettings.bank_A_highLimit - 1);
+      break;
+    case SYS_BANK_A_LIMIT_HIGH:
+      targetValue_I8 = midiSettings.bank_A_highLimit + delta;
+      midiSettings.bank_A_highLimit =  constrain(targetValue_I8, midiSettings.bank_A_lowLimit + 1, 127);
+      break;
+    case SYS_BANK_B_LIMIT_LOW:
+      targetValue_I8 = midiSettings.bank_B_lowLimit + delta;
+      midiSettings.bank_B_lowLimit =  constrain(targetValue_I8, 0, midiSettings.bank_B_highLimit - 1);
+      break;
+    case SYS_BANK_B_LIMIT_HIGH:
+      targetValue_I8 = midiSettings.bank_B_highLimit + delta;
+      midiSettings.bank_B_highLimit =  constrain(targetValue_I8, midiSettings.bank_B_lowLimit + 1, 127);
+      break;
+    case SYS_BANK_A_TRANSPOSE:
+      targetValue_I8 = midiSettings.bank_A_transpose + delta;
+      midiSettings.bank_A_transpose =  constrain(targetValue_I8, -48, 48);
+      break;
+    case SYS_BANK_B_TRANSPOSE:
+      targetValue_I8 = midiSettings.bank_B_transpose + delta;
+      midiSettings.bank_B_transpose =  constrain(targetValue_I8, -48, 48);
       break;
   }
 }
