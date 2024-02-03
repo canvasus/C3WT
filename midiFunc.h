@@ -26,6 +26,9 @@
 #define SYS_BANK_A_TRANSPOSE    6
 #define SYS_BANK_B_TRANSPOSE    7
 
+#define SYS_SIDECHAIN_CHANNEL 8
+#define SYS_SIDECHAIN_NOTE 9
+
 
 extern uint8_t noteStatus[128];
 extern uint8_t midiActivity;
@@ -49,6 +52,9 @@ struct MidiSettings
   uint8_t arp_mode = ARP_OFF;
   uint16_t arp_intervalTicks = 16;
   uint8_t arp_noteLength = 8;
+
+  uint8_t sideChain_channel = 9;
+  uint8_t sideChain_note = 36;
 };
 
 extern MidiSettings midiSettings;

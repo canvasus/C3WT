@@ -88,8 +88,8 @@ FLASHMEM Voice::Voice()
 
   _connect(_envelopeDC, 0, _filterEnvelope, 0);
   _connect(_filterEnvelope, 0, _filterModMixer, 0);
-  _connect(mod_lfo1, 0, _filterModMixer, 1);
-  _connect(mod_lfo2, 0, _filterModMixer, 2);
+  //_connect(mod_lfo1, 0, _filterModMixer, 1); // --- ???
+  //_connect(mod_lfo2, 0, _filterModMixer, 2); // --- ???
   _connect(_filterModMixer, 0, _filter, 1);
   
   _envelopeDC.amplitude(1.0);
@@ -149,6 +149,8 @@ FLASHMEM Voice::Voice()
 
   // dc input to mod mixers
   _connect(mod_dc, 0, _modMixer_osc1_pitch, 3);
+  _connect(mod_dc, 0, _modMixer_osc2_pitch, 3);
+  _connect(_lfo2_amplitudeModulation, 0, _filterModMixer, 3);
 
   // oscillator 1 to mod mixers
   _connect(_osc1, 0, _modMixer_osc2_pitch_voiceInternal, 2);

@@ -88,6 +88,12 @@ void myNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
     //else arpeggiator.addNote(note);
     midiActivity = 1;
   }
+
+  if ( (channel == midiSettings.sideChain_channel) && (note == midiSettings.sideChain_note) )
+  {
+    sideChain.trigger();
+  }
+
 }
 
 void myNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
@@ -120,7 +126,6 @@ void myControlChange(uint8_t channel, uint8_t control, uint8_t value)
     switch (control)
     {
       case CC_MODWHEEL:
-        //voiceBank1.setFilterCutoff(value / 127.0);
         voiceBank1.setParameter(FILTER_CUTOFF, value / 127.0);
         voiceBank1.modWheel = value / 127.0;
         return;
@@ -132,7 +137,6 @@ void myControlChange(uint8_t channel, uint8_t control, uint8_t value)
     switch (control)
     {
       case CC_MODWHEEL:
-        //voiceBank1.setFilterCutoff(value / 127.0);
         voiceBank2.setParameter(FILTER_CUTOFF, value / 127.0);
         voiceBank2.modWheel = value / 127.0;
         return;
@@ -144,6 +148,8 @@ void myControlChange(uint8_t channel, uint8_t control, uint8_t value)
       case CC_PANIC:
         voiceBank1.panic();
         voiceBank2.panic();
+        memset(noteStatus, 0, 128);
+        midiActivity = 0;
         return;
     }
 }
@@ -231,6 +237,14 @@ void adjustMidiParameter(uint8_t parameter, int8_t delta)
     case SYS_BANK_B_TRANSPOSE:
       targetValue_I8 = midiSettings.bank_B_transpose + delta;
       midiSettings.bank_B_transpose =  constrain(targetValue_I8, -48, 48);
+      break;
+    case SYS_SIDECHAIN_CHANNEL:
+      targetValue_I8 = midiSettings.sideChain_channel + delta;
+      midiSettings.sideChain_channel = constrain(targetValue_I8, 0, 16);
+      break;
+    case SYS_SIDECHAIN_NOTE:
+      targetValue_I8 = midiSettings.sideChain_note + delta;
+      midiSettings.sideChain_note = constrain(targetValue_I8, 1, 127);
       break;
   }
 }

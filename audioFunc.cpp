@@ -36,6 +36,8 @@ SM2k_AudioControlWM8731 codecControl1;
 VoiceBank voiceBank1;
 VoiceBank voiceBank2;
 
+SideChain sideChain;
+
 VoiceBank * voiceBanks[2] = {&voiceBank1, &voiceBank2};
 uint8_t currentVoiceBank = 0;
 
@@ -110,8 +112,14 @@ FLASHMEM void setupAudio()
   connect(fxReturnMixerL, 0, outputMixerL, 3);
   connect(fxReturnMixerR, 0, outputMixerR, 3);
 
-  connect(outputMixerL, 0, output_i2s , 0);
-  connect(outputMixerR, 0, output_i2s , 1);
+  //connect(outputMixerL, 0, output_i2s , 0);
+  //connect(outputMixerR, 0, output_i2s , 1);
+
+  connect(outputMixerL, 0, sideChain.left , 0);
+  connect(outputMixerR, 0, sideChain.right , 0);
+  connect(sideChain.left, 0, output_i2s , 0);
+  connect(sideChain.right, 0, output_i2s , 1);
+  sideChain.audioParameters = &audioParameters;
 
   connect(outputMixerL, 0, fft , 0);
   fft.averageTogether(4);
@@ -165,6 +173,7 @@ void updateVoices()
 
   voiceBank1.update();
   voiceBank2.update();
+  sideChain.update();
   
   totalTime = totalTime + mainLoopTimer;
   mainLoopTimer = 0;
@@ -271,8 +280,25 @@ void adjustAudioParameter(uint8_t parameter, int8_t delta)
       break;
     case DELAY_FEEDBACK:
       targetValueF = audioParameters.delay_feedback + delta * 0.05;
-      audioParameters.delay_feedback = constrain(targetValueF, 0, 2.0);
+      audioParameters.delay_feedback = constrain(targetValueF, 0, 1.0);
       setDelay();
+      break;
+
+    case SIDECHAIN_LEVEL:
+      targetValueF = audioParameters.sideChain_level + delta * 0.05;
+      audioParameters.sideChain_level = constrain(targetValueF, 0, 1.0);
+      break;
+    case SIDECHAIN_ATTACK:
+      targetValueF = audioParameters.sideChain_attack + delta;
+      audioParameters.sideChain_attack = constrain(targetValueF, 0, 200.0);
+       break;
+    case SIDECHAIN_HOLD:
+      targetValueF = audioParameters.sideChain_hold + delta;
+      audioParameters.sideChain_hold = constrain(targetValueF, 0, 200.0);
+      break;
+    case SIDECHAIN_RELEASE:
+      targetValueF = audioParameters.sideChain_release + delta;
+      audioParameters.sideChain_release = constrain(targetValueF, 0, 200.0);
       break;
 
     default:
@@ -369,4 +395,29 @@ void setDelay()
     delayInputMixer_L.gain(3, 0.0);
     delayInputMixer_R.gain(3, 0.0);
   }
+}
+
+SideChain::SideChain()
+{
+  _patchCords[0] = new AudioConnection(_dc, 0, left, 1);
+  _patchCords[1] = new AudioConnection(_dc, 0, right, 1);
+  _dc.amplitude(1.0);
+}
+
+void SideChain::trigger()
+{
+  _timer = 0;
+  _dc.amplitude(1.0 - audioParameters->sideChain_level, audioParameters->sideChain_attack);
+  _isActive = true;
+}
+
+void SideChain::_release()
+{
+  _dc.amplitude(1.0, audioParameters->sideChain_release);
+  _isActive = false;
+}
+
+void SideChain::update()
+{
+  if (_isActive && _timer > audioParameters->sideChain_hold) _release();
 }

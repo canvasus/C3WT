@@ -30,15 +30,23 @@
 #define DELAY_TYPE      35
 #define DELAY_TIME      36
 #define DELAY_FEEDBACK  37
+
+#define SIDECHAIN_LEVEL   38
+#define SIDECHAIN_ATTACK  39
+#define SIDECHAIN_HOLD    40
+#define SIDECHAIN_RELEASE 41
+
 #define DELAY_NORMAL 0
 #define DELAY_PINGPONG 1
 
 #define NR_VOICEBANKS 2
+
 extern VoiceBank voiceBank1;
 extern VoiceBank voiceBank2;
 extern VoiceBank * voiceBanks[2];
 extern uint8_t currentVoiceBank;
 extern float mainLoopTime;
+
 
 struct AudioParameters
 {
@@ -72,8 +80,31 @@ struct AudioParameters
   float delay_masterLevel = 1.0;
   float phaser_masterLevel = 1.0;
 
+  float sideChain_level = 0.0;
+  float sideChain_attack = 0.0;
+  float sideChain_hold = 0.0;
+  float sideChain_release = 0.0;
+  
 };
 
+class SideChain 
+{
+  private:
+    AudioSynthWaveformDc     _dc;
+    elapsedMillis            _timer;
+    bool _isActive = false;
+    AudioConnection  *   _patchCords[2];
+    void _release();
+  public:
+    SideChain();
+    AudioParameters *  audioParameters;
+    AudioEffectMultiply      left;
+    AudioEffectMultiply      right;
+    void trigger();
+    void update();
+};
+
+extern SideChain sideChain;
 extern AudioParameters audioParameters;
 extern AudioAnalyzeFFT256 fft;
 extern float peakLevels[2];
@@ -90,3 +121,4 @@ void setChorus();
 void setPhaser();
 void setDelay();
 void setGranular();
+void setSideChain();

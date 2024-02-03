@@ -98,9 +98,10 @@
 #define PAGE_WAVETABLE_OSC1  14
 #define PAGE_WAVETABLE_OSC2  15
 #define PAGE_MIX             16
+#define PAGE_SIDECHAIN      17
 //#define PAGE_ARPEGGIATOR 
 
-#define NR_PAGES 17
+#define NR_PAGES 18
 
 #define PAGE_MESSAGE  254
 #define N_A           255
@@ -281,6 +282,7 @@ void configurePage_filter();
 void configurePage_controls();
 void configurePage_system();
 void configurePage_mix();
+void configurePage_sideChain();
 
 void updateVarPointers(uint8_t bankId);
 

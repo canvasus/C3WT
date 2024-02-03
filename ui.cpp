@@ -37,6 +37,7 @@ void setupUI()
   configurePage_filter();
   configurePage_mix();
 
+  configurePage_sideChain();
   configurePage_effects();
   configurePage_patchName();
   configurePage_screenSaver();
@@ -260,12 +261,20 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xef74;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_EFFECTS, 5* (column_w + padding), 2* (row_h + padding), column_w, 3 * row_h + 2 * padding); 
+  // -----
+  widgetIndex = pages[PAGE].addWidget(PAGE_EFFECTS, 5* (column_w + padding), 2* (row_h + padding), column_w, 2 * row_h + padding); 
   pages[PAGE].widgetPointers[widgetIndex]->label("EFX");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xfff0;
+
+  widgetIndex = pages[PAGE].addWidget(PAGE_SIDECHAIN, 5* (column_w + padding), 4* (row_h + padding), column_w, row_h); 
+  pages[PAGE].widgetPointers[widgetIndex]->label("SC");
+  pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
+  pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
+  pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
+  pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xf0a0;
   
 
   widgetIndex = pages[PAGE].addWidget(PAGE_SYSTEM, 0* (column_w + padding), SCREEN_YRES - 40, column_w, 40); 
@@ -1916,6 +1925,101 @@ FLASHMEM void configurePage_system()
   widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 680, 410, 120, 60);
   pages[PAGE].widgetPointers[widgetIndex]->label("<BACK");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
+}
+
+FLASHMEM void configurePage_sideChain()
+{
+  uint8_t PAGE = PAGE_SIDECHAIN;
+  uint8_t widgetIndex = 0;
+  uint8_t staticIndex = 0;
+
+  pages[PAGE].clear();
+  pages[PAGE].tft = &tft;
+  pages[PAGE].backPageId = PAGE_PATCH;
+  pages[PAGE].color1 = SELECTED_COLOR;
+  pages[PAGE].color2 = IDLE_COLOR;
+  //pages[PAGE].animateFunction = &animateSystemPage;
+
+  const uint16_t column_w = 140;
+  const uint16_t row_h = 60;
+  const uint8_t padding = 4;
+  const uint8_t labelOffsetX = 10;
+  const uint8_t labelOffsetY = 8;
+
+  staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0* (row_h + padding), column_w, 40);
+  pages[PAGE].staticPointers[staticIndex]->label("CTRL");
+  pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetX = labelOffsetX;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetY = labelOffsetY;
+
+  staticIndex = pages[PAGE].addStatic(0, 1* (column_w + padding), 0* (row_h + padding), column_w, 40);
+  pages[PAGE].staticPointers[staticIndex]->label("PAR");
+  pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetX = labelOffsetX;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetY = labelOffsetY;
+
+
+  widgetIndex = pages[PAGE].addWidget(SYS_SIDECHAIN_CHANNEL, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Ch");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.sideChain_channel;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_SIDECHAIN_NOTE, 0* (column_w + padding), 2* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Note");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.sideChain_note;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
+
+  widgetIndex = pages[PAGE].addWidget(SIDECHAIN_LEVEL, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Lvl");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 2;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.sideChain_level;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustAudioParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SIDECHAIN_ATTACK, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Atk");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.sideChain_attack;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustAudioParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SIDECHAIN_HOLD, 1* (column_w + padding), 3* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Hld");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.sideChain_hold;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustAudioParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SIDECHAIN_RELEASE, 1* (column_w + padding), 4* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Rel");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &audioParameters.sideChain_release;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustAudioParameter;
+
+  widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 680, 410, 120, 60);
+  pages[PAGE].widgetPointers[widgetIndex]->label("<BACK");
+  pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
+
 }
 
 //void configurePageArpeggiator()
