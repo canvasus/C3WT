@@ -8,8 +8,7 @@
 #include "sdMgr.h"
 #include <Encoder.h>
 
-#include <font_Arial.h>
-//#define USE_GFX_FONT // uncomment for default ugly but fast font
+#include "src/RA8875-RA8875_t4/font_Arial.h"
 
 #define SCREEN_XRES 800
 #define SCREEN_YRES 480
@@ -99,9 +98,9 @@
 #define PAGE_WAVETABLE_OSC2  15
 #define PAGE_MIX             16
 #define PAGE_SIDECHAIN      17
-//#define PAGE_ARPEGGIATOR 
+#define PAGE_ARPEGGIATOR    18
 
-#define NR_PAGES 18
+#define NR_PAGES 19
 
 #define PAGE_MESSAGE  254
 #define N_A           255
@@ -283,6 +282,7 @@ void configurePage_controls();
 void configurePage_system();
 void configurePage_mix();
 void configurePage_sideChain();
+void configurePageArpeggiator();
 
 void updateVarPointers(uint8_t bankId);
 

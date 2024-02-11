@@ -191,25 +191,25 @@ CJK-Uni:	\u4E00 -> \u9FD5	/u4E ... /u9F
 // Documentation on the ILI9488_t3 font data format:
 // https://forum.pjrc.com/threads/54316-ILI9488_t-font-structure-format
 /*
-typedef struct {
-	const unsigned char *index;
-	const unsigned char *unicode;
-	const unsigned char *data;
-	unsigned char version;
-	unsigned char reserved;
-	unsigned char index1_first;
-	unsigned char index1_last;
-	unsigned char index2_first;
-	unsigned char index2_last;
-	unsigned char bits_index;
-	unsigned char bits_width;
-	unsigned char bits_height;
-	unsigned char bits_xoffset;
-	unsigned char bits_yoffset;
-	unsigned char bits_delta;
-	unsigned char line_space;
-	unsigned char cap_height;
-} ILI9341_t3_font_t;
+//typedef struct {
+//	const unsigned char *index;
+//	const unsigned char *unicode;
+//	const unsigned char *data;
+//	unsigned char version;
+//	unsigned char reserved;
+//	unsigned char index1_first;
+//	unsigned char index1_last;
+//	unsigned char index2_first;
+//	unsigned char index2_last;
+//	unsigned char bits_index;
+//	unsigned char bits_width;
+//	unsigned char bits_height;
+//	unsigned char bits_xoffset;
+//	unsigned char bits_yoffset;
+//	unsigned char bits_delta;
+//	unsigned char line_space;
+//	unsigned char cap_height;
+//} ILI9341_t3_font_t;
 */
 #include "ILI9341_fonts.h"
 

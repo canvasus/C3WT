@@ -14,7 +14,7 @@ uint8_t brightness = 255;
 //elapsedMillis loadTimer = 0;
 //uint16_t loadTimes[NR_PAGES];
 
-void setupUI()
+FLASHMEM void setupUI()
 {
   Serial.println("UI SETUP");
   
@@ -43,6 +43,7 @@ void setupUI()
   configurePage_screenSaver();
   configurePage_controls();
   configurePage_system();
+  configurePageArpeggiator();
 }
 
 void showStartupScreen()
@@ -247,12 +248,21 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xc398;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_MODULATION, 3* (column_w + padding), 3* (row_h + padding), column_w, 2 * row_h + padding); 
+  widgetIndex = pages[PAGE].addWidget(PAGE_MODULATION, 3* (column_w + padding), 3* (row_h + padding), column_w, row_h); 
   pages[PAGE].widgetPointers[widgetIndex]->label("MOD");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xc518;
+
+  widgetIndex = pages[PAGE].addWidget(PAGE_ARPEGGIATOR, 3* (column_w + padding), 4* (row_h + padding), column_w, row_h); 
+  pages[PAGE].widgetPointers[widgetIndex]->label("ARP");
+  pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
+  pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
+  pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
+  pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = 5;
+  pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xed5d;
+
 
   widgetIndex = pages[PAGE].addWidget(PAGE_MIX, 4* (column_w + padding), 2* (row_h + padding), column_w, 3 * row_h + 2 * padding); 
   pages[PAGE].widgetPointers[widgetIndex]->label("MIX");
@@ -276,7 +286,7 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
   pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xf0a0;
   
-
+  
   widgetIndex = pages[PAGE].addWidget(PAGE_SYSTEM, 0* (column_w + padding), SCREEN_YRES - 40, column_w, 40); 
   pages[PAGE].widgetPointers[widgetIndex]->label("SYS");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
@@ -2022,14 +2032,71 @@ FLASHMEM void configurePage_sideChain()
 
 }
 
-//void configurePageArpeggiator()
-//{
-    // widgetIndex = pages[PAGE].addWidget(0, 0, 0, 80, 20);
-  // pages[PAGE].widgetPointers[widgetIndex]->label("MOD");
-  // pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 45;
-  // pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-  // pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.arp_mode;
-  // pages[PAGE].widgetPointers[widgetIndex]->setI8 = &setArpeggiatorMode;
+FLASHMEM void configurePageArpeggiator()
+{
+  uint8_t PAGE = PAGE_ARPEGGIATOR;
+  uint8_t widgetIndex = 0;
+  uint8_t staticIndex = 0;
+
+  pages[PAGE].clear();
+  pages[PAGE].tft = &tft;
+  pages[PAGE].backPageId = PAGE_PATCH;
+  pages[PAGE].color1 = SELECTED_COLOR;
+  pages[PAGE].color2 = IDLE_COLOR;
+  //pages[PAGE].animateFunction = &animateSystemPage;
+
+  const uint16_t column_w = 140;
+  const uint16_t row_h = 60;
+  const uint8_t padding = 4;
+  const uint8_t labelOffsetX = 10;
+ // const uint8_t labelOffsetY = 8;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BPM, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Bpm");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bpm;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustBpm;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_ARP_MODE, 1* (column_w + padding), 0* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("A mod");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_A_arpMode;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_ARP_INTERVAL, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("A int");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_A_arpIntervalTicks;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+  
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_ARP_MODE, 2* (column_w + padding), 0* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("B mod");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_B_arpMode;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+  
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_ARP_INTERVAL, 2* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("B int");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_B_arpIntervalTicks;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
 
   // widgetIndex = pages[PAGE].addWidget(0, 0, 22, 80, 20);
   // pages[PAGE].widgetPointers[widgetIndex]->label("BPM");
@@ -2037,7 +2104,11 @@ FLASHMEM void configurePage_sideChain()
   // pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   // pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bpm;
   // pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustBpm;
-//}
+
+  widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 680, 410, 120, 60);
+  pages[PAGE].widgetPointers[widgetIndex]->label("<BACK");
+  pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
+}
 
 // --- Widget callback functions ---
 
@@ -2378,9 +2449,9 @@ void animateScreenSaver(bool firstCall)
   static uint8_t noteStatusBuffer[128];
   static uint8_t stage = 0;
 
-  const uint16_t column_w = 4;
+  const uint16_t column_w = 6;
   const uint16_t row_h = 4;
-  const uint16_t offset_x = 4;
+  static int8_t offset_x = 0;
   
   if (mode == 3) // Fireworks
   {

@@ -6,7 +6,8 @@ MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, serialMIDI);
 MidiSettings midiSettings;
 
 IntervalTimer masterClockTimer;
-Arpeggiator arpeggiator(&midiSettings, &voiceBank1);
+Arpeggiator arpeggiator_A(&midiSettings, &voiceBank1, &midiSettings.bank_A_arpMode, &midiSettings.bank_A_arpIntervalTicks);
+Arpeggiator arpeggiator_B(&midiSettings, &voiceBank2, &midiSettings.bank_B_arpMode, &midiSettings.bank_B_arpIntervalTicks);
 
 USBHost myusb;
 USBHub hub1(myusb);
@@ -53,7 +54,7 @@ void updateMidi()
   usbMIDI.read();
   serialMIDI.read();
   midi1.read();
-  //updateArpeggiator();
+  updateArpeggiator();
   checkUsbStatus();
 }
 
@@ -73,9 +74,9 @@ void myNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
         && (note <= midiSettings.bank_A_highLimit) )
   {
     noteStatus[note] = velocity;
-    voiceBank1.noteOn(note + midiSettings.bank_A_transpose, velocity);
-    //if(midiSettings.arp_mode == ARP_OFF) voiceBank1.noteOn(note, velocity);
-    //else arpeggiator.addNote(note);
+    //voiceBank1.noteOn(note + midiSettings.bank_A_transpose, velocity);
+    if(midiSettings.bank_A_arpMode == ARP_OFF) voiceBank1.noteOn(note + midiSettings.bank_A_transpose, velocity);
+    else arpeggiator_A.addNote(note + midiSettings.bank_A_transpose);
     midiActivity = 1;
   }
 
@@ -84,8 +85,8 @@ void myNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
         && (note <= midiSettings.bank_B_highLimit) )
   {
     noteStatus[note] = velocity;
-    voiceBank2.noteOn(note + midiSettings.bank_B_transpose, velocity);
-    //else arpeggiator.addNote(note);
+    if(midiSettings.bank_B_arpMode == ARP_OFF) voiceBank2.noteOn(note + midiSettings.bank_B_transpose, velocity);
+    else arpeggiator_B.addNote(note + midiSettings.bank_B_transpose);
     midiActivity = 1;
   }
 
@@ -103,9 +104,8 @@ void myNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
         && (note <= midiSettings.bank_A_highLimit) )
   {
     noteStatus[note] = 0;
-    voiceBank1.noteOff(note + midiSettings.bank_A_transpose, velocity);
-    //if(midiSettings.arp_mode == ARP_OFF) 
-    //else arpeggiator.removeNote(note);
+    if(midiSettings.bank_A_arpMode == ARP_OFF) voiceBank1.noteOff(note + midiSettings.bank_A_transpose, velocity);
+    else arpeggiator_A.removeNote(note + midiSettings.bank_A_transpose);
     midiActivity = 0;
   }
 
@@ -114,7 +114,8 @@ void myNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
         && (note <= midiSettings.bank_B_highLimit) )
   {
     noteStatus[note] = 0;
-    voiceBank2.noteOff(note + midiSettings.bank_B_transpose, velocity);
+    if(midiSettings.bank_B_arpMode == ARP_OFF) voiceBank2.noteOff(note + midiSettings.bank_B_transpose, velocity);
+    else arpeggiator_B.removeNote(note + midiSettings.bank_B_transpose);
     midiActivity = 0;
   }
 }
@@ -187,17 +188,24 @@ void myMIDIClockStop()
 }
 
 
-void tickMasterClock() { arpeggiator.tick(); }
+void tickMasterClock() { midiSettings.masterClock++; }
 
-void setArpeggiatorMode(uint8_t dummy, int8_t delta)
+void updateArpeggiator()
 {
-  midiSettings.arp_mode = constrain(midiSettings.arp_mode + delta, 0, NR_ARP_MODES - 1);
+  arpeggiator_A.update();
+  arpeggiator_B.update();
+}
+
+void setArpeggiatorMode(uint8_t bank, int8_t delta)
+{
+  if (bank == 0) midiSettings.bank_A_arpMode = constrain(midiSettings.bank_A_arpMode + delta, 0, NR_ARP_MODES - 1);
+  else midiSettings.bank_B_arpMode = constrain(midiSettings.bank_B_arpMode + delta, 0, NR_ARP_MODES - 1);
 }
 
 void adjustBpm(uint8_t dummy, int8_t delta)
 {
-  midiSettings.bpm = constrain(midiSettings.bpm + delta, 20, 300);
-  midiSettings.oneTickUs = 1000 * 60000 / (midiSettings.bpm * 32);
+  midiSettings.bpm = constrain(midiSettings.bpm + delta, 20, 255);
+  midiSettings.oneTickUs = 1000 * 60000 / (midiSettings.bpm * RESOLUTION);
   masterClockTimer.update(midiSettings.oneTickUs);
 }
 
@@ -246,45 +254,89 @@ void adjustMidiParameter(uint8_t parameter, int8_t delta)
       targetValue_I8 = midiSettings.sideChain_note + delta;
       midiSettings.sideChain_note = constrain(targetValue_I8, 1, 127);
       break;
+    case SYS_BANK_A_ARP_MODE:
+      targetValue_I8 = midiSettings.bank_A_arpMode + delta;
+      midiSettings.bank_A_arpMode = constrain(targetValue_I8, 0, NR_ARP_MODES - 1);
+      break;
+    case SYS_BANK_B_ARP_MODE:
+      targetValue_I8 = midiSettings.bank_B_arpMode + delta;
+      midiSettings.bank_B_arpMode = constrain(targetValue_I8, 0, NR_ARP_MODES - 1);
+      break;
+    case SYS_BPM:
+      targetValue_I8 = midiSettings.bpm + delta;
+      midiSettings.bpm = constrain(targetValue_I8, 20, 300);
+      break;
+    case SYS_BANK_A_ARP_INTERVAL:
+      if (delta > 0) targetValue_I8 = midiSettings.bank_A_arpIntervalTicks >> 1;
+      else targetValue_I8 = midiSettings.bank_A_arpIntervalTicks << 1;
+      midiSettings.bank_A_arpIntervalTicks = constrain(targetValue_I8, 1, RESOLUTION);
+      break;
+    case SYS_BANK_B_ARP_INTERVAL:
+      if (delta > 0) targetValue_I8 = midiSettings.bank_B_arpIntervalTicks >> 1;
+      else targetValue_I8 = midiSettings.bank_B_arpIntervalTicks << 1;
+      midiSettings.bank_B_arpIntervalTicks = constrain(targetValue_I8, 1, RESOLUTION);
+      break;
   }
 }
 
 
-Arpeggiator::Arpeggiator(MidiSettings * settings, VoiceBank * voiceBank)
+Arpeggiator::Arpeggiator(MidiSettings * settings, VoiceBank * voiceBank, uint8_t * arpMode, uint8_t * intervalTicks)
 {
   _settings = settings;
   _voiceBank = voiceBank;
+  _arpMode = arpMode;
+  _intervalTicks = intervalTicks;
   memset(_notesPressed, 255, MAX_ARP_NOTES);
 }
 
-void Arpeggiator::tick()
+void Arpeggiator::update()
 {
-
-  if ( (midiSettings.arp_mode != ARP_OFF) && (_nrNotesPressed > 0) )
+  if ( (*_arpMode != ARP_OFF) && (_nrNotesPressed > 0) )
   {
-    _tick++;
+    bool stepTrigger = ( (midiSettings.masterClock % *_intervalTicks) == 0);
 
-    if( (_state == ARP_IDLE) && (_tick > midiSettings.arp_intervalTicks) )
+    if (stepTrigger) Serial.printf("Step, %d\n", midiSettings.masterClock);
+    if ( stepTrigger && !_oldStepTrigger) // rising edge
     {
-       _voiceBank->noteOn(_notesPressed[_step], 127);
-       _state = ARP_PLAYING;
-       _playedTime = 0;
-       return;
-    }
-    
-    if( (_state == ARP_PLAYING) && ( _playedTime > midiSettings.arp_noteLength) )
-    {
-       _voiceBank->noteOff(_notesPressed[_step], 0);
-      _state = ARP_IDLE;
+      // new step
+      //_oldStepTrigger = true;
+      _voiceBank->noteOff(_notesPressed[_step], 0);
       if(_step < (_nrNotesPressed - 1) ) _step++;
       else _step = 0;
-      //Serial.println(_step);
-      return;
+      _voiceBank->noteOn(_notesPressed[_step], 127);
     }
 
-    if (_state == ARP_PLAYING) _playedTime++;
-  }
+    else   
+    {
+      // just do note off after noteLength
+      
+    }
+
+    _oldStepTrigger = stepTrigger;
+  } 
 }
+  
+    // if(_state == ARP_IDLE)
+    // {
+    //    _voiceBank->noteOn(_notesPressed[_step], 127);
+    //    _state = ARP_PLAYING;
+    //    _playedTime = 0;
+    //    return;
+    // }
+    
+    // if(_state == ARP_PLAYING) && ( _playedTime > midiSettings.arp_noteLength) )
+    // {
+    //    _voiceBank->noteOff(_notesPressed[_step], 0);
+    //   _state = ARP_IDLE;
+    //   if(_step < (_nrNotesPressed - 1) ) _step++;
+    //   else _step = 0;
+    //   //Serial.println(_step);
+    //   return;
+    //}
+
+    //if (_state == ARP_PLAYING) _playedTime++;
+  //}
+
 
 void Arpeggiator::addNote(uint8_t note)
 {
@@ -294,7 +346,7 @@ void Arpeggiator::addNote(uint8_t note)
     _nrNotesPressed++;
     qsort(_notesPressed, MAX_ARP_NOTES, sizeof(uint8_t), compare);
   }
- // _printNotes();
+  //_printNotes();
 }
 
 void Arpeggiator::removeNote(uint8_t note)
