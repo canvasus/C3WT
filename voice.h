@@ -2,7 +2,7 @@
 
 #include <Audio.h>
 #include "src/P3_synth_waveform.h"
-
+//#include "midiFunc.h"
 // note: imported waveTables assumed to be 8193 samples, use wav2sketch 44100Hz/PCM
 
 #define ARBITRARY_LENGTH 8193
@@ -161,7 +161,8 @@
 #define WAVETABLE_PLAYMODE_ONESHOT_UP 1
 #define WAVETABLE_LENGTH 8192
 
-const uint8_t MAX_WAVEFORM_INDEX = 3;
+#define NR_WAVEFORMS 8
+//const uint8_t MAX_WAVEFORM_INDEX = 7;
 
 extern int16_t waveTable1_I16[WAVETABLE_LENGTH];
 extern int16_t waveTable2_I16[WAVETABLE_LENGTH];
@@ -171,6 +172,7 @@ extern int16_t waveTable4_I16[WAVETABLE_LENGTH];
 extern int16_t * activeWaveTables[4];
 
 extern const String waveTableNames[NR_WAVETABLES];
+extern char waveformNames[NR_WAVEFORMS][6];
 
 struct Patch
 {
@@ -308,7 +310,14 @@ struct Patch
   uint16_t osc2_waveTable_stepSize = 1;
   uint8_t osc2_waveTable_movement = WAVETABLE_PLAYMODE_UPDOWN;
 
-  
+  uint8_t midi_channel = 1;
+  uint8_t midi_lowLimit = 0;
+  uint8_t midi_highLimit = 127;
+  int8_t midi_transpose = 0;
+  uint8_t arp_mode = 0;
+  uint8_t arp_intervalTicks = 24;
+  uint8_t arp_offsetTicks = 0;
+  uint8_t arp_octaves = 0;
 };
 
 class Voice

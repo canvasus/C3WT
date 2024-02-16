@@ -119,6 +119,7 @@
 #define WIDGET_POT 3
 #define WIDGET_BOX_HBAR 4
 #define WIDGET_BOX_POT 5
+#define WIDGET_TOGGLE 6
 
 #define MAX_WIDGETS 64
 #define MAX_STATICS 16

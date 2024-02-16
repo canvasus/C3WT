@@ -1855,7 +1855,7 @@ FLASHMEM void configurePage_system()
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
-  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_A_channel;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank1.patch.midi_channel;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
 
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_MIDICHANNEL, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h);
@@ -1864,7 +1864,7 @@ FLASHMEM void configurePage_system()
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
-  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_B_channel;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank2.patch.midi_channel;;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
 
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_LIMIT_LOW, 0* (column_w + padding), 2* (row_h + padding), column_w, row_h);
@@ -1873,7 +1873,7 @@ FLASHMEM void configurePage_system()
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
-  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_A_lowLimit;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank1.patch.midi_lowLimit;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
 
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_LIMIT_LOW, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h);
@@ -1882,7 +1882,7 @@ FLASHMEM void configurePage_system()
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
-  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_B_lowLimit;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank2.patch.midi_lowLimit;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
 
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_LIMIT_HIGH, 0* (column_w + padding), 3* (row_h + padding), column_w, row_h);
@@ -1891,7 +1891,7 @@ FLASHMEM void configurePage_system()
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
-  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_A_highLimit;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank1.patch.midi_highLimit;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
 
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_LIMIT_HIGH, 1* (column_w + padding), 3* (row_h + padding), column_w, row_h);
@@ -1900,7 +1900,7 @@ FLASHMEM void configurePage_system()
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
-  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_B_highLimit;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank2.patch.midi_highLimit;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
 
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_TRANSPOSE, 0* (column_w + padding), 4* (row_h + padding), column_w, row_h);
@@ -1909,7 +1909,7 @@ FLASHMEM void configurePage_system()
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
-  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_i8 = &midiSettings.bank_A_transpose;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_i8 = &voiceBank1.patch.midi_transpose;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
 
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_TRANSPOSE, 1* (column_w + padding), 4* (row_h + padding), column_w, row_h);
@@ -1918,10 +1918,8 @@ FLASHMEM void configurePage_system()
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
-  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_i8 = &midiSettings.bank_B_transpose;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_i8 = &voiceBank2.patch.midi_transpose;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
-
-
 
   widgetIndex = pages[PAGE].addWidget(0, 3* (column_w + padding), 1* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Bright");
@@ -2049,7 +2047,14 @@ FLASHMEM void configurePageArpeggiator()
   const uint16_t row_h = 60;
   const uint8_t padding = 4;
   const uint8_t labelOffsetX = 10;
- // const uint8_t labelOffsetY = 8;
+  const uint8_t labelOffsetY = 8;
+
+  staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0* (row_h + padding), column_w, 40);
+  pages[PAGE].staticPointers[staticIndex]->label("GLOBAL");
+  pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetX = labelOffsetX;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetY = labelOffsetY;
 
   widgetIndex = pages[PAGE].addWidget(SYS_BPM, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Bpm");
@@ -2060,50 +2065,93 @@ FLASHMEM void configurePageArpeggiator()
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bpm;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustBpm;
 
-  widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_ARP_MODE, 1* (column_w + padding), 0* (row_h + padding), column_w, row_h);
-  pages[PAGE].widgetPointers[widgetIndex]->label("A mod");
+
+  staticIndex = pages[PAGE].addStatic(0, 1* (column_w + padding), 0* (row_h + padding), column_w, 40);
+  pages[PAGE].staticPointers[staticIndex]->label("BANK A");
+  pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetX = labelOffsetX;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetY = labelOffsetY;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_ARP_MODE, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("mod");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
-  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_A_arpMode;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank1.patch.arp_mode;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
 
-  widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_ARP_INTERVAL, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h);
-  pages[PAGE].widgetPointers[widgetIndex]->label("A int");
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_ARP_INTERVAL, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("int");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
-  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_A_arpIntervalTicks;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank1.patch.arp_intervalTicks;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_ARP_OFFSET, 1* (column_w + padding), 3* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("ofs");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank1.patch.arp_offsetTicks;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_ARP_OCTAVES, 1* (column_w + padding), 4* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Oct");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank1.patch.arp_octaves;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
+
+  staticIndex = pages[PAGE].addStatic(0, 2* (column_w + padding), 0* (row_h + padding), column_w, 40);
+  pages[PAGE].staticPointers[staticIndex]->label("BANK B");
+  pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetX = labelOffsetX;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetY = labelOffsetY; 
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_ARP_MODE, 2* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("mod");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank2.patch.arp_mode;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
   
-
-  widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_ARP_MODE, 2* (column_w + padding), 0* (row_h + padding), column_w, row_h);
-  pages[PAGE].widgetPointers[widgetIndex]->label("B mod");
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_ARP_INTERVAL, 2* (column_w + padding), 2* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("int");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
-  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_B_arpMode;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank2.patch.arp_intervalTicks;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
-  
-  widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_ARP_INTERVAL, 2* (column_w + padding), 1* (row_h + padding), column_w, row_h);
-  pages[PAGE].widgetPointers[widgetIndex]->label("B int");
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_ARP_OFFSET, 2* (column_w + padding), 3* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("ofs");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
-  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bank_B_arpIntervalTicks;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank2.patch.arp_offsetTicks;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
 
-
-  // widgetIndex = pages[PAGE].addWidget(0, 0, 22, 80, 20);
-  // pages[PAGE].widgetPointers[widgetIndex]->label("BPM");
-  // pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 45;
-  // pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-  // pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bpm;
-  // pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustBpm;
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_ARP_OCTAVES, 2* (column_w + padding), 4* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Oct");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank2.patch.arp_octaves;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
 
   widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 680, 410, 120, 60);
   pages[PAGE].widgetPointers[widgetIndex]->label("<BACK");

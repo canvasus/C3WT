@@ -14,9 +14,12 @@
 #define ARP_OFF  0
 #define ARP_UP   1
 #define ARP_DOWN 2
-#define ARP_SEQ  3
+#define ARP_CYCLE  3
 
 #define NR_ARP_MODES 4
+
+#define ARP_DIRECTION_UP 0
+#define ARP_DIRECTION_DOWN 1
 
 #define SYS_BANK_A_MIDICHANNEL  0
 #define SYS_BANK_B_MIDICHANNEL  1
@@ -35,6 +38,11 @@
 #define SYS_BPM 12
 #define SYS_BANK_A_ARP_INTERVAL 13
 #define SYS_BANK_B_ARP_INTERVAL 14
+#define SYS_BANK_A_ARP_OFFSET 15
+#define SYS_BANK_B_ARP_OFFSET 16
+#define SYS_BANK_A_ARP_OCTAVES 17
+#define SYS_BANK_B_ARP_OCTAVES 18
+
 
 extern uint8_t noteStatus[128];
 extern uint8_t midiActivity;
@@ -43,25 +51,26 @@ extern bool usbPcStatus;
 
 struct MidiSettings
 {
-  uint8_t bank_A_channel = 1;
-  uint8_t bank_B_channel = 2;
-  uint8_t bank_A_lowLimit = 0;
-  uint8_t bank_A_highLimit = 127;
-  uint8_t bank_B_lowLimit = 0;
-  uint8_t bank_B_highLimit = 127;
-  int8_t bank_A_transpose = 0;
-  int8_t bank_B_transpose = 0;
-  uint8_t bank_A_arpMode = ARP_OFF;
-  uint8_t bank_B_arpMode = ARP_OFF;
-  uint8_t bank_A_arpIntervalTicks = RESOLUTION;
-  uint8_t bank_B_arpIntervalTicks = RESOLUTION;
+  // uint8_t bank_A_channel = 1;
+  // uint8_t bank_B_channel = 2;
+  // uint8_t bank_A_lowLimit = 0;
+  // uint8_t bank_A_highLimit = 127;
+  // uint8_t bank_B_lowLimit = 0;
+  // uint8_t bank_B_highLimit = 127;
+  // int8_t bank_A_transpose = 0;
+  // int8_t bank_B_transpose = 0;
+  // uint8_t bank_A_arpMode = ARP_OFF;
+  // uint8_t bank_B_arpMode = ARP_OFF;
+  // uint8_t bank_A_arpIntervalTicks = RESOLUTION;
+  // uint8_t bank_B_arpIntervalTicks = RESOLUTION;
+  // uint8_t bank_A_arpOffsetTicks = 0;
+  // uint8_t bank_B_arpOffsetTicks = 0;
 
   uint8_t bpm = 120;
   uint32_t oneTickUs = 1000 * 60000 / (120 * RESOLUTION);
   uint16_t masterClock = 0;
   
-  //uint16_t arp_intervalTicks = 16;
-  uint8_t arp_noteLength = 8;
+//  uint8_t arp_noteLength = 8;
 
   uint8_t sideChain_channel = 9;
   uint8_t sideChain_note = 36;
@@ -81,26 +90,27 @@ class Arpeggiator
   private:
     uint8_t _notesPressed[MAX_ARP_NOTES];
     uint8_t _nrNotesPressed = 0;
-    uint32_t _tick = 0;
     uint16_t _playedTime = 0;
     uint8_t _step = 0;
+    uint8_t _octave = 0;
+    uint8_t _direction = ARP_DIRECTION_UP;
     bool _oldStepTrigger = false;
-    uint8_t _state = ARP_IDLE;
-    MidiSettings * _settings;
-    uint8_t * _arpMode;
-    uint8_t * _intervalTicks;
+    MidiSettings * _midiSettings;
     VoiceBank * _voiceBank;
     void _printNotes();
   
   public:
-    Arpeggiator(MidiSettings * settings, VoiceBank * voiceBank, uint8_t * arpMode, uint8_t * intervalTicks);
-    void tick();
+    //Arpeggiator(MidiSettings * settings, VoiceBank * voiceBank, uint8_t * arpMode, uint8_t * intervalTicks);
+    Arpeggiator(MidiSettings * midiSettings, VoiceBank * voiceBank);
+    //void tick();
     void update();
     void addNote(uint8_t note);
     void removeNote(uint8_t note);
+    //uint8_t * offsetTicks;
+    void reset();
 };
 
-extern Arpeggiator arpeggiator;
+//extern Arpeggiator arpeggiator;
 
 void setupMidi();
 void updateMidi();

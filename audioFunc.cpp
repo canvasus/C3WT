@@ -134,6 +134,8 @@ FLASHMEM void setupAudio()
   outputMixerR.gain(0, 0.9); // Voicebank 1 DRY R
   outputMixerL.gain(1, 0.9); // Voicebank 2 DRY L
   outputMixerR.gain(1, 0.9); // Voicebank 2 DRY R
+  //outputMixerL.gain(2, 0.9); // FREE
+  //outputMixerR.gain(2, 0.9); // FREE
   outputMixerL.gain(3, 1.0); // FX L
   outputMixerR.gain(3, 1.0); // FX R
 
@@ -368,10 +370,10 @@ void setDelay()
   {
     delayL.delay(0, audioParameters.delay_time);
     delayR.delay(0, audioParameters.delay_time - 1);
-    delayInputMixer_L.gain(0, 1.0); //direct input bank 1 L
-    delayInputMixer_R.gain(0, 1.0); //direct input bank 1 R
-    delayInputMixer_L.gain(1, 1.0); //direct input bank 2 L
-    delayInputMixer_R.gain(1, 1.0); //direct input bank 2 R
+    delayInputMixer_L.gain(0, 0.9); //direct input bank 1 L
+    delayInputMixer_R.gain(0, 0.9); //direct input bank 1 R
+    delayInputMixer_L.gain(1, 0.9); //direct input bank 2 L
+    delayInputMixer_R.gain(1, 0.9); //direct input bank 2 R
 
     delayInputMixer_L.gain(2, 0.0); // ping pong off
     delayInputMixer_R.gain(2, 0.0); // ping pong off
@@ -384,9 +386,9 @@ void setDelay()
   {
     delayL.delay(0, audioParameters.delay_time);
     delayR.delay(0, audioParameters.delay_time);
-    delayInputMixer_L.gain(0, 1.0); //direct input bank 1, to L only
+    delayInputMixer_L.gain(0, 0.9); //direct input bank 1, to L only
     delayInputMixer_R.gain(0, 0.0);
-    delayInputMixer_L.gain(1, 1.0); //direct input bank 2, to L only
+    delayInputMixer_L.gain(1, 0.9); //direct input bank 2, to L only
     delayInputMixer_R.gain(1, 0.0);
     
     delayInputMixer_L.gain(2, audioParameters.delay_feedback);  // ping pong Right to Left
