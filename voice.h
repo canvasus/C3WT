@@ -153,7 +153,7 @@
 #define LEFT  0
 #define RIGHT 1
 
-#define NR_WAVETABLES 18
+#define NR_WAVETABLES 20
 #define WAVETABLE_MODE_PHASESCAN  0
 #define WAVETABLE_MODE_MORPH      1
 

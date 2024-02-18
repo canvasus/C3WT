@@ -1,3 +1,3 @@
 // Audio data converted from audio file by wav2sketch_js
-
-extern const unsigned int AudioSampleBraids04[4097];
+#include <Arduino.h>
+extern const unsigned int AudioSampleBraids04[8193];

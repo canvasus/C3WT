@@ -106,7 +106,7 @@ class SideChain
 
 extern SideChain sideChain;
 extern AudioParameters audioParameters;
-extern AudioAnalyzeFFT256 fft;
+//extern AudioAnalyzeFFT256 fft;
 extern float peakLevels[2];
 
 void setupAudio();

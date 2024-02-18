@@ -121,8 +121,8 @@ FLASHMEM void setupAudio()
   connect(sideChain.right, 0, output_i2s , 1);
   sideChain.audioParameters = &audioParameters;
 
-  connect(outputMixerL, 0, fft , 0);
-  fft.averageTogether(4);
+  //connect(outputMixerL, 0, fft , 0);
+  //fft.averageTogether(4);
 
   //connect(voiceBank1.output_dry_R, 0, peak1 , 0);
   //connect(voiceBank2.output_dry_R, 0, peak2 , 0);

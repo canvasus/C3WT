@@ -51,27 +51,10 @@ extern bool usbPcStatus;
 
 struct MidiSettings
 {
-  // uint8_t bank_A_channel = 1;
-  // uint8_t bank_B_channel = 2;
-  // uint8_t bank_A_lowLimit = 0;
-  // uint8_t bank_A_highLimit = 127;
-  // uint8_t bank_B_lowLimit = 0;
-  // uint8_t bank_B_highLimit = 127;
-  // int8_t bank_A_transpose = 0;
-  // int8_t bank_B_transpose = 0;
-  // uint8_t bank_A_arpMode = ARP_OFF;
-  // uint8_t bank_B_arpMode = ARP_OFF;
-  // uint8_t bank_A_arpIntervalTicks = RESOLUTION;
-  // uint8_t bank_B_arpIntervalTicks = RESOLUTION;
-  // uint8_t bank_A_arpOffsetTicks = 0;
-  // uint8_t bank_B_arpOffsetTicks = 0;
-
   uint8_t bpm = 120;
   uint32_t oneTickUs = 1000 * 60000 / (120 * RESOLUTION);
   uint16_t masterClock = 0;
   
-//  uint8_t arp_noteLength = 8;
-
   uint8_t sideChain_channel = 9;
   uint8_t sideChain_note = 36;
 };

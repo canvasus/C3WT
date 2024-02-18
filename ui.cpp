@@ -2544,58 +2544,58 @@ void animateScreenSaver(bool firstCall)
     }
   }
 
-  if (mode == 4) // moving FFT
-  {
-    if (firstCall)
-    {
-      tft.BTE_enable(true);
-      tft.setBackgroundColor(MAIN_BG_COLOR);
-      tft.setForegroundColor(MAIN_BG_COLOR);
-      tft.setTransparentColor(MAIN_BG_COLOR);
-      stage = 0;
-      return;
-    }
+  // if (mode == 4) // moving FFT
+  // {
+  //   if (firstCall)
+  //   {
+  //     tft.BTE_enable(true);
+  //     tft.setBackgroundColor(MAIN_BG_COLOR);
+  //     tft.setForegroundColor(MAIN_BG_COLOR);
+  //     tft.setTransparentColor(MAIN_BG_COLOR);
+  //     stage = 0;
+  //     return;
+  //   }
 
-    const uint8_t binMaxHeight = 64;
-    const uint16_t move_y = 10;
-    if (stage == 0)
-    {
-      // scroll 3d section
-      //tft.BTE_move(0, binMaxHeight, SCREEN_XRES, SCREEN_YRES - binMaxHeight, offset_x, 0, 0, 0, false);
-      tft.BTE_move(100, move_y, SCREEN_XRES - 100, SCREEN_YRES - binMaxHeight - move_y, 100 + offset_x, 0, 0, 0, false);
-      stage = 1;
-      return;
-    }
+  //   const uint8_t binMaxHeight = 64;
+  //   const uint16_t move_y = 10;
+  //   if (stage == 0)
+  //   {
+  //     // scroll 3d section
+  //     //tft.BTE_move(0, binMaxHeight, SCREEN_XRES, SCREEN_YRES - binMaxHeight, offset_x, 0, 0, 0, false);
+  //     tft.BTE_move(100, move_y, SCREEN_XRES - 100, SCREEN_YRES - binMaxHeight - move_y, 100 + offset_x, 0, 0, 0, false);
+  //     stage = 1;
+  //     return;
+  //   }
 
-    if ( (stage == 1) && !tft.readStatus() ) stage = 2;
+  //   if ( (stage == 1) && !tft.readStatus() ) stage = 2;
 
-    if (stage == 2)
-    {
-      // copy latest fft with transparency
-      //tft.BTE_move(0, binMaxHeight, SCREEN_XRES, SCREEN_YRES - binMaxHeight, offset_x, 0, 0, 0, false);
-      tft.BTE_move(100, SCREEN_YRES - binMaxHeight, 300, binMaxHeight, 100, SCREEN_YRES - 2 * binMaxHeight, 0, 0, true, 224);
-      stage = 3;
-      return;
-    }
+  //   if (stage == 2)
+  //   {
+  //     // copy latest fft with transparency
+  //     //tft.BTE_move(0, binMaxHeight, SCREEN_XRES, SCREEN_YRES - binMaxHeight, offset_x, 0, 0, 0, false);
+  //     tft.BTE_move(100, SCREEN_YRES - binMaxHeight, 300, binMaxHeight, 100, SCREEN_YRES - 2 * binMaxHeight, 0, 0, true, 224);
+  //     stage = 3;
+  //     return;
+  //   }
 
-    if ( (stage == 3) && !tft.readStatus() ) stage = 4;
+  //   if ( (stage == 3) && !tft.readStatus() ) stage = 4;
 
-    if ( (stage == 4) && fft.available()) stage = 5;
+  //   if ( (stage == 4) && fft.available()) stage = 5;
 
-    if (stage == 5)
-    {
-      // draw here
-      tft.fillRect(100, SCREEN_YRES - binMaxHeight, 300, binMaxHeight, MAIN_BG_COLOR); // Clear row between events
+  //   if (stage == 5)
+  //   {
+  //     // draw here
+  //     tft.fillRect(100, SCREEN_YRES - binMaxHeight, 300, binMaxHeight, MAIN_BG_COLOR); // Clear row between events
 
-      for (uint8_t bin = 0; bin < 128; bin++)
-      {
-        uint8_t binValue = (uint8_t)(fft.read(bin) * binMaxHeight * pow(2, bin/127.0) );
-        //tft.fillRect(100 + (bin << 2), SCREEN_YRES - binValue - 2, 2, 2, MIDIEVENT_ON);
-        tft.drawPixel(100 + (bin << 1), SCREEN_YRES - binValue, MIDIEVENT_ON);
-      }
-      stage = 0; //
-    }
-  }
+  //     for (uint8_t bin = 0; bin < 128; bin++)
+  //     {
+  //       uint8_t binValue = (uint8_t)(fft.read(bin) * binMaxHeight * pow(2, bin/127.0) );
+  //       //tft.fillRect(100 + (bin << 2), SCREEN_YRES - binValue - 2, 2, 2, MIDIEVENT_ON);
+  //       tft.drawPixel(100 + (bin << 1), SCREEN_YRES - binValue, MIDIEVENT_ON);
+  //     }
+  //     stage = 0; //
+  //   }
+  // }
 }
 
 void animateAmpEnvelope(bool firstCall)

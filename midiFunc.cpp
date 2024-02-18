@@ -6,8 +6,6 @@ MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, serialMIDI);
 MidiSettings midiSettings;
 
 IntervalTimer masterClockTimer;
-//Arpeggiator arpeggiator_A(&midiSettings, &voiceBank1, &midiSettings.bank_A_arpMode, &midiSettings.bank_A_arpIntervalTicks);
-//Arpeggiator arpeggiator_B(&midiSettings, &voiceBank2, &midiSettings.bank_B_arpMode, &midiSettings.bank_B_arpIntervalTicks);
 
 Arpeggiator arpeggiator_A(&midiSettings, &voiceBank1);
 Arpeggiator arpeggiator_B(&midiSettings, &voiceBank2);

@@ -26,7 +26,7 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   File file = SD.open(fileName);
   if (!file) return FILE_NOT_EXIST;
 
-  StaticJsonDocument<4896> doc;
+  StaticJsonDocument<5208> doc;
   Patch patch;
   AudioParameters tempAudioPar;
 
@@ -169,6 +169,16 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   patch.osc2_waveTable_stepSize = doc["osc2_waveTable_stepSize"];
   patch.osc2_waveTable_movement = doc["osc2_waveTable_movement"];
   
+  patch.midi_channel = doc["midi_channel"] | 1;
+  patch.midi_lowLimit = doc["midi_lowLimit"] | 0;
+  patch.midi_highLimit = doc["midi_highLimit"] | 127;
+  patch.midi_transpose = doc["midi_transpose"] | 0; 
+  patch.arp_mode = doc["arp_mode"] | 0;
+  patch.arp_intervalTicks = doc["arp_intervalTicks"] | 24;
+  patch.arp_offsetTicks = doc["arp_offsetTicks"] | 0;
+  patch.arp_octaves = doc["arp_octaves"] | 0;
+
+
   // AUDIO PARAMETERS
   tempAudioPar.hpVolume =doc["hpVolume"];
   tempAudioPar.usbGain = doc["usbGain"];
@@ -225,7 +235,7 @@ FLASHMEM void savePatch(uint8_t patchNr)
     return;
   }
 
-  StaticJsonDocument<4896> doc;
+  StaticJsonDocument<5208> doc;
 
   // Set the values in the document
   doc["name"] = patchInfo.name;
@@ -333,7 +343,6 @@ FLASHMEM void savePatch(uint8_t patchNr)
   doc["am_fixedFrequency"] = voiceBanks[currentVoiceBank]->patch.am_fixedFrequency;
 
 
-
   doc["dryLevel"] = voiceBanks[currentVoiceBank]->patch.dryLevel;
   doc["pan"] = voiceBanks[currentVoiceBank]->patch.pan;
   doc["reverbSend"] = voiceBanks[currentVoiceBank]->patch.reverbSend;
@@ -356,6 +365,16 @@ FLASHMEM void savePatch(uint8_t patchNr)
   doc["osc2_waveTable_interval"] = voiceBanks[currentVoiceBank]->patch.osc2_waveTable_interval;
   doc["osc2_waveTable_stepSize"] = voiceBanks[currentVoiceBank]->patch.osc2_waveTable_stepSize;
   doc["osc2_waveTable_movement"] = voiceBanks[currentVoiceBank]->patch.osc2_waveTable_movement;
+
+  doc["midi_channel"] = voiceBanks[currentVoiceBank]->patch.midi_channel;
+  doc["midi_lowLimit"] = voiceBanks[currentVoiceBank]->patch.midi_lowLimit;
+  doc["midi_highLimit"] = voiceBanks[currentVoiceBank]->patch.midi_highLimit;
+  doc["midi_transpose"] = voiceBanks[currentVoiceBank]->patch.midi_transpose;
+  doc["arp_mode"] = voiceBanks[currentVoiceBank]->patch.arp_mode;
+  doc["arp_intervalTicks"] = voiceBanks[currentVoiceBank]->patch.arp_intervalTicks;
+  doc["arp_offsetTicks"] = voiceBanks[currentVoiceBank]->patch.arp_offsetTicks;
+  doc["arp_octaves"] = voiceBanks[currentVoiceBank]->patch.arp_octaves;
+
 
   // AUDIO PARAMETERS
   doc["hpVolume"] = audioParameters.hpVolume;
@@ -380,7 +399,7 @@ FLASHMEM void savePatch(uint8_t patchNr)
   doc["chorus_masterLevel"] = audioParameters.chorus_masterLevel;
   doc["delay_masterLevel"] = audioParameters.delay_masterLevel;
   doc["phaser_masterLevel"] = audioParameters.phaser_masterLevel;
-  
+ 
 
   // Serialize JSON to file
   if (serializeJson(doc, file) == 0) {
@@ -403,7 +422,7 @@ uint8_t peekPatchName(uint8_t patchNr)
 
   File file = SD.open(fileName);
 
-  StaticJsonDocument<4096> doc;
+  StaticJsonDocument<5208> doc;
 
   // // Deserialize the JSON document
   DeserializationError error = deserializeJson(doc, file);
