@@ -120,6 +120,7 @@ void Widget::_drawText(bool selected)
   {
     tft->setCursor(_x + varOffsetX , _y + varOffsetY);
     if (var_ptr_str != nullptr) tft->print(*var_ptr_str);
+    else if ( (var_ptr_charArray != nullptr) && (var_ptr_u8 != nullptr) ) tft->print(var_ptr_charArray[*var_ptr_u8]);
     else if (var_ptr_u8 != nullptr) tft->print(*var_ptr_u8);
     else if (var_ptr_u16 != nullptr) tft->print(*var_ptr_u16);
     else if (var_ptr_f != nullptr) tft->print(*var_ptr_f, floatPrecision);

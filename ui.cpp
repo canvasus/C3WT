@@ -353,19 +353,23 @@ FLASHMEM void configurePage_oscillator()
 
   widgetIndex = pages[PAGE].addWidget(OSC1_WAVEFORM, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Wfm 1");
-  pages[PAGE].widgetPointers[widgetIndex]->drawWaveform = true;
+  //pages[PAGE].widgetPointers[widgetIndex]->drawWaveform = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 70;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBanks[currentVoiceBank]->patch.osc1_waveform;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_charArray = waveformNames;
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
 
   widgetIndex = pages[PAGE].addWidget(OSC2_WAVEFORM, 0* (column_w + padding), 2* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Wfm 2");
-  pages[PAGE].widgetPointers[widgetIndex]->drawWaveform = true;
+  //pages[PAGE].widgetPointers[widgetIndex]->drawWaveform = true;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 70;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBanks[currentVoiceBank]->patch.osc2_waveform;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_charArray = waveformNames;
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
 
   staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 3* (row_h + padding), column_w, row_h);
   pages[PAGE].staticPointers[staticIndex]->label("Pulse");
@@ -518,8 +522,6 @@ FLASHMEM void configurePage_oscillator()
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.fm_level;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
-
- 
 
   // widgetIndex = pages[PAGE].addWidget(OSC1_SYNC, 4* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
   // pages[PAGE].widgetPointers[widgetIndex]->label("Sync:");
@@ -752,7 +754,17 @@ FLASHMEM void configurePage_mix()
   pages[PAGE].staticPointers[staticIndex]->textColor1 = 0xffff;
 
 
-  widgetIndex = pages[PAGE].addWidget(EFX_SEND_DRY, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  widgetIndex = pages[PAGE].addWidget(EFX_PAN, 0* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Pan");
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[0]->patch.pan;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBank1Wrapper;
+  pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
+  pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
+  pages[PAGE].widgetPointers[widgetIndex]->varMin = -1.0;
+
+  widgetIndex = pages[PAGE].addWidget(EFX_SEND_DRY, 0* (column_w + padding), 2* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Dry");
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
@@ -761,7 +773,7 @@ FLASHMEM void configurePage_mix()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(EFX_SEND_REVERB, 0* (column_w + padding), 2* (row_h + padding), column_w, row_h);
+  widgetIndex = pages[PAGE].addWidget(EFX_SEND_REVERB, 0* (column_w + padding), 3* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Rev");
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
@@ -770,7 +782,7 @@ FLASHMEM void configurePage_mix()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(EFX_SEND_CHORUS, 0* (column_w + padding), 3* (row_h + padding), column_w, row_h);
+  widgetIndex = pages[PAGE].addWidget(EFX_SEND_CHORUS, 0* (column_w + padding), 4* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Ch/Ph");
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
@@ -779,7 +791,7 @@ FLASHMEM void configurePage_mix()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(EFX_SEND_DELAY, 0* (column_w + padding), 4* (row_h + padding), column_w, row_h);
+  widgetIndex = pages[PAGE].addWidget(EFX_SEND_DELAY, 0* (column_w + padding), 5* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Del");
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
@@ -788,8 +800,18 @@ FLASHMEM void configurePage_mix()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
+  
+  widgetIndex = pages[PAGE].addWidget(EFX_PAN, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Pan");
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[1]->patch.pan;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBank2Wrapper;
+  pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
+  pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
+  pages[PAGE].widgetPointers[widgetIndex]->varMin = -1.0;
 
- widgetIndex = pages[PAGE].addWidget(EFX_SEND_DRY, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h);
+  widgetIndex = pages[PAGE].addWidget(EFX_SEND_DRY, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Dry");
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
@@ -798,7 +820,7 @@ FLASHMEM void configurePage_mix()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(EFX_SEND_REVERB, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h);
+  widgetIndex = pages[PAGE].addWidget(EFX_SEND_REVERB, 1* (column_w + padding), 3* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Rev");
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
@@ -807,7 +829,7 @@ FLASHMEM void configurePage_mix()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(EFX_SEND_CHORUS, 1* (column_w + padding), 3* (row_h + padding), column_w, row_h);
+  widgetIndex = pages[PAGE].addWidget(EFX_SEND_CHORUS, 1* (column_w + padding), 4* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Ch/Ph");
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
@@ -816,7 +838,7 @@ FLASHMEM void configurePage_mix()
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
 
-  widgetIndex = pages[PAGE].addWidget(EFX_SEND_DELAY, 1* (column_w + padding), 4* (row_h + padding), column_w, row_h);
+  widgetIndex = pages[PAGE].addWidget(EFX_SEND_DELAY, 1* (column_w + padding), 5* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Del");
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = varOffsetY;
@@ -824,6 +846,7 @@ FLASHMEM void configurePage_mix()
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBank2Wrapper;
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
   pages[PAGE].widgetPointers[widgetIndex]->fontSize = 14;
+
 
   widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 700, 430, 100, 50);
   pages[PAGE].widgetPointers[widgetIndex]->label("<BACK");
@@ -1487,6 +1510,7 @@ FLASHMEM void configurePage_wavetableOsc1()
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBanks[currentVoiceBank]->patch.osc1_waveTable_mode;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_charArray = waveTableModes;
 
   widgetIndex = pages[PAGE].addWidget(OSC1_WAVETABLE_START, 0, 3 * (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("strt");
@@ -1522,6 +1546,7 @@ FLASHMEM void configurePage_wavetableOsc1()
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBanks[currentVoiceBank]->patch.osc1_waveTable_movement;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_charArray = waveTableMovement;
 
 
   widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, SCREEN_XRES - column_w, SCREEN_YRES - 44, column_w, 44);
@@ -1565,6 +1590,7 @@ FLASHMEM void configurePage_wavetableOsc2()
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBanks[currentVoiceBank]->patch.osc2_waveTable_mode;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_charArray = waveTableModes;
 
   widgetIndex = pages[PAGE].addWidget(OSC2_WAVETABLE_START, 0, 3 * (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("strt");
@@ -1600,15 +1626,13 @@ FLASHMEM void configurePage_wavetableOsc2()
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBanks[currentVoiceBank]->patch.osc2_waveTable_movement;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_charArray = waveTableMovement;
 
 
-
-  //widgetIndex = pages[PAGE].addWidget(0, 1 * (column_w + padding), SCREEN_YRES - 44, column_w, 44);
-  //pages[PAGE].widgetPointers[widgetIndex]->label("cp1");
-  //pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
-  //pages[PAGE].widgetPointers[widgetIndex]->activateCb = &copyWavetableSettings;
-
-
+  widgetIndex = pages[PAGE].addWidget(PAGE_WAVETABLE_OSC1, 1 * (column_w + padding), SCREEN_YRES - 44, column_w, 44);
+  pages[PAGE].widgetPointers[widgetIndex]->label("OSC1");
+  pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
+  
   widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, SCREEN_XRES - column_w, SCREEN_YRES - 44, column_w, 44);
   pages[PAGE].widgetPointers[widgetIndex]->label("<BACK");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
@@ -2081,6 +2105,7 @@ FLASHMEM void configurePageArpeggiator()
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank1.patch.arp_mode;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_charArray = arpModeNames;
 
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_ARP_INTERVAL, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("int");
@@ -2125,6 +2150,7 @@ FLASHMEM void configurePageArpeggiator()
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank2.patch.arp_mode;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_charArray = arpModeNames;
   
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_ARP_INTERVAL, 2* (column_w + padding), 2* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("int");

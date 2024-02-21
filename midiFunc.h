@@ -48,6 +48,7 @@ extern uint8_t noteStatus[128];
 extern uint8_t midiActivity;
 extern bool usbDeviceStatus;
 extern bool usbPcStatus;
+extern char arpModeNames[NR_ARP_MODES][6];
 
 struct MidiSettings
 {
@@ -78,6 +79,7 @@ class Arpeggiator
     uint8_t _octave = 0;
     uint8_t _direction = ARP_DIRECTION_UP;
     bool _oldStepTrigger = false;
+    uint8_t _notePlaying = 0;
     MidiSettings * _midiSettings;
     VoiceBank * _voiceBank;
     void _printNotes();

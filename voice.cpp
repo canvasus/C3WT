@@ -48,6 +48,9 @@ const String waveTableNames[NR_WAVETABLES] = {"Pleasant", "MicroWave2 ", "Learni
                                         "Roland", "Transform"};
 
 
+char waveTableModes[2][6] = {"scan", "morph"};
+char waveTableMovement[2][6] = {"loop", "up"};
+
 FLASHMEM Voice::Voice()
 {
   _connectionIndex = 0;
@@ -1076,19 +1079,19 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
 
     case EFX_SEND_DRY:
       targetValueF = patch.dryLevel + delta * 0.05;
-      patch.dryLevel = constrain(targetValueF, 0.0, 2.0);
+      patch.dryLevel = constrain(targetValueF, 0.0, 1.0);
       output_dry_L.gain(_getPannedLevel(patch.dryLevel, LEFT));
       output_dry_R.gain(_getPannedLevel(patch.dryLevel, RIGHT));
       break;
     case EFX_SEND_REVERB:
       targetValueF = patch.reverbSend + delta * 0.05;
-      patch.reverbSend = constrain(targetValueF, 0.0, 2.0);
+      patch.reverbSend = constrain(targetValueF, 0.0, 1.0);
       output_reverbSend_L.gain(patch.reverbSend);
       output_reverbSend_R.gain(patch.reverbSend);
       break;
     case EFX_SEND_CHORUS:
       targetValueF = patch.chorusSend + delta * 0.05;
-      patch.chorusSend = constrain(targetValueF, 0.0, 2.0);
+      patch.chorusSend = constrain(targetValueF, 0.0, 1.0);
       output_chorusSend.gain(patch.chorusSend);
       break;
     //case EFX_SEND_PHASER:
@@ -1098,10 +1101,14 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       //break;
     case EFX_SEND_DELAY:
       targetValueF = patch.delaySend + delta * 0.05;
-      patch.delaySend = constrain(targetValueF, 0.0, 2.0);
+      patch.delaySend = constrain(targetValueF, 0.0, 1.0);
       output_delaySend.gain(patch.delaySend);
       break;
-
+    case EFX_PAN:
+      targetValueF = patch.pan + delta * 0.05;
+      patch.pan = constrain(targetValueF, -1.0, 1.0);
+      setEfx();
+      break;
     case LFO1_WAVEFORM:
       targetValueU8 = patch.lfo1_waveform + delta;
       patch.lfo1_waveform = constrain(targetValueU8, 0, (nrWaveforms - 1));

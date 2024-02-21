@@ -20,7 +20,7 @@
 #define FILTER_MAX_CUTOFF 13600
 #define FILTER_OCTAVECONTROL 7
 
-// 118
+// 119
 #define POLY_MODE 106
 #define MONO_MODE 114
 
@@ -145,6 +145,8 @@
 #define LFO1_FILTER_CUTOFF 84
 #define LFO2_FILTER_CUTOFF 85
 
+#define EFX_PAN 118
+
 #define MODMIXER_ENV3_CH  0
 #define MODMIXER_LFO1_CH  1
 #define MODMIXER_LFO2_CH  2
@@ -173,6 +175,9 @@ extern int16_t * activeWaveTables[4];
 
 extern const String waveTableNames[NR_WAVETABLES];
 extern char waveformNames[NR_WAVEFORMS][6];
+extern char waveTableModes[2][6];
+extern char waveTableMovement[2][6];
+
 
 struct Patch
 {

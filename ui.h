@@ -121,6 +121,8 @@
 #define WIDGET_BOX_POT 5
 #define WIDGET_TOGGLE 6
 
+#define WIDGET_STRINGWIDTH 6
+
 #define MAX_WIDGETS 64
 #define MAX_STATICS 16
 
@@ -206,7 +208,7 @@ class Widget
     uint8_t varOffsetX = 2;
     uint8_t varOffsetY = 4;
 
-    uint8_t fontSize = 16;
+    uint8_t fontSize = 14;
     uint8_t floatPrecision = 2;
     uint16_t sliderHandleRadius = 10;
     uint16_t slider_header_h = 0;
@@ -225,6 +227,7 @@ class Widget
     float * var_ptr_f = nullptr;
     String * var_ptr_str = nullptr;
     char * var_ptr_char = nullptr;
+    char (*var_ptr_charArray)[WIDGET_STRINGWIDTH] = nullptr;
 };
 
 class Page
@@ -251,7 +254,7 @@ class Page
     uint8_t selectedId = 0;
     uint16_t color1 = 0;
     uint16_t color2 = 0;
-    uint8_t fontSize = 18;
+    uint8_t fontSize = 16;
     bool clearOnFirstCall = true;
     int checkTouch(uint16_t xPos, uint16_t yPos, uint8_t eventType);
     uint8_t draw(bool firstCall);

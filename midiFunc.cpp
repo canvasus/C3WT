@@ -10,6 +10,8 @@ IntervalTimer masterClockTimer;
 Arpeggiator arpeggiator_A(&midiSettings, &voiceBank1);
 Arpeggiator arpeggiator_B(&midiSettings, &voiceBank2);
 
+char arpModeNames[NR_ARP_MODES][6] = {"off", "up", "down", "cycle"};
+
 USBHost myusb;
 USBHub hub1(myusb);
 MIDIDevice_BigBuffer midi1(myusb);
@@ -78,7 +80,8 @@ void myNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
   {
     noteStatus[note] = velocity;
     if(voiceBank1.patch.arp_mode == ARP_OFF) voiceBank1.noteOn(note + voiceBank1.patch.midi_transpose, velocity);
-    arpeggiator_A.addNote(note + voiceBank1.patch.midi_transpose);
+    //arpeggiator_A.addNote(note + voiceBank1.patch.midi_transpose);
+    arpeggiator_A.addNote(note);
     midiActivity = 1;
   }
 
@@ -198,11 +201,11 @@ void updateArpeggiator()
   arpeggiator_B.update();
 }
 
-void setArpeggiatorMode(uint8_t bank, int8_t delta)
-{
-  if (bank == 0) voiceBank1.patch.arp_mode = constrain(voiceBank1.patch.arp_mode + delta, 0, NR_ARP_MODES - 1);
-  else voiceBank2.patch.arp_mode = constrain(voiceBank2.patch.arp_mode + delta, 0, NR_ARP_MODES - 1);
-}
+// void setArpeggiatorMode(uint8_t bank, int8_t delta)
+// {
+//   if (bank == 0) voiceBank1.patch.arp_mode = constrain(voiceBank1.patch.arp_mode + delta, 0, NR_ARP_MODES - 1);
+//   else voiceBank2.patch.arp_mode = constrain(voiceBank2.patch.arp_mode + delta, 0, NR_ARP_MODES - 1);
+// }
 
 void adjustBpm(uint8_t dummy, int8_t delta)
 {
@@ -328,7 +331,8 @@ void Arpeggiator::update()
     if ( stepTrigger && !_oldStepTrigger) // rising edge
     {
       // new step
-      _voiceBank->noteOff(_notesPressed[_step] + _octave * 12, 0);
+      _voiceBank->noteOff(_notePlaying, 0);
+      //_voiceBank->noteOff(_notesPressed[_step] + _octave * 12, 0);
 
       //if (_step >= (_nrNotesPressed - 1) ) _octave++;
       //if (_octave > _voiceBank->patch.arp_octaves) _octave = 0;
@@ -360,7 +364,9 @@ void Arpeggiator::update()
       }
       
       if (_octave > _voiceBank->patch.arp_octaves) _octave = 0;
-      _voiceBank->noteOn(_notesPressed[_step] + _octave * 12, 127);
+      _notePlaying = _notesPressed[_step] + _octave * 12;
+      //_voiceBank->noteOn(_notesPressed[_step] + _octave * 12, 127);
+      _voiceBank->noteOn(_notePlaying, 127);
     }
 
     else   
@@ -380,12 +386,13 @@ void Arpeggiator::addNote(uint8_t note)
     _nrNotesPressed++;
     qsort(_notesPressed, MAX_ARP_NOTES, sizeof(uint8_t), compare);
   }
-  //_printNotes();
+  _printNotes();
 }
 
 void Arpeggiator::removeNote(uint8_t note)
 {
   if (_voiceBank->patch.arp_mode != ARP_OFF) _voiceBank->noteOff(note + _octave * 12, 0);
+
   for(uint8_t i = 0; i < MAX_ARP_NOTES; i++)
   {
     if(_notesPressed[i] == note)
@@ -398,7 +405,7 @@ void Arpeggiator::removeNote(uint8_t note)
   qsort(_notesPressed, MAX_ARP_NOTES, sizeof(uint8_t), compare);
   if (_nrNotesPressed > 0) _step = min(_step, _nrNotesPressed - 1);
   else _step = 0;
-  //_printNotes();
+  _printNotes();
 }
 
 void Arpeggiator::reset()
@@ -406,6 +413,7 @@ void Arpeggiator::reset()
   _step = 0;
   memset(_notesPressed, 255, MAX_ARP_NOTES);
   _nrNotesPressed = 0;
+  _notePlaying = 0;
 }
 
 void Arpeggiator::_printNotes()
