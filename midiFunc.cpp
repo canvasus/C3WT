@@ -80,7 +80,6 @@ void myNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
   {
     noteStatus[note] = velocity;
     if(voiceBank1.patch.arp_mode == ARP_OFF) voiceBank1.noteOn(note + voiceBank1.patch.midi_transpose, velocity);
-    //arpeggiator_A.addNote(note + voiceBank1.patch.midi_transpose);
     arpeggiator_A.addNote(note);
     midiActivity = 1;
   }
@@ -91,7 +90,7 @@ void myNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
   {
     noteStatus[note] = velocity;
     if(voiceBank2.patch.arp_mode == ARP_OFF) voiceBank2.noteOn(note + voiceBank2.patch.midi_transpose, velocity);
-    arpeggiator_B.addNote(note + voiceBank2.patch.midi_transpose);
+    arpeggiator_B.addNote(note);
     midiActivity = 1;
   }
 
@@ -110,7 +109,7 @@ void myNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
   {
     noteStatus[note] = 0;
     if(voiceBank1.patch.arp_mode == ARP_OFF) voiceBank1.noteOff(note + voiceBank1.patch.midi_transpose, velocity);
-    arpeggiator_A.removeNote(note + voiceBank1.patch.midi_transpose);
+    arpeggiator_A.removeNote(note);
     midiActivity = 0;
   }
 
@@ -120,7 +119,7 @@ void myNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
   {
     noteStatus[note] = 0;
     if(voiceBank2.patch.arp_mode == ARP_OFF) voiceBank2.noteOff(note + voiceBank2.patch.midi_transpose, velocity);
-    arpeggiator_B.removeNote(note + voiceBank2.patch.midi_transpose);
+    arpeggiator_B.removeNote(note);
     midiActivity = 0;
   }
 }
@@ -364,7 +363,7 @@ void Arpeggiator::update()
       }
       
       if (_octave > _voiceBank->patch.arp_octaves) _octave = 0;
-      _notePlaying = _notesPressed[_step] + _octave * 12;
+      _notePlaying = _notesPressed[_step] + _octave * 12 + _voiceBank->patch.midi_transpose;
       //_voiceBank->noteOn(_notesPressed[_step] + _octave * 12, 127);
       _voiceBank->noteOn(_notePlaying, 127);
     }
@@ -410,8 +409,16 @@ void Arpeggiator::removeNote(uint8_t note)
 
 void Arpeggiator::reset()
 {
+  for(uint8_t i = 0; i < MAX_ARP_NOTES; i++)
+  {
+    if(_notesPressed[i] < 255)
+    {
+      _voiceBank->noteOff(_notesPressed[i] + _octave * 12, 0);
+      _notesPressed[i] = 255;
+    }
+  }
   _step = 0;
-  memset(_notesPressed, 255, MAX_ARP_NOTES);
+  //memset(_notesPressed, 255, MAX_ARP_NOTES);
   _nrNotesPressed = 0;
   _notePlaying = 0;
 }

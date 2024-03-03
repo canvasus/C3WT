@@ -47,6 +47,9 @@
 #define HBAR_BG_SELECTED_COLOR      0x630c
 #define HBAR_BORDER_COLOR           BORDER_COLOR
 
+#define SHAPE_GRAPH_COLOR           0x6c35
+#define SHAPE_GRAPH_BG_COLOR        0x630c
+
 
 // --- new color scheme test ----
 
@@ -322,6 +325,7 @@ void animateMidiInput();
 void animateBpm(bool firstCall);
 void animateSystemPage(bool firstCall);
 void animateMeter(bool firstCall);
+void animateWaveShaper(bool firstCall);
 
 int16_t getEncoderDirection(uint8_t encoderNr);
 uint8_t updateButton(uint8_t buttonNr);

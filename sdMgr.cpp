@@ -58,6 +58,9 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   patch.pulse_level =  doc["pulse_level"];
   patch.noise_level = doc["noise_level"];
 
+  patch.waveshaper_index = doc["waveshaper_index"] | 0;
+  patch.waveshaper_level = doc["waveshaper_level"] | 0.0;
+
   patch.phaseModulation = doc["phaseModulation"];
   patch.frequencyModulation = doc["frequencyModulation"];
 
@@ -252,6 +255,9 @@ FLASHMEM void savePatch(uint8_t patchNr)
   doc["osc2_level"] = voiceBanks[currentVoiceBank]->patch.osc2_level;
   doc["pulse_level"] = voiceBanks[currentVoiceBank]->patch.pulse_level;
   doc["noise_level"] = voiceBanks[currentVoiceBank]->patch.noise_level;
+
+  doc["waveshaper_index"] = voiceBanks[currentVoiceBank]->patch.waveshaper_index;
+  doc["waveshaper_level"] = voiceBanks[currentVoiceBank]->patch.waveshaper_level;
 
   doc["phaseModulation"] = voiceBanks[currentVoiceBank]->patch.phaseModulation;
   doc["frequencyModulation"] = voiceBanks[currentVoiceBank]->patch.frequencyModulation;

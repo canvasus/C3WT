@@ -40,6 +40,7 @@ SideChain sideChain;
 
 VoiceBank * voiceBanks[2] = {&voiceBank1, &voiceBank2};
 uint8_t currentVoiceBank = 0;
+char voiceBankNames[2][6] = {"A", "B"};
 
 AudioParameters audioParameters;
 
@@ -93,11 +94,14 @@ FLASHMEM void setupAudio()
 
   // PHASER + CHORUS ROUTING
   connect(chorusInputMixer, 0, phaser , 0); 
-  connect(phaser, 0, chorusPhaserBoost , 0); 
-  connect(chorusPhaserBoost, 0, chorus , 0); 
+  connect(phaser, 0, chorus , 0);
+  //connect(phaser, 0, chorusPhaserBoost , 0); 
+  //connect(chorusPhaserBoost, 0, chorus , 0);
   connect(chorus, 0, fxReturnMixerL, 1);
   connect(chorus, 1, fxReturnMixerR, 1);
-  chorusPhaserBoost.gain(1.5);
+  fxReturnMixerL.gain(1, 1.6);
+  fxReturnMixerR.gain(1, 1.6);
+  //chorusPhaserBoost.gain(1.5);
 
   // DELAY ROUTING
   connect(delayInputMixer_L, 0, delayL, 0);

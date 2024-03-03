@@ -2,7 +2,6 @@
 
 #include <Audio.h>
 #include "src/P3_synth_waveform.h"
-//#include "midiFunc.h"
 // note: imported waveTables assumed to be 8193 samples, use wav2sketch 44100Hz/PCM
 
 #define ARBITRARY_LENGTH 8193
@@ -20,7 +19,16 @@
 #define FILTER_MAX_CUTOFF 13600
 #define FILTER_OCTAVECONTROL 7
 
-// 119
+#define NR_WAVESHAPE_MODELS 4
+
+enum ParameterIndexes
+{
+  OSC1_WAVEFORM,
+  OSC2_WAVEFORM,
+  TRANSPOSE
+};
+
+// Next parameter index: 121
 #define POLY_MODE 106
 #define MONO_MODE 114
 
@@ -146,6 +154,8 @@
 #define LFO2_FILTER_CUTOFF 85
 
 #define EFX_PAN 118
+#define WAVESHAPER_INDEX 119
+#define WAVESHAPER_LEVEL 120
 
 #define MODMIXER_ENV3_CH  0
 #define MODMIXER_LFO1_CH  1
@@ -164,7 +174,6 @@
 #define WAVETABLE_LENGTH 8192
 
 #define NR_WAVEFORMS 8
-//const uint8_t MAX_WAVEFORM_INDEX = 7;
 
 extern int16_t waveTable1_I16[WAVETABLE_LENGTH];
 extern int16_t waveTable2_I16[WAVETABLE_LENGTH];
@@ -291,6 +300,9 @@ struct Patch
   float am_level = 0.0;
   uint8_t osc_am_waveform = 0;
   uint8_t am_fixedFrequency = 0;
+
+  uint8_t waveshaper_index = 0;
+  float waveshaper_level = 0.0;
 
   float dryLevel = 0.8;
   float pan = 0.0; // center
@@ -444,7 +456,12 @@ class VoiceBank
     AudioAnalyzePeak    _lfo2Peak;
     AudioSynthWaveformDc _modDc;
     
-    AudioFilterStateVariable dcOffsetFilter;
+    AudioFilterStateVariable _dcOffsetFilter;
+
+    AudioEffectWaveshaper _waveShaper;
+    //float _waveShapeArray[3] = {-1.0, 0, 1.0};
+    
+    void _setWaveshaper();
     
     uint16_t _connectionIndex = 0;
     void _connect(AudioStream &source, unsigned char sourceOutput, AudioStream &destination, unsigned char destinationInput);
@@ -464,7 +481,9 @@ class VoiceBank
     AudioAmplifier  output_chorusSend;
     AudioAmplifier  output_delaySend;
 
-    AudioSynthWaveformSine overTone;
+    //AudioSynthWaveformSine overTone;
+
+    float waveShapeArray[65];
 
     void update();
     void configure();
