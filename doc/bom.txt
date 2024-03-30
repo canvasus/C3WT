@@ -1,10 +1,10 @@
 Part		Low USD		SEK (freight + tax)
 ------------------------------------------
-Teensy 4.1	30		699
-ER-TFT070M/cap	49		770		
-Pcb				50
+Teensy 4.1	30		550
+ER-TFT070M/cap	49		1020		
+Pcb				60
 Codec		4		80
-Connectors			38
-Optocoupler			16
+Connectors			40
+Optocoupler			15
 --------------------------------------
-				1653	
+				1765

@@ -18,15 +18,15 @@
 #define RA8875_MOSI   11  // ER-TFTM070 pin 7
 #define RA8875_MISO   12  // ER-TFTM070 pin 6
 #define RA8875_SCLK   13  // ER-TFTM070 pin 8
-#define RA8875_INT    32  // FT5206 interrupt, ER-TFTM070 pin 33
+#define RA8875_INT    31  // FT5206 interrupt, ER-TFTM070 pin 33 . Note: 32 on SN 001!!
 
 #define MAXTOUCHLIMIT   1 // 1...5
 #define CTP_FINGER_UP   1
 #define CTP_FINGER_DOWN 2
 
-#define ENC1_A  38 //36
-#define ENC1_B  37 //37
-#define ENC1_SW 36 //38
+#define ENC1_A  38 // J7 pin 4
+#define ENC1_B  37 // J7 pin 3
+#define ENC1_SW 36 // J7 pin 2 (GND = 1
 
 #define SCREEN_SAVER_TIME 120 * 1000
 
