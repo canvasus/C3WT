@@ -53,6 +53,7 @@ float mainLoopTime = 0;
 
 FLASHMEM void setupAudio()
 {
+  Serial.println("Audio SETUP");
   AudioMemory(600);
 
   codecControl1.setAddress(0x1A);
@@ -280,7 +281,7 @@ void adjustAudioParameter(uint8_t parameter, int8_t delta)
       setDelay();
       break;
     case DELAY_TIME:
-      targetValueF = audioParameters.delay_time + delta * 20;
+      targetValueF = audioParameters.delay_time + delta * 5;
       audioParameters.delay_time = constrain(targetValueF, 20, 400);
       setDelay();
       break;

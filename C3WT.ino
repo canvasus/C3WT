@@ -20,4 +20,5 @@ void loop()
   updateVoices();
   updateMidi();
   updateUI();
+  updateSerial();
 }

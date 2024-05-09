@@ -165,6 +165,17 @@ void myPitchBend(uint8_t channel, int pitchBend)
   if (channel == voiceBank2.patch.midi_channel) voiceBank2.setPitchBend(pitchBend);
 }
 
+void myProgramChange(uint8_t channel, uint8_t program)
+{
+
+}
+
+void mySystemExclusive(uint8_t *data, unsigned int length)
+{
+  
+}
+
+
 void myMIDIClock()
 {
   static uint8_t counter = 0;
@@ -360,6 +371,8 @@ void Arpeggiator::update()
           if (_step >= (_nrNotesPressed - 1) ) _direction = ARP_DIRECTION_DOWN;
           if (_step == 0) _direction = ARP_DIRECTION_UP;
           break;
+        case ARP_CHORD:
+          break;
       }
       
       if (_octave > _voiceBank->patch.arp_octaves) _octave = 0;
@@ -385,7 +398,7 @@ void Arpeggiator::addNote(uint8_t note)
     _nrNotesPressed++;
     qsort(_notesPressed, MAX_ARP_NOTES, sizeof(uint8_t), compare);
   }
-  _printNotes();
+  //_printNotes();
 }
 
 void Arpeggiator::removeNote(uint8_t note)
@@ -404,7 +417,7 @@ void Arpeggiator::removeNote(uint8_t note)
   qsort(_notesPressed, MAX_ARP_NOTES, sizeof(uint8_t), compare);
   if (_nrNotesPressed > 0) _step = min(_step, _nrNotesPressed - 1);
   else _step = 0;
-  _printNotes();
+  //_printNotes();
 }
 
 void Arpeggiator::reset()

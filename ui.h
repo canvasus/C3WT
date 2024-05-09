@@ -129,6 +129,8 @@
 #define MAX_WIDGETS 64
 #define MAX_STATICS 16
 
+extern bool forceReload;
+
 typedef void (*SetFunctionI8)(uint8_t index, int8_t value);
 typedef void (*SetFunctionF)(uint8_t index, float value);
 typedef void (*ActivateCb)(uint8_t index); 
@@ -294,6 +296,7 @@ void configurePageArpeggiator();
 void updateVarPointers(uint8_t bankId);
 
 void setPage(uint8_t page);
+void setPageWrapper(uint8_t page, int8_t dummy);
 void changePatch(uint8_t callerId, int8_t delta);
 void adjustVoiceBankWrapper(uint8_t index, int8_t delta);
 void adjustVoiceBank1Wrapper(uint8_t index, int8_t delta);

@@ -49,7 +49,7 @@ const String waveTableNames[NR_WAVETABLES] = {"Pleasant", "MicroWave2 ", "Learni
 
 
 char waveTableModes[2][6] = {"scan", "morph"};
-char waveTableMovement[2][6] = {"loop", "up"};
+char waveTableMovement[NR_WT_PLAYMODES][6] = {"loop", "up", "lfo1", "lfo2"};
 
 float waveshaper_default[3] = {-1.0, 0.0, 1.0};
 char waveShaperNames[NR_WAVESHAPE_MODELS][6] = {"off", "odr", "dist", "comp"};
@@ -200,6 +200,13 @@ void Voice::update()
     if (_patch->osc2_waveTable_mode == WAVETABLE_MODE_PHASESCAN) _updateWaveTable2_phaseScan();
     else if(_patch->osc2_waveTable_mode == WAVETABLE_MODE_MORPH) _updateWaveTable2_morph();
   }
+
+  if (!_ampEnvelope.isActive())
+  {
+    _osc1.frequency(0.0);
+    _osc2.frequency(0.0);
+    _pwm.frequency(0.0);
+  }
 }
 
 void Voice::_updateWaveTable1_phaseScan()
@@ -245,17 +252,30 @@ void Voice::_updateWaveTable2_phaseScan()
 void Voice::_updateWaveTable1_morph()
 {
   // assumes 2* 8192 = 16384 length
-  if (_scanDirection1 == RIGHT)
+  switch (_patch->osc1_waveTable_movement)
   {
-    _waveOffset1 = min(_waveOffset1 + _patch->osc1_waveTable_stepSize, _patch->osc1_waveTable_start + _patch->osc1_waveTable_length);
-    if ( (_waveOffset1 >= (_patch->osc1_waveTable_start + _patch->osc1_waveTable_length) ) && (_patch->osc1_waveTable_movement == WAVETABLE_PLAYMODE_UPDOWN) ) _scanDirection1 = LEFT;
-    if (_waveOffset1 > (2* WAVETABLE_LENGTH - 257) ) _waveOffset1 = 2*WAVETABLE_LENGTH - 257;
-  }
-  else if (_scanDirection1 == LEFT)
-  {
-    if (_patch->osc1_waveTable_stepSize > _waveOffset1) _waveOffset1 = 0;
-    else _waveOffset1 = _waveOffset1 - _patch->osc1_waveTable_stepSize;
-    if (_waveOffset1 <= _patch->osc1_waveTable_start) _scanDirection1 = RIGHT;
+    case WAVETABLE_PLAYMODE_LFO1:
+      _waveOffset1 = _patch->osc1_waveTable_start + (_patch->osc1_waveTable_length >> 1) +  lfo1Value * (_patch->osc1_waveTable_length >> 1);
+      if (_waveOffset1 > (2* WAVETABLE_LENGTH - 257) ) _waveOffset1 = 2*WAVETABLE_LENGTH - 257;
+      break;
+    case WAVETABLE_PLAYMODE_LFO2:
+      _waveOffset1 = _patch->osc1_waveTable_start + lfo2Value * _patch->osc1_waveTable_length;
+      if (_waveOffset1 > (2* WAVETABLE_LENGTH - 257) ) _waveOffset1 = 2*WAVETABLE_LENGTH - 257;
+      break;
+    default:
+      if (_scanDirection1 == RIGHT)
+      {
+        _waveOffset1 = min(_waveOffset1 + _patch->osc1_waveTable_stepSize, _patch->osc1_waveTable_start + _patch->osc1_waveTable_length);
+        if ( (_waveOffset1 >= (_patch->osc1_waveTable_start + _patch->osc1_waveTable_length) ) && (_patch->osc1_waveTable_movement == WAVETABLE_PLAYMODE_UPDOWN) ) _scanDirection1 = LEFT;
+        if (_waveOffset1 > (2* WAVETABLE_LENGTH - 257) ) _waveOffset1 = 2*WAVETABLE_LENGTH - 257;
+      }
+      else if (_scanDirection1 == LEFT)
+      {
+        if (_patch->osc1_waveTable_stepSize > _waveOffset1) _waveOffset1 = 0;
+        else _waveOffset1 = _waveOffset1 - _patch->osc1_waveTable_stepSize;
+        if (_waveOffset1 <= _patch->osc1_waveTable_start) _scanDirection1 = RIGHT;
+      }
+      break;
   }
 
   float crossFade = (_waveOffset1 % 256) / 256.0;
@@ -373,9 +393,9 @@ void Voice::applyPatchData()
   _osc1.amplitude(1.0);
   _osc2.amplitude(1.0);
 
-  _osc_AM.begin(1.0, 440.0f, waveformList[_patch->osc_am_waveform]);
-  _osc_FM.begin(1.0, 440.0f, waveformList[_patch->osc_fm_waveform]);
-  _pwm.frequency(440.0f);
+  _osc_AM.begin(1.0, 0.0f, waveformList[_patch->osc_am_waveform]);
+  _osc_FM.begin(1.0, 0.0f, waveformList[_patch->osc_fm_waveform]);
+  _pwm.frequency(0.0f);
 
   _osc1.phaseModulation(_patch->phaseModulation);
   _osc2.phaseModulation(_patch->phaseModulation);
@@ -470,8 +490,13 @@ void Voice::setEnv3()
 void Voice::setFilter()
 {
   _filter.frequency( (FILTER_MAX_CUTOFF / 9) * (pow(10, _patch->cutoff) - 1) );
+  #ifndef USE_LADDER_FILTER
   _filter.resonance(0.7 + 4.3 * _patch->resonance);  // Chamberlin
-  //_filter.resonance(1.8 * _patch->resonance);  // Ladder
+  #endif
+
+  #ifdef USE_LADDER_FILTER
+  _filter.resonance(1.8 * _patch->resonance);  // Ladder
+  #endif
 }
 
 void Voice::setOscMixer(uint8_t oscillatorId)
@@ -636,6 +661,8 @@ void VoiceBank::configure()
 
   _lfo1.begin(0.2, 1.0, waveformList[0]);
   _lfo2.begin(0.9, 1.0, waveformList[0]);
+  _connect(_lfo1, 0, _lfo1Peak, 0);
+  _connect(_lfo2, 0, _lfo2Peak, 0);
   //_lfo1.offset(-0.5);
   //_lfo2.offset(-0.5);
   _modDc.amplitude(0.0);
@@ -653,8 +680,12 @@ void VoiceBank::configure()
 void VoiceBank::update()
 {
   // update audiostream --> number modulation etc
-  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].update();
-  
+  for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++)
+  {
+    if(_lfo1Peak.available()) voices[voiceIndex].lfo1Value = _lfo1Peak.read();
+    if(_lfo2Peak.available()) voices[voiceIndex].lfo2Value = _lfo2Peak.read();
+    voices[voiceIndex].update();
+  }
 }
 
 void VoiceBank::noteOn(uint8_t note, uint8_t velocity)
@@ -864,18 +895,12 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       break;
 
     case FILTER_CUTOFF:
-      // if (patch.cutoff < 1) targetValueF = patch.cutoff + delta * 0.1;
-      // else if (patch.cutoff < 10) targetValueF = patch.cutoff + delta;
-      // else if (patch.cutoff < 100) targetValueF = patch.cutoff + delta * 10;
-      // else if (patch.cutoff < 1000) targetValueF = patch.cutoff + delta * 100;
-      // else targetValueF = patch.cutoff + delta * 500;
-      targetValueF = patch.cutoff + delta * 0.02;
-      //patch.cutoff = constrain(targetValueF, 0.0, FILTER_MAX_CUTOFF);
+      targetValueF = patch.cutoff + delta * 0.01;
       patch.cutoff = constrain(targetValueF, 0.0, 1.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
       break;
     case FILTER_RESONANCE:
-      targetValueF = patch.resonance + delta * 0.05;
+      targetValueF = patch.resonance + delta * 0.02;
       patch.resonance = constrain(targetValueF, 0.0, 1.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
       break;
@@ -1155,6 +1180,16 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       patch.lfo2Level = constrain(targetValueF, 0.0, 1.0);
       _lfo2.amplitude(patch.lfo2Level);
       break;
+    case LFO1_OFFSET:
+      targetValueF = patch.lfo1Offset + delta * 0.05;
+      patch.lfo1Offset = constrain(targetValueF, -1.0, 1.0);
+      _lfo1.offset(patch.lfo1Offset);
+      break;
+    case LFO2_OFFSET:
+      targetValueF = patch.lfo2Offset + delta * 0.05;
+      patch.lfo2Offset = constrain(targetValueF, -1.0, 1.0);
+      _lfo2.offset(patch.lfo2Offset);
+      break;
   
     case MOD_ENV3_LFO1_AMPLITUDE:
       targetValueF = patch.mod_env3_lfo1_amplitude + delta * 0.05;
@@ -1210,7 +1245,7 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       break;
     case OSC1_WAVETABLE_MOVEMENT:
       targetValueU8 = patch.osc1_waveTable_movement + delta;
-      targetValueU8 = constrain(targetValueU8, 0,1);
+      targetValueU8 = constrain(targetValueU8, 0, NR_WT_PLAYMODES - 1);
       patch.osc1_waveTable_movement = targetValueU8;
       break;
 
@@ -1256,7 +1291,7 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       break;
     case OSC2_WAVETABLE_MOVEMENT:
       targetValueU8 = patch.osc2_waveTable_movement + delta;
-      targetValueU8 = constrain(targetValueU8, 0,1);
+      targetValueU8 = constrain(targetValueU8, 0, NR_WT_PLAYMODES - 1);
       patch.osc2_waveTable_movement = targetValueU8;
       break;
 
@@ -1410,6 +1445,9 @@ void VoiceBank::applyPatchData()
   _lfo2.amplitude(patch.lfo2Level);
   _lfo1.frequency(patch.lfo1Frequency);
   _lfo2.frequency(patch.lfo2Frequency);
+  _lfo1.offset(patch.lfo1Offset);
+  _lfo2.offset(patch.lfo2Offset);
+
   _dcOffsetFilter.frequency(patch.hpfilter_cutoff);
   _setWaveshaper();
   setEfx();

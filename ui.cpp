@@ -147,6 +147,7 @@ FLASHMEM void configurePage_screenSaver()
   pages[PAGE].widgetPointers[widgetIndex]->color2 = MAIN_BG_COLOR;
   pages[PAGE].widgetPointers[widgetIndex]->drawLabel = false;
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &setPageWrapper;
 }
 
 FLASHMEM void configurePage_patch()
@@ -285,7 +286,7 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = labelOffsetY;
-  pages[PAGE].widgetPointers[widgetIndex]->color2 = 0xf0a0;
+  pages[PAGE].widgetPointers[widgetIndex]->color2 = 0x6f1a;
   
   
   widgetIndex = pages[PAGE].addWidget(PAGE_SYSTEM, 0* (column_w + padding), SCREEN_YRES - 40, column_w, 40); 
@@ -294,11 +295,11 @@ FLASHMEM void configurePage_patch()
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = 5;
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_CONTROLS, 1* (column_w + padding), SCREEN_YRES - 40, column_w, 40); 
-  pages[PAGE].widgetPointers[widgetIndex]->label("CTL");
-  pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
-  pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
-  pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = 5;
+  //widgetIndex = pages[PAGE].addWidget(PAGE_CONTROLS, 1* (column_w + padding), SCREEN_YRES - 40, column_w, 40); 
+  //pages[PAGE].widgetPointers[widgetIndex]->label("CTL");
+  //pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
+  //pages[PAGE].widgetPointers[widgetIndex]->labelOffsetX = labelOffsetX;
+  //pages[PAGE].widgetPointers[widgetIndex]->labelOffsetY = 5;
 }
 
 FLASHMEM void configurePage_oscillator()
@@ -1218,12 +1219,12 @@ FLASHMEM void configurePage_lfo()
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.lfo1Level;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
 
-  // widgetIndex = pages[PAGE].addWidget(LFO1_FILTER_MODE, 0* (column_w + padding), 4* (row_h + padding), column_w, row_h); 
-  // pages[PAGE].widgetPointers[widgetIndex]->label("Flt");
-  // pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
-  // pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-  // pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBanks[currentVoiceBank]->patch.lfo1FilterMode;
-  // pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
+  widgetIndex = pages[PAGE].addWidget(LFO1_OFFSET, 0* (column_w + padding), 4* (row_h + padding), column_w, row_h); 
+  pages[PAGE].widgetPointers[widgetIndex]->label("Offs");
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.lfo1Offset;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
 
 
   widgetIndex = pages[PAGE].addWidget(LFO2_WAVEFORM, 1* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
@@ -1247,12 +1248,12 @@ FLASHMEM void configurePage_lfo()
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.lfo2Level;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
 
-  // widgetIndex = pages[PAGE].addWidget(LFO2_FILTER_MODE, 1* (column_w + padding), 4* (row_h + padding), column_w, row_h); 
-  // pages[PAGE].widgetPointers[widgetIndex]->label("Filt");
-  // pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
-  // pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-  // pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBanks[currentVoiceBank]->patch.lfo2FilterMode;
-  // pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
+  widgetIndex = pages[PAGE].addWidget(LFO2_OFFSET, 1* (column_w + padding), 4* (row_h + padding), column_w, row_h); 
+  pages[PAGE].widgetPointers[widgetIndex]->label("Offs");
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.lfo2Offset;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
 
 
   widgetIndex = pages[PAGE].addWidget(ENV3_ATTACK, 2* (column_w + padding), 1* (row_h + padding), column_w, row_h);
@@ -1931,6 +1932,7 @@ FLASHMEM void configurePage_system()
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank1.patch.midi_lowLimit;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
 
+
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_LIMIT_LOW, 1* (column_w + padding), 2* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Low");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
@@ -1975,6 +1977,14 @@ FLASHMEM void configurePage_system()
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_i8 = &voiceBank2.patch.midi_transpose;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+  
+  widgetIndex = pages[PAGE].addWidget(0, 0* (column_w + padding), 5* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Export");
+  pages[PAGE].widgetPointers[widgetIndex]->selectOnPress = false;
+  pages[PAGE].widgetPointers[widgetIndex]->activateCb = &sendPatchData;
+
+
+
 
   widgetIndex = pages[PAGE].addWidget(0, 3* (column_w + padding), 1* (row_h + padding), column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Bright");
@@ -2217,6 +2227,8 @@ FLASHMEM void configurePageArpeggiator()
 
 // --- Widget callback functions ---
 
+void setPageWrapper(uint8_t page, int8_t dummy) { currentPage = page; }
+
 void setPage(uint8_t page) { currentPage = page; }
 
 void changePatch(uint8_t callerId, int8_t delta)
@@ -2293,7 +2305,7 @@ FLASHMEM void copyWavetableSettings(uint8_t index)
 FLASHMEM void setActiveVoiceBank(uint8_t index, int8_t delta)
 {
   currentVoiceBank = currentVoiceBank + delta;
-  currentVoiceBank = constrain(currentVoiceBank, 0, 1);
+  currentVoiceBank = constrain(currentVoiceBank, 0, NR_VOICEBANKS - 1);
   // update page pointers
   configurePage_patch();
   configurePage_oscillator();
@@ -2872,76 +2884,76 @@ void animateMeter(bool firstCall)
 
 void animateSystemPage(bool firstCall)
 {
-  static float audioProcessorUsageMax = 0.0;
-  static float audioMemoryUsageMax = 0.0;
-  static float tempMon = 0.0;
-  static float loop = 0.0;
-  static elapsedMillis timer = 0;
-  const uint16_t offset = 90;
+  // static float audioProcessorUsageMax = 0.0;
+  // static float audioMemoryUsageMax = 0.0;
+  // static float tempMon = 0.0;
+  // static float loop = 0.0;
+  // static elapsedMillis timer = 0;
+  // const uint16_t offset = 90;
 
-  if (firstCall)
-  {
-    tft.setTextColor(MIDIEVENT_ON);
-    tft.setCursor(0 , SCREEN_YRES - 150);
-    tft.print("Build: ");
-    tft.print(__DATE__);
-    tft.print(" ");
-    tft.print(__TIME__);
-    tft.setCursor(0 , SCREEN_YRES - 120);
-    tft.print("LOOP: ");
-    tft.setCursor(0 , SCREEN_YRES - 90);
-    tft.print("TEMP: ");
-    tft.setCursor(0 , SCREEN_YRES - 60);
-    tft.print("PRC: ");
-    tft.setCursor(0 , SCREEN_YRES - 30);
-    tft.print("MEM: ");
-  }
+  // if (firstCall)
+  // {
+  //   tft.setTextColor(MIDIEVENT_ON);
+  //   tft.setCursor(0 , SCREEN_YRES - 150);
+  //   tft.print("Build: ");
+  //   tft.print(__DATE__);
+  //   tft.print(" ");
+  //   tft.print(__TIME__);
+  //   tft.setCursor(0 , SCREEN_YRES - 120);
+  //   tft.print("LOOP: ");
+  //   tft.setCursor(0 , SCREEN_YRES - 90);
+  //   tft.print("TEMP: ");
+  //   tft.setCursor(0 , SCREEN_YRES - 60);
+  //   tft.print("PRC: ");
+  //   tft.setCursor(0 , SCREEN_YRES - 30);
+  //   tft.print("MEM: ");
+  // }
 
-  if (timer > 1000) 
-  {
-    timer = 0;
+  // if (timer > 1000) 
+  // {
+  //   timer = 0;
     
-    tft.setCursor(offset , SCREEN_YRES - 120);
-    tft.setTextColor(MAIN_BG_COLOR);
-    tft.print(loop, 2);
+  //   tft.setCursor(offset , SCREEN_YRES - 120);
+  //   tft.setTextColor(MAIN_BG_COLOR);
+  //   tft.print(loop, 2);
    
-    loop = mainLoopTime;
-    tft.setCursor(offset , SCREEN_YRES - 120);
-    tft.setTextColor(MIDIEVENT_ON);
-    tft.print(loop, 2);
+  //   loop = mainLoopTime;
+  //   tft.setCursor(offset , SCREEN_YRES - 120);
+  //   tft.setTextColor(MIDIEVENT_ON);
+  //   tft.print(loop, 2);
 
-    tft.setCursor(offset , SCREEN_YRES - 90);
-    tft.setTextColor(MAIN_BG_COLOR);
-    tft.print(tempMon, 0);
+  //   tft.setCursor(offset , SCREEN_YRES - 90);
+  //   tft.setTextColor(MAIN_BG_COLOR);
+  //   tft.print(tempMon, 0);
    
-    tempMon = tempmonGetTemp();
-    tft.setCursor(offset , SCREEN_YRES - 90);
-    tft.setTextColor(MIDIEVENT_ON);
-    tft.print(tempMon, 0);
+  //   tempMon = tempmonGetTemp();
+  //   tft.setCursor(offset , SCREEN_YRES - 90);
+  //   tft.setTextColor(MIDIEVENT_ON);
+  //   tft.print(tempMon, 0);
 
 
-    tft.setCursor(offset , SCREEN_YRES - 60);
-    tft.setTextColor(MAIN_BG_COLOR);
-    tft.print(audioProcessorUsageMax, 0);
+  //   tft.setCursor(offset , SCREEN_YRES - 60);
+  //   tft.setTextColor(MAIN_BG_COLOR);
+  //   tft.print(audioProcessorUsageMax, 0);
    
-    audioProcessorUsageMax = AudioProcessorUsageMax();
-    tft.setCursor(offset , SCREEN_YRES - 60);
-    tft.setTextColor(MIDIEVENT_ON);
-    tft.print(audioProcessorUsageMax, 0);
+  //   audioProcessorUsageMax = AudioProcessorUsageMax();
+  //   tft.setCursor(offset , SCREEN_YRES - 60);
+  //   tft.setTextColor(MIDIEVENT_ON);
+  //   tft.print(audioProcessorUsageMax, 0);
 
 
-    tft.setCursor(offset , SCREEN_YRES - 30);
-    tft.setTextColor(MAIN_BG_COLOR);
-    tft.print(audioMemoryUsageMax, 0);
+  //   tft.setCursor(offset , SCREEN_YRES - 30);
+  //   tft.setTextColor(MAIN_BG_COLOR);
+  //   tft.print(audioMemoryUsageMax, 0);
 
-    audioMemoryUsageMax = AudioMemoryUsageMax();
-    tft.setCursor(offset , SCREEN_YRES - 30);
-    tft.setTextColor(MIDIEVENT_ON);
-    tft.print(audioMemoryUsageMax, 0);
+  //   audioMemoryUsageMax = AudioMemoryUsageMax();
+  //   tft.setCursor(offset , SCREEN_YRES - 30);
+  //   tft.setTextColor(MIDIEVENT_ON);
+  //   tft.print(audioMemoryUsageMax, 0);
         
-    AudioMemoryUsageMaxReset(); 
-    AudioProcessorUsageMaxReset(); 
-  }
+  //   AudioMemoryUsageMaxReset(); 
+  //   AudioProcessorUsageMaxReset(); 
+  // }
 }
 
 void animateWaveShaper(bool firstCall)

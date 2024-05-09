@@ -39,14 +39,21 @@
 #define DELAY_NORMAL 0
 #define DELAY_PINGPONG 1
 
-#define NR_VOICEBANKS 2
+#ifndef USE_LADDER_FILTER
+ #define NR_VOICEBANKS 2
+ extern VoiceBank voiceBank1;
+ extern VoiceBank voiceBank2;
+#endif
 
-extern VoiceBank voiceBank1;
-extern VoiceBank voiceBank2;
-extern VoiceBank * voiceBanks[2];
+#ifdef USE_LADDER_FILTER
+  #define NR_VOICEBANKS 1
+  extern VoiceBank voiceBank1;
+#endif
+
+extern VoiceBank * voiceBanks[NR_VOICEBANKS];
 extern uint8_t currentVoiceBank;
 extern float mainLoopTime;
-extern char voiceBankNames[2][6];
+extern char voiceBankNames[NR_VOICEBANKS][6];
 
 struct AudioParameters
 {

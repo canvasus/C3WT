@@ -15,6 +15,7 @@
 #define ARP_UP   1
 #define ARP_DOWN 2
 #define ARP_CYCLE  3
+#define ARP_CHORD 4
 
 #define NR_ARP_MODES 4
 
@@ -106,6 +107,8 @@ void myNoteOn(uint8_t channel, uint8_t note, uint8_t velocity);
 void myNoteOff(uint8_t channel, uint8_t note, uint8_t velocity);
 void myControlChange(uint8_t channel, uint8_t control, uint8_t value);
 void myPitchBend(uint8_t channel, int pitchBend);
+void myProgramChange(uint8_t channel, uint8_t program);
+void mySystemExclusive(uint8_t *data, unsigned int length);
 
 void myMIDIClock();
 void myMIDIClockStart();

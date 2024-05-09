@@ -28,7 +28,7 @@ enum ParameterIndexes
   TRANSPOSE
 };
 
-// Next parameter index: 121
+// Next parameter index: 123
 #define POLY_MODE 106
 #define MONO_MODE 114
 
@@ -152,10 +152,15 @@ enum ParameterIndexes
 #define LFO2_FILTER_MODE 83
 #define LFO1_FILTER_CUTOFF 84
 #define LFO2_FILTER_CUTOFF 85
+#define LFO1_OFFSET 121
+#define LFO2_OFFSET 122
+
 
 #define EFX_PAN 118
 #define WAVESHAPER_INDEX 119
 #define WAVESHAPER_LEVEL 120
+
+
 
 #define MODMIXER_ENV3_CH  0
 #define MODMIXER_LFO1_CH  1
@@ -171,6 +176,10 @@ enum ParameterIndexes
 
 #define WAVETABLE_PLAYMODE_UPDOWN     0
 #define WAVETABLE_PLAYMODE_ONESHOT_UP 1
+#define WAVETABLE_PLAYMODE_LFO1       2
+#define WAVETABLE_PLAYMODE_LFO2       3
+#define NR_WT_PLAYMODES 4
+
 #define WAVETABLE_LENGTH 8192
 
 #define NR_WAVEFORMS 8
@@ -185,7 +194,7 @@ extern int16_t * activeWaveTables[4];
 extern const String waveTableNames[NR_WAVETABLES];
 extern char waveformNames[NR_WAVEFORMS][6];
 extern char waveTableModes[2][6];
-extern char waveTableMovement[2][6];
+extern char waveTableMovement[NR_WT_PLAYMODES][6];
 
 
 struct Patch
@@ -286,6 +295,8 @@ struct Patch
   uint8_t lfo2_waveform = 0;
   float lfo1Level = 0.0;
   float lfo2Level = 0.0;
+  float lfo1Offset = 0.0;
+  float lfo2Offset = 0.0;
   uint8_t lfo1FilterMode = 0;
   uint8_t lfo2FilterMode = 0;
   float lfo1FilterCutoff = FILTER_MAX_CUTOFF;
@@ -350,7 +361,15 @@ class Voice
     AudioEffectEnvelope               _envelope3;
 
     AudioSynthWaveformDc              _envelopeDC;
+    
+    #ifndef USE_LADDER_FILTER
     AudioFilterStateVariable          _filter;
+    #endif
+    
+    #ifdef USE_LADDER_FILTER
+    AudioFilterLadder                 _filter;
+    #endif
+
     AudioMixer4                       _filterModMixer;
 
     AudioMixer4 _modMixer_osc1_pitch;
@@ -404,6 +423,8 @@ class Voice
     AudioAmplifier  mod_lfo1;
     AudioAmplifier  mod_lfo2;
     AudioAmplifier  mod_dc;
+    float lfo1Value = 0.0;
+    float lfo2Value = 0.0;
 
     int16_t *activeWaveTable1;
     int16_t *activeWaveTable2;
@@ -452,8 +473,8 @@ class VoiceBank
     AudioMixer4 _voiceMixer[3];
     AudioSynthWaveform _lfo1;
     AudioSynthWaveform _lfo2;
-    AudioAnalyzePeak    _lfo1Peak;
-    AudioAnalyzePeak    _lfo2Peak;
+    AudioAnalyzeRMS    _lfo1Peak;
+    AudioAnalyzeRMS    _lfo2Peak;
     AudioSynthWaveformDc _modDc;
     
     AudioFilterStateVariable _dcOffsetFilter;
