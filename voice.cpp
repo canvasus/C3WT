@@ -774,7 +774,8 @@ void VoiceBank::_connect(AudioStream &source, unsigned char sourceOutput, AudioS
 void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
 {
   uint16_t targetValueU16 = 0;
-  //uint32_t targetValueI32 = 0;
+  int16_t targetValueI16 = 0;
+  int32_t targetValueI32 = 0;
   uint8_t targetValueU8 = 0;
   int8_t targetValueI8 = 0;
   float targetValueF = 0.0;
@@ -783,7 +784,6 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
   {
     case OSC1_WAVEFORM:
       targetValueU8 = patch.osc1_waveform + delta;
-      //patch.osc1_waveform = constrain(targetValueU8, 0, (NR_WAVEFORMS - 1) );
       if (targetValueU8 > (NR_WAVEFORMS - 1) ) targetValueU8 = 0;
       patch.osc1_waveform = targetValueU8;
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setOsc1Waveform();
@@ -792,7 +792,6 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       targetValueU8 = patch.osc2_waveform + delta;
       if (targetValueU8 > (NR_WAVEFORMS - 1) ) targetValueU8 = 0;
       patch.osc2_waveform = targetValueU8;
-      //patch.osc2_waveform = constrain(targetValueU8, 0, (NR_WAVEFORMS - 1) );
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setOsc2Waveform();
       break;
     case TRANSPOSE:
@@ -908,7 +907,7 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
     case ENV3_ATTACK:
       if (patch.envelope3_attack < 11) targetValueF = patch.envelope3_attack + delta;
       else targetValueF = patch.envelope3_attack + delta * 10;
-      patch.envelope3_attack = constrain(targetValueF, 0.0, 2000.0);
+      patch.envelope3_attack = constrain(targetValueF, 0.0, 4000.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setEnv3();
       break;
     case ENV3_DECAY:
@@ -1227,10 +1226,11 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
     }
     case OSC1_WAVETABLE_LENGTH:
     {
-      targetValueU16 = patch.osc1_waveTable_length + delta * 16;
+      targetValueI32 = patch.osc1_waveTable_length + delta * 16;
       uint16_t maxValue = 2* WAVETABLE_LENGTH - patch.osc1_waveTable_start - 1;
-      if (targetValueU16 > maxValue) targetValueU16 = 0;
-      patch.osc1_waveTable_length = targetValueU16;
+      if (targetValueI32 < 0) targetValueI32 = maxValue;
+      if (targetValueI32 > maxValue) targetValueI32 = 0;
+      patch.osc1_waveTable_length = (uint16_t)targetValueI32;
       break;
     }
     case OSC1_WAVETABLE_INTERVAL:
@@ -1239,9 +1239,10 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       patch.osc1_waveTable_interval = targetValueU16;
       break;
     case OSC1_WAVETABLE_STEPSIZE:
-      targetValueU16 = patch.osc1_waveTable_stepSize + delta;
-      if (targetValueU16 > 256) targetValueU16 = 0;
-      patch.osc1_waveTable_stepSize = targetValueU16;
+      targetValueI16 = patch.osc1_waveTable_stepSize + delta;
+      if (targetValueI16 > 1024) targetValueI16 = 0;
+      if (targetValueI16 < 0) targetValueI16 = 1024;
+      patch.osc1_waveTable_stepSize = (uint16_t)targetValueI16;
       break;
     case OSC1_WAVETABLE_MOVEMENT:
       targetValueU8 = patch.osc1_waveTable_movement + delta;
@@ -1273,10 +1274,11 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
     }
     case OSC2_WAVETABLE_LENGTH:
     {
-      targetValueU16 = patch.osc2_waveTable_length + delta * 16;
-      uint16_t maxValue = 2 * WAVETABLE_LENGTH - patch.osc2_waveTable_start - 1;
-      if (targetValueU16 > maxValue) targetValueU16 = 0;
-      patch.osc2_waveTable_length = targetValueU16;
+      targetValueI32 = patch.osc2_waveTable_length + delta * 16;
+      uint16_t maxValue = 2* WAVETABLE_LENGTH - patch.osc2_waveTable_start - 1;
+      if (targetValueI32 < 0) targetValueI32 = maxValue;
+      if (targetValueI32 > maxValue) targetValueI32 = 0;
+      patch.osc2_waveTable_length = (uint16_t)targetValueI32;
       break;
     }
     case OSC2_WAVETABLE_INTERVAL:
@@ -1285,9 +1287,10 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       patch.osc2_waveTable_interval = targetValueU16;
       break;
     case OSC2_WAVETABLE_STEPSIZE:
-      targetValueU16 = patch.osc2_waveTable_stepSize + delta;
-      if (targetValueU16 > 256) targetValueU16 = 0;
-      patch.osc2_waveTable_stepSize = targetValueU16;
+      targetValueI16 = patch.osc2_waveTable_stepSize + delta;
+      if (targetValueI16 > 1024) targetValueI16 = 0;
+      if (targetValueI16 < 0) targetValueI16 = 1024;
+      patch.osc2_waveTable_stepSize = (uint16_t)targetValueI16;
       break;
     case OSC2_WAVETABLE_MOVEMENT:
       targetValueU8 = patch.osc2_waveTable_movement + delta;

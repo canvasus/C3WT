@@ -2233,7 +2233,7 @@ void setPage(uint8_t page) { currentPage = page; }
 
 void changePatch(uint8_t callerId, int8_t delta)
 {
-  int8_t desiredPatchNr = currentPatchNr[currentVoiceBank] + delta;
+  int16_t desiredPatchNr = currentPatchNr[currentVoiceBank] + delta;
   if (desiredPatchNr < 0) desiredPatchNr = NR_PATCHES - 1;
   if (desiredPatchNr > NR_PATCHES - 1) desiredPatchNr = 0;
 
@@ -2285,8 +2285,11 @@ FLASHMEM void savePatchWrapper(uint8_t index)
 void peekPatchNameWrapper(uint8_t index, int8_t delta)
 {
   //char buf[PATCH_NAME_NR_CHARACTERS];
-  peekPatchNr = peekPatchNr + delta;
-  peekPatchNr = constrain(peekPatchNr, 0, NR_PATCHES - 1);
+  int16_t temp = peekPatchNr + delta;
+  if (temp < 0) temp = NR_PATCHES - 1;
+  else if (temp > NR_PATCHES - 1) temp = 0;
+  peekPatchNr = (uint8_t)temp;
+  //peekPatchNr = constrain(peekPatchNr, 0, NR_PATCHES - 1);
   peekPatchName(peekPatchNr);
   pages[PAGE_PATCHNAME].staticPointers[1]->draw(false);
 }

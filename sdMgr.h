@@ -8,7 +8,7 @@
 
 #define CS_SD BUILTIN_SDCARD
 
-#define NR_PATCHES 128
+#define NR_PATCHES 150
 #define PATCH_NAME_NR_CHARACTERS 11
 
 #define LOAD_OK         0
@@ -22,6 +22,7 @@ struct PatchInfo
 };
 
 #define DATA_SIZE sizeof(Patch) + sizeof(AudioParameters)
+#define JSON_DOC_SIZE 5208
 
 extern PatchInfo patchInfo;
 extern String patchNameUI[NR_VOICEBANKS];

@@ -26,7 +26,7 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   File file = SD.open(fileName);
   if (!file) return FILE_NOT_EXIST;
 
-  StaticJsonDocument<5208> doc;
+  StaticJsonDocument<JSON_DOC_SIZE> doc;
   Patch patch;
   AudioParameters tempAudioPar;
 
@@ -240,7 +240,7 @@ FLASHMEM void savePatch(uint8_t patchNr)
     return;
   }
 
-  StaticJsonDocument<5208> doc;
+  StaticJsonDocument<JSON_DOC_SIZE> doc;
 
   // Set the values in the document
   doc["name"] = patchInfo.name;
@@ -489,19 +489,19 @@ void updateSerial()
 
 FLASHMEM void receivePatchData(String buffer, uint8_t bankNr)
 {
-  StaticJsonDocument<5208> doc;
+  StaticJsonDocument<JSON_DOC_SIZE> doc;
   Patch patch;
   AudioParameters tempAudioPar;
 
   DeserializationError error = deserializeJson(doc, buffer);
   if (error)
   {
-    Serial.println(F("Failed to read file, using default configuration"));
+    Serial.println(F("Patch data not accepted"));
     return;
   } 
   else
   {
-    Serial.println(F("Patch received and deserialized ok"));
+    Serial.println(F("Patch data received OK"));
     
     strlcpy(patchInfo.name,                  // <- destination
             doc["name"] | "INIT PATCH",  // <- source
