@@ -405,10 +405,8 @@ class Voice
     uint16_t _waveOffset2 = 0;
     uint8_t _scanDirection1 = RIGHT;
     uint8_t _scanDirection2 = RIGHT;
-    void _updateWaveTable1_phaseScan();
-    void _updateWaveTable2_phaseScan();
-    void _updateWaveTable1_morph();
-    void _updateWaveTable2_morph();
+    void _updateWaveTable1();
+    void _updateWaveTable2();
    
     void _connect(AudioStream &source, unsigned char sourceOutput, AudioStream &destination, unsigned char destinationInput);
     

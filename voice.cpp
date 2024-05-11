@@ -190,15 +190,17 @@ void Voice::update()
   if( (waveformList[_patch->osc1_waveform] == WAVEFORM_ARBITRARY) && (osc1_waveTimer > _patch->osc1_waveTable_interval) )
   {
     osc1_waveTimer = 0;
-    if (_patch->osc1_waveTable_mode == WAVETABLE_MODE_PHASESCAN) _updateWaveTable1_phaseScan();
-    else if(_patch->osc1_waveTable_mode == WAVETABLE_MODE_MORPH) _updateWaveTable1_morph();
+    _updateWaveTable1();
+    //if (_patch->osc1_waveTable_mode == WAVETABLE_MODE_PHASESCAN) _updateWaveTable1_phaseScan();
+    //else if(_patch->osc1_waveTable_mode == WAVETABLE_MODE_MORPH) _updateWaveTable1_morph();
   }
   
   if( (waveformList[_patch->osc2_waveform] == WAVEFORM_ARBITRARY) && (osc2_waveTimer > _patch->osc2_waveTable_interval) )
   {
     osc2_waveTimer = 0;
-    if (_patch->osc2_waveTable_mode == WAVETABLE_MODE_PHASESCAN) _updateWaveTable2_phaseScan();
-    else if(_patch->osc2_waveTable_mode == WAVETABLE_MODE_MORPH) _updateWaveTable2_morph();
+    _updateWaveTable2();
+    //if (_patch->osc2_waveTable_mode == WAVETABLE_MODE_PHASESCAN) _updateWaveTable2_phaseScan();
+    //else if(_patch->osc2_waveTable_mode == WAVETABLE_MODE_MORPH) _updateWaveTable2_morph();
   }
 
   if (!_ampEnvelope.isActive())
@@ -209,47 +211,77 @@ void Voice::update()
   }
 }
 
-void Voice::_updateWaveTable1_phaseScan()
-{
- if (_scanDirection1 == RIGHT)
-    {
-      _waveOffset1 = _waveOffset1 + _patch->osc1_waveTable_stepSize;
-      if (_waveOffset1 >= (_patch->osc1_waveTable_start + _patch->osc1_waveTable_length) ) _scanDirection1 = LEFT;
-    }
-    if (_scanDirection1 == LEFT)
-    {
-      _waveOffset1 = _waveOffset1 - _patch->osc1_waveTable_stepSize;
-      if (_waveOffset1 <= _patch->osc1_waveTable_start) _scanDirection1 = RIGHT;
-    }
-    if (_waveOffset1 > (WAVETABLE_LENGTH * 2 - 256) ) _waveOffset1 = WAVETABLE_LENGTH * 2 - 256;
-    
-    _osc1.arbitraryWaveform(&activeWaveTable1[_waveOffset1 >> 1], AWFREQ);
-    //_osc1.arbitraryWaveform(&waveTable1_I16[_waveOffset1 >> 1], AWFREQ);
-    _osc1.begin(WAVEFORM_ARBITRARY);
-    _osc1.amplitude(1.0);
-}
+// void Voice::_updateWaveTable1_phaseScan()
+// {
+//    switch (_patch->osc1_waveTable_movement)
+//   {
+//     case WAVETABLE_PLAYMODE_LFO1:
+//       _waveOffset1 = _patch->osc1_waveTable_start + (_patch->osc1_waveTable_length >> 1) +  lfo1Value * (_patch->osc1_waveTable_length >> 1);
+//       if (_waveOffset1 > (2* WAVETABLE_LENGTH - 257) ) _waveOffset1 = 2*WAVETABLE_LENGTH - 257;
+//       break;
+//     case WAVETABLE_PLAYMODE_LFO2:
+//       _waveOffset1 = _patch->osc1_waveTable_start + lfo2Value * _patch->osc1_waveTable_length;
+//       if (_waveOffset1 > (2* WAVETABLE_LENGTH - 257) ) _waveOffset1 = 2*WAVETABLE_LENGTH - 257;
+//       break;
+//     default:
+//       if (_scanDirection1 == RIGHT)
+//       {
+//         _waveOffset1 = min(_waveOffset1 + _patch->osc1_waveTable_stepSize, _patch->osc1_waveTable_start + _patch->osc1_waveTable_length);
+//         if ( (_waveOffset1 >= (_patch->osc1_waveTable_start + _patch->osc1_waveTable_length) ) && (_patch->osc1_waveTable_movement == WAVETABLE_PLAYMODE_UPDOWN) ) _scanDirection1 = LEFT;
+//         if (_waveOffset1 > (2* WAVETABLE_LENGTH - 257) ) _waveOffset1 = 2*WAVETABLE_LENGTH - 257;
+//       }
+//       else if (_scanDirection1 == LEFT)
+//       {
+//         if (_patch->osc1_waveTable_stepSize > _waveOffset1) _waveOffset1 = 0;
+//         else _waveOffset1 = _waveOffset1 - _patch->osc1_waveTable_stepSize;
+//         if (_waveOffset1 <= _patch->osc1_waveTable_start) _scanDirection1 = RIGHT;
+//       }
+//       break;
+//   }
+// //  if (_scanDirection1 == RIGHT)
+// //     {
+// //       _waveOffset1 = _waveOffset1 + _patch->osc1_waveTable_stepSize;
+// //       if (_waveOffset1 >= (_patch->osc1_waveTable_start + _patch->osc1_waveTable_length) ) _scanDirection1 = LEFT;
+// //     }
+// //     if (_scanDirection1 == LEFT)
+// //     {
+// //       _waveOffset1 = _waveOffset1 - _patch->osc1_waveTable_stepSize;
+// //       if (_waveOffset1 <= _patch->osc1_waveTable_start) _scanDirection1 = RIGHT;
+// //     }
+// //     if (_waveOffset1 > (WAVETABLE_LENGTH * 2 - 256) ) _waveOffset1 = WAVETABLE_LENGTH * 2 - 256;
+//   for (uint16_t index = 0; index < 256; index++)
+//   {
+//     // now adjust for 8192 length
+//     waveTableMorph1_I16[index] = activeWaveTable1[(_waveOffset1 + index) >> 1];
+//   }
 
-void Voice::_updateWaveTable2_phaseScan()
-{
-  if (_scanDirection2 == RIGHT)
-  {
-    _waveOffset2  = _waveOffset2 + _patch->osc2_waveTable_stepSize;
-    if (_waveOffset2 >= (_patch->osc2_waveTable_start + _patch->osc2_waveTable_length)) _scanDirection2 = LEFT;
-  }
-  if (_scanDirection2 == LEFT)
-  {
-    _waveOffset2 = _waveOffset2 - _patch->osc2_waveTable_stepSize;
-    if (_waveOffset2 <= _patch->osc2_waveTable_start) _scanDirection2 = RIGHT;
-  }
-  if (_waveOffset2 > (ARBITRARY_LENGTH * 2 - 256) ) _waveOffset2 = ARBITRARY_LENGTH * 2 - 256;
+//   //_osc1.arbitraryWaveform(&activeWaveTable1[_waveOffset1 >> 1], AWFREQ);
+//   _osc1.arbitraryWaveform(waveTableMorph1_I16, AWFREQ);
+//   _osc1.begin(WAVEFORM_ARBITRARY);
+//   _osc1.amplitude(1.0);
+// }
+
+// // void Voice::_updateWaveTable2_phaseScan()
+// // {
+// //   if (_scanDirection2 == RIGHT)
+// //   {
+// //     _waveOffset2  = _waveOffset2 + _patch->osc2_waveTable_stepSize;
+// //     if (_waveOffset2 >= (_patch->osc2_waveTable_start + _patch->osc2_waveTable_length)) _scanDirection2 = LEFT;
+// //   }
+// //   if (_scanDirection2 == LEFT)
+// //   {
+// //     _waveOffset2 = _waveOffset2 - _patch->osc2_waveTable_stepSize;
+// //     if (_waveOffset2 <= _patch->osc2_waveTable_start) _scanDirection2 = RIGHT;
+// //   }
+// //   if (_waveOffset2 > (ARBITRARY_LENGTH * 2 - 256) ) _waveOffset2 = ARBITRARY_LENGTH * 2 - 256;
   
-  _osc2.arbitraryWaveform(&activeWaveTable2[_waveOffset2 >> 1], AWFREQ);
-  //_osc2.arbitraryWaveform(&waveTable2_I16[_waveOffset2 >> 1], AWFREQ);
-  _osc2.begin(WAVEFORM_ARBITRARY);
-  _osc2.amplitude(1.0);
-}
+// //   _osc2.arbitraryWaveform(&activeWaveTable2[_waveOffset2 >> 1], AWFREQ);
+// //   //_osc2.arbitraryWaveform(&waveTable2_I16[_waveOffset2 >> 1], AWFREQ);
+// //   _osc2.begin(WAVEFORM_ARBITRARY);
+// //   _osc2.amplitude(1.0);
+// // }
 
-void Voice::_updateWaveTable1_morph()
+void Voice::_updateWaveTable1()
 {
   // assumes 2* 8192 = 16384 length
   switch (_patch->osc1_waveTable_movement)
@@ -278,13 +310,25 @@ void Voice::_updateWaveTable1_morph()
       break;
   }
 
-  float crossFade = (_waveOffset1 % 256) / 256.0;
-  uint16_t firstWaveStartPoint = (_waveOffset1 / 256) * 256;
-  uint16_t secondWaveStartPoint = firstWaveStartPoint + 256;
-  for (uint16_t index = 0; index < 256; index++)
+  if (_patch->osc1_waveTable_mode == WAVETABLE_MODE_PHASESCAN)
   {
-    // now adjust for 8192 length
-    waveTableMorph1_I16[index] = activeWaveTable1[ (firstWaveStartPoint + index) >> 1] * (1.0 - crossFade) + activeWaveTable1[(secondWaveStartPoint + index) >> 1] * crossFade;
+    for (uint16_t index = 0; index < 256; index++)
+    {
+      // now adjust for 8192 length
+      waveTableMorph1_I16[index] = activeWaveTable1[(_waveOffset1 + index) >> 1];
+    }
+  }
+
+  else
+  {
+    float crossFade = (_waveOffset1 % 256) / 256.0;
+    uint16_t firstWaveStartPoint = (_waveOffset1 / 256) * 256;
+    uint16_t secondWaveStartPoint = firstWaveStartPoint + 256;
+    for (uint16_t index = 0; index < 256; index++)
+    {
+      // now adjust for 8192 length
+      waveTableMorph1_I16[index] = activeWaveTable1[ (firstWaveStartPoint + index) >> 1] * (1.0 - crossFade) + activeWaveTable1[(secondWaveStartPoint + index) >> 1] * crossFade;
+    }
   }
 
   _osc1.arbitraryWaveform(waveTableMorph1_I16, AWFREQ);
@@ -292,30 +336,52 @@ void Voice::_updateWaveTable1_morph()
   _osc1.amplitude(1.0);
 }
 
-void Voice::_updateWaveTable2_morph()
+void Voice::_updateWaveTable2()
 {
-  if (_scanDirection2 == RIGHT)
+  switch (_patch->osc2_waveTable_movement)
   {
-    _waveOffset2 = min(_waveOffset2 + _patch->osc2_waveTable_stepSize, _patch->osc2_waveTable_start + _patch->osc2_waveTable_length);
-    if ( (_waveOffset2 >= (_patch->osc2_waveTable_start + _patch->osc2_waveTable_length) ) && (_patch->osc2_waveTable_movement == WAVETABLE_PLAYMODE_UPDOWN) ) _scanDirection2 = LEFT;
-    if (_waveOffset2 > (2*WAVETABLE_LENGTH - 257) ) _waveOffset2 = 2*WAVETABLE_LENGTH - 257;
-  }
-  else if (_scanDirection2 == LEFT)
-  {
-    if (_patch->osc2_waveTable_stepSize > _waveOffset2) _waveOffset2 = 0;
-    else _waveOffset2 = _waveOffset2 - _patch->osc2_waveTable_stepSize;
-    if (_waveOffset2 <= _patch->osc2_waveTable_start) _scanDirection2 = RIGHT;
+    case WAVETABLE_PLAYMODE_LFO1:
+      _waveOffset2 = _patch->osc2_waveTable_start + (_patch->osc2_waveTable_length >> 1) +  lfo1Value * (_patch->osc2_waveTable_length >> 1);
+      if (_waveOffset2 > (2* WAVETABLE_LENGTH - 257) ) _waveOffset2 = 2*WAVETABLE_LENGTH - 257;
+      break;
+    case WAVETABLE_PLAYMODE_LFO2:
+      _waveOffset2 = _patch->osc2_waveTable_start + lfo2Value * _patch->osc2_waveTable_length;
+      if (_waveOffset2 > (2* WAVETABLE_LENGTH - 257) ) _waveOffset2 = 2*WAVETABLE_LENGTH - 257;
+      break;
+    default:
+      if (_scanDirection2 == RIGHT)
+      {
+        _waveOffset2 = min(_waveOffset2 + _patch->osc2_waveTable_stepSize, _patch->osc2_waveTable_start + _patch->osc2_waveTable_length);
+        if ( (_waveOffset2 >= (_patch->osc2_waveTable_start + _patch->osc2_waveTable_length) ) && (_patch->osc2_waveTable_movement == WAVETABLE_PLAYMODE_UPDOWN) ) _scanDirection2 = LEFT;
+        if (_waveOffset2 > (2*WAVETABLE_LENGTH - 257) ) _waveOffset2 = 2*WAVETABLE_LENGTH - 257;
+      }
+      else if (_scanDirection2 == LEFT)
+      {
+        if (_patch->osc2_waveTable_stepSize > _waveOffset2) _waveOffset2 = 0;
+        else _waveOffset2 = _waveOffset2 - _patch->osc2_waveTable_stepSize;
+        if (_waveOffset2 <= _patch->osc2_waveTable_start) _scanDirection2 = RIGHT;
+      }
+      break;
   }
 
-  float crossFade = (_waveOffset2 % 256) / 256.0;
-    
-  uint16_t firstWaveStartPoint = (_waveOffset2 / 256) * 256;
-  uint16_t secondWaveStartPoint = firstWaveStartPoint + 256;
-  for (uint16_t index = 0; index < 256; index++)
+  if (_patch->osc2_waveTable_mode == WAVETABLE_MODE_PHASESCAN)
   {
-    //waveTableMorph2_I16[index] = waveTable2_I16[firstWaveStartPoint + index] * (1 - crossFade) + waveTable2_I16[secondWaveStartPoint + index] * crossFade;
-    //waveTableMorph2_I16[index] = waveTable2_I16[ (firstWaveStartPoint + index) << 1] * (1.0 - crossFade) + waveTable2_I16[(secondWaveStartPoint + index) << 1] * crossFade;
-    waveTableMorph2_I16[index] = activeWaveTable2[ (firstWaveStartPoint + index) >> 1] * (1.0 - crossFade) + activeWaveTable2[(secondWaveStartPoint + index) >> 1] * crossFade;
+    for (uint16_t index = 0; index < 256; index++)
+    {
+      // now adjust for 8192 length
+      waveTableMorph2_I16[index] = activeWaveTable2[(_waveOffset2 + index) >> 1];
+    }
+  }
+
+  else
+  {
+    float crossFade = (_waveOffset2 % 256) / 256.0;
+    uint16_t firstWaveStartPoint = (_waveOffset2 / 256) * 256;
+    uint16_t secondWaveStartPoint = firstWaveStartPoint + 256;
+    for (uint16_t index = 0; index < 256; index++)
+    {
+      waveTableMorph2_I16[index] = activeWaveTable2[ (firstWaveStartPoint + index) >> 1] * (1.0 - crossFade) + activeWaveTable2[(secondWaveStartPoint + index) >> 1] * crossFade;
+    }
   }
 
   _osc2.arbitraryWaveform(waveTableMorph2_I16, AWFREQ);

@@ -13,8 +13,7 @@ def findPort():
         if ( (p.pid == 1161) and (p.vid == 5824)):
             portName = p.device
             if (not teensyOnline):
-                connectTeensy(portName)
-            _teensyOnline = True
+                _teensyOnline = connectTeensy(portName)
             break
     teensyOnline = _teensyOnline
     global teensyPort
@@ -22,7 +21,11 @@ def findPort():
 
 def connectTeensy(port):
     global ser
-    ser = serial.Serial(port, timeout=0)
+    try:
+        ser = serial.Serial(port, timeout=0)
+        return True
+    except:
+        return False
 
 def updatePortIndicator(indicator):
     global teensyPort
@@ -62,27 +65,37 @@ def listenTask():
             #print("decode/store patch failed")
             pass
 
-def mainTask():
+def requestDump():
     global ser
+    try:
+        string = "DUMP\n"
+        ser.write(string.encode())
+    except:
+        pass
+
+def mainTask():
     findPort()
     updatePortIndicator(portIndicator)
     try:
         listenTask()
     except:
         pass
-    root.after(100, mainTask)  # reschedule event in 100ms
+    root.after(20, mainTask)  # reschedule event in 20ms
     
 def on_closing():
     global ser
     root.destroy()
-    ser.close()
+    try:
+        ser.close()
+    except:
+        pass
 
 teensyOnline = False
 teensyPort = ""
 ser = serial
 
 root = tk.Tk()
-root.geometry('300x100')
+root.geometry('300x150')
 root.title("C3WT Patch Manager")
 
 portIndicator = tk.Label(root,
@@ -92,19 +105,27 @@ portIndicator = tk.Label(root,
                  text="")
 portIndicator.place(x=0,y=0)
 
-button = tk.Button(text="Upload patch..."
+button_upload = tk.Button(root, text="Upload patch..."
                    ,command = lambda:fileDialog()
                    ,height= 2
                    ,width = 36)
 
-button.place(x=20,y=30)
+button_upload.place(x=20,y=30)
+
+button_dump = tk.Button(root, text="Request all patches"
+                   ,command = lambda:requestDump()
+                   ,height= 2
+                   ,width = 36)
+
+button_dump.place(x=20,y=75)
+
 
 messageBox = tk.Label(root,
                  height = 1,
                  width = 42,
                  bg="lightgrey",
                  text="")
-messageBox.place(x=0,y=80)
+messageBox.place(x=0,y=125)
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
 root.after(100, mainTask)

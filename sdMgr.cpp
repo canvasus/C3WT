@@ -473,9 +473,34 @@ FLASHMEM void sendPatchData(uint8_t bankNr)
     file.close();
   }  
   // if the file isn't open, pop up an error:
-  else {
+  else
+  {
     Serial.println("error opening datalog.txt");
   } 
+}
+
+FLASHMEM void dumpAllPatchData()
+{
+  for (uint16_t patch = 0; patch < NR_PATCHES; patch++)
+  {
+    char fileName[14];
+    sprintf(fileName, "P3_PATCHJ_%03d", patch);
+    File file = SD.open(fileName);
+    if (file)
+    {
+      while (file.available())
+      {
+        Serial.write(file.read());
+      }
+      Serial.println("");
+      file.close();
+    }
+    else
+    {
+      Serial.println("error opening datalog.txt");
+    } 
+    delay(100);
+  }
 }
 
 void updateSerial()
@@ -483,7 +508,12 @@ void updateSerial()
   if (Serial.available() > 0)
   {
     String input = Serial.readStringUntil('\n');
-    receivePatchData(input, currentVoiceBank);
+    if (input == "DUMP")
+    {
+      Serial.println("Dump request recognized");
+      dumpAllPatchData();
+    }
+    else receivePatchData(input, currentVoiceBank);
   }
 }
 

@@ -40,3 +40,4 @@ void savePatch(uint8_t patchNr);
 void updateSerial();
 void sendPatchData(uint8_t bankNr);
 void receivePatchData(String buffer, uint8_t bankNr);
+void dumpAllPatchData();
