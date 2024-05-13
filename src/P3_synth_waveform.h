@@ -52,13 +52,18 @@ extern const int16_t AudioWaveformSine[257];
 #define WAVEFORM_BANDLIMIT_SQUARE 11
 #define WAVEFORM_BANDLIMIT_PULSE  12
 
+#define WAVEFORM_MULTISAW 30
+#define WAVEFORM_SHRUTHI_ZSYNC 33
+#define WAVEFORM_BRAIDS_CSAW 38
+
+#define DIV32768 3.0517578E-5f
+#define DIV255 0.00392156
 
 typedef struct P3_step_state
 {
   int offset ;
   bool positive ;
 } P3_step_state ;
-
 
 class P3_BandLimitedWaveform
 {
@@ -265,6 +270,41 @@ public:
 	
 	uint32_t getPhaseAccumulator() { return phase_accumulator;}
 
+	struct SawSwarmState {
+	  uint32_t phase[6];
+	  uint32_t increments[5];
+	  uint32_t data_qs_phase[4];
+	  int32_t filter_state[2][2];
+	  int32_t dc_blocked;
+	  int32_t lp;
+	  int32_t bp;
+	} state_saw;
+	
+	inline int32_t ThisBlepSample(uint32_t t) {
+	    if (t > 65535) {
+	      t = 65535;
+	    }
+	    return t * t >> 18;
+	}
+  
+  	inline int32_t NextBlepSample(uint32_t t) {
+	    if (t > 65535) {
+     	 t = 65535;
+	    }
+	    t = 65535 - t;
+	    return -static_cast<int32_t>(t * t >> 18);
+	  }
+
+	uint8_t Osc_data_cr_decimate;
+	uint16_t Osc_data_cr_state;
+	uint16_t OscData_sec_phase;
+	uint16_t osc_par_a = 0;
+	uint16_t osc_par_b = 0;
+	uint32_t phaseOld_ = 0;
+	int16_t par_a_mod_ = 0; // parameter_A
+	int16_t par_b_mod_ = 0; // parameter_B
+	int32_t parameter_[2];
+
 private:
 	audio_block_t *inputQueueArray[2];
 	uint32_t phase_accumulator;
@@ -280,7 +320,46 @@ private:
         P3_BandLimitedWaveform band_limit_waveform ;
 	bool syncIn = false;
 	bool syncOut = false;
+	uint32_t state_saw_phase_[4];
+	int32_t next_sample_;
+	bool high_;
+	int16_t discontinuity_depth_;
+	int16_t aux_parameter_;
 };
 
+const uint16_t wav_res_sine16[] PROGMEM = {
+    0, 10, 39, 88, 157, 245, 352, 479,
+    625, 790, 974, 1178, 1400, 1641, 1901, 2179,
+    2475, 2790, 3122, 3472, 3840, 4225, 4627, 5045,
+    5481, 5932, 6400, 6884, 7382, 7897, 8426, 8969,
+    9527, 10098, 10684, 11282, 11893, 12517, 13153, 13800,
+    14459, 15129, 15809, 16500, 17200, 17909, 18628, 19355,
+    20090, 20832, 21582, 22338, 23100, 23869, 24642, 25421,
+    26203, 26990, 27780, 28574, 29369, 30167, 30966, 31767,
+    32568, 33369, 34170, 34969, 35768, 36565, 37359, 38151,
+    38940, 39724, 40505, 41281, 42052, 42818, 43577, 44330,
+    45076, 45815, 46546, 47268, 47982, 48687, 49383, 50068,
+    50743, 51408, 52061, 52703, 53332, 53950, 54555, 55147,
+    55725, 56290, 56840, 57377, 57898, 58405, 58896, 59372,
+    59831, 60275, 60702, 61112, 61506, 61882, 62241, 62582,
+    62906, 63211, 63499, 63767, 64018, 64249, 64462, 64656,
+    64831, 64987, 65123, 65240, 65338, 65416, 65475, 65514,
+    65534, 65534, 65514, 65475, 65416, 65338, 65240, 65123,
+    64987, 64831, 64656, 64462, 64249, 64018, 63767, 63499,
+    63211, 62906, 62582, 62241, 61882, 61506, 61112, 60702,
+    60275, 59831, 59372, 58896, 58405, 57898, 57377, 56840,
+    56290, 55725, 55147, 54555, 53950, 53332, 52703, 52061,
+    51408, 50743, 50068, 49383, 48687, 47982, 47268, 46546,
+    45815, 45076, 44330, 43577, 42818, 42052, 41281, 40505,
+    39724, 38940, 38151, 37359, 36565, 35768, 34969, 34170,
+    33369, 32568, 31767, 30966, 30167, 29369, 28574, 27780,
+    26990, 26203, 25421, 24642, 23869, 23100, 22338, 21582,
+    20832, 20090, 19355, 18628, 17909, 17200, 16500, 15809,
+    15129, 14459, 13800, 13153, 12517, 11893, 11282, 10684,
+    10098, 9527, 8969, 8426, 7897, 7382, 6884, 6400,
+    5932, 5481, 5045, 4627, 4225, 3840, 3472, 3122,
+    2790, 2475, 2179, 1901, 1641, 1400, 1178, 974,
+    790, 625, 479, 352, 245, 157, 88, 39,
+    10};
 
 //#endif

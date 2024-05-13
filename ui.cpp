@@ -356,6 +356,13 @@ FLASHMEM void configurePage_oscillator()
   pages[PAGE].staticPointers[staticIndex]->labelOffsetX = labelOffsetX;
   pages[PAGE].staticPointers[staticIndex]->labelOffsetY = labelOffsetY;
 
+  staticIndex = pages[PAGE].addStatic(0, 5* (column_w + padding), 0* (row_h + padding), 100, 40);
+  pages[PAGE].staticPointers[staticIndex]->label("MISC");
+  pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->textColor1 = HEADER_TEXT_COLOR;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetX = labelOffsetX;
+  pages[PAGE].staticPointers[staticIndex]->labelOffsetY = labelOffsetY;
+
   // staticIndex = pages[PAGE].addStatic(0, 4* (column_w + padding), 0* (row_h + padding), column_w, 40);
   // pages[PAGE].staticPointers[staticIndex]->label("SYNC");
   // pages[PAGE].staticPointers[staticIndex]->color2 = HEADER_COLOR;
@@ -554,6 +561,43 @@ FLASHMEM void configurePage_oscillator()
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.fm_level;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
   pages[PAGE].widgetPointers[widgetIndex]->type = WIDGET_BOX_HBAR;
+
+
+  widgetIndex = pages[PAGE].addWidget(OSC1_PAR_A, 5* (column_w + padding), 1* (row_h + padding), 100, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("O1pA:");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u16 = &voiceBanks[currentVoiceBank]->patch.osc1_parA;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
+
+  widgetIndex = pages[PAGE].addWidget(OSC1_PAR_B, 5* (column_w + padding), 2* (row_h + padding), 100, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("O1pB:");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u16 = &voiceBanks[currentVoiceBank]->patch.osc1_parB;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
+
+  widgetIndex = pages[PAGE].addWidget(OSC2_PAR_A, 5* (column_w + padding), 3* (row_h + padding), 100, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("O2pB:");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u16 = &voiceBanks[currentVoiceBank]->patch.osc2_parA;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
+
+  widgetIndex = pages[PAGE].addWidget(OSC2_PAR_B, 5* (column_w + padding), 4* (row_h + padding), 100, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("O2pB:");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u16 = &voiceBanks[currentVoiceBank]->patch.osc2_parB;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
+
+
+
+
 
   // widgetIndex = pages[PAGE].addWidget(OSC1_SYNC, 4* (column_w + padding), 1* (row_h + padding), column_w, row_h); 
   // pages[PAGE].widgetPointers[widgetIndex]->label("Sync:");

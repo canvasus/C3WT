@@ -233,6 +233,8 @@ void P3_AudioSynthWaveformModulated::update(void)
 	int16_t magnitude15;
 	uint32_t i, ph, index, index2, scale, priorphase;
 	const uint32_t inc = phase_increment;
+	uint32_t phase_spread;
+	uint32_t saw_phase_increment;
 
 	moddata = receiveReadOnly(0);
 	shapedata = receiveReadOnly(1);
@@ -465,8 +467,172 @@ void P3_AudioSynthWaveformModulated::update(void)
 			*bp++ = sample;
 		}
 		break;
-	}
+	case WAVEFORM_MULTISAW:
+	{
+		int32_t sample;
+		uint8_t parameter_a;
+		uint8_t parameter_b;
+		parameter_a = osc_par_a; // Parameter Spread
+		parameter_b = osc_par_b; // Parameter Sawmix
 
+		phase_spread = (phase_increment >> 14) * parameter_a;
+		++phase_spread;
+		saw_phase_increment = phase_increment & random(0xFFFF);
+		for (uint8_t i = 0; i < 5; ++i)
+		{
+			saw_phase_increment += phase_spread;
+			state_saw.increments[i] = saw_phase_increment;
+		}
+		// Phase spread and sawmix
+		int32_t magnitude_a;
+		int32_t magnitude_b;
+		magnitude_a = magnitude * ((127 - parameter_b) * 0.0078f);
+		magnitude_b = magnitude * (parameter_b * 0.0078f);
+
+		for (i = 0; i < AUDIO_BLOCK_SAMPLES; i++)
+		{
+			state_saw.data_qs_phase[0] -= state_saw.increments[0];
+			state_saw.data_qs_phase[1] -= state_saw.increments[1];
+			state_saw.data_qs_phase[2] += state_saw.increments[2];
+			state_saw.data_qs_phase[3] += state_saw.increments[3];
+			state_saw.phase[0] = phasedata[i];
+			state_saw.phase[1] = (state_saw.phase[0] + state_saw.data_qs_phase[0]);
+			state_saw.phase[2] = (state_saw.phase[1] + state_saw.data_qs_phase[1]);
+			state_saw.phase[3] = (state_saw.phase[2] + state_saw.data_qs_phase[2]);
+			state_saw.phase[4] = (state_saw.phase[3] + state_saw.data_qs_phase[3]);
+			sample = signed_multiply_32x16t(magnitude_a, state_saw.phase[0]) >> 1;
+			sample += signed_multiply_32x16t(magnitude_b, state_saw.phase[1]) >> 2;
+			sample += signed_multiply_32x16t(magnitude_b, state_saw.phase[2]) >> 2;
+			sample += signed_multiply_32x16t(magnitude_b, state_saw.phase[3]) >> 2;
+			sample += signed_multiply_32x16t(magnitude_b, state_saw.phase[4]) >> 2;
+
+			float sample_f;
+			sample_f = sample * 1.35f * DIV32768;
+			sample_f = 1.50f * sample_f - 0.5f * sample_f * sample_f * sample_f;
+			sample = sample_f * 32768;
+			*bp++ = ~(int16_t)((sample * magnitude) >> 16);
+		}
+	}
+	break;
+	
+	case WAVEFORM_SHRUTHI_ZSYNC:
+	{
+		uint16_t phase_2_zs;
+		uint16_t phase_integral_zs;
+		uint16_t increment_zs;
+
+		// parameter + modulation value
+		parameter_[0] = (osc_par_a << 5) + par_a_mod_;
+		// clip max. value
+		parameter_[0] = saturate16(parameter_[0]);
+		parameter_[0] >>= 7;
+
+		phase_integral_zs = phase_increment >> 15;
+		increment_zs = phase_integral_zs + (phase_integral_zs * uint32_t(parameter_[0]) >> 3);
+		phase_2_zs = OscData_sec_phase;
+		for (i = 0; i < AUDIO_BLOCK_SAMPLES; i++)
+		{
+			ph = phasedata[i] << 1;
+			phase_integral_zs = ph >> 16;
+			if (ph < phaseOld_)
+			{
+				phase_2_zs = 0;
+			}
+			phaseOld_ = ph;
+			phase_2_zs += increment_zs;
+			uint16_t carrier = (wav_res_sine16[phase_2_zs >> 8]);
+			int16_t sample = (phase_integral_zs < 0x8000 ? carrier : 32768) + 32768;
+			*bp++ = sample;
+		}
+		// update secondary phase
+		OscData_sec_phase = phase_2_zs;
+	}
+	break;
+	
+	case WAVEFORM_BRAIDS_CSAW:
+	{
+		parameter_[0] = ((osc_par_a << 5) + (par_a_mod_ << 1));
+		parameter_[1] = ((osc_par_b << 5) + (par_b_mod_ << 1));
+		// clip max value
+		parameter_[0] = saturate16(parameter_[0]);
+		parameter_[1] = saturate16(parameter_[1]);
+
+		int32_t next_sample = next_sample_;
+
+		for (i = 0; i < AUDIO_BLOCK_SAMPLES; i++)
+		{
+			bool sync_reset = false;
+			bool self_reset = false;
+			bool transition_during_reset = false;
+			uint32_t reset_time = 0;
+			uint32_t pw = static_cast<uint32_t>(parameter_[0]) * 49152;
+
+			if (pw < 8 * phase_increment)
+			{
+				pw = 8 * phase_increment;
+			}
+
+			int32_t this_sample = next_sample;
+			next_sample = 0;
+
+			uint32_t phase_ = phasedata[i];
+			if (phase_ < phaseOld_)
+			{
+				self_reset = true;
+			}
+			phaseOld_ = phase_;
+
+			while (transition_during_reset || !sync_reset)
+			{
+				if (!high_)
+				{
+					if (phase_ < pw)
+					{
+						break;
+					}
+					uint32_t t = (phase_ - pw) / (phase_increment >> 16);
+					int16_t before = discontinuity_depth_;
+					int16_t after = phase_ >> 18;
+					int16_t discontinuity = after - before;
+					this_sample += discontinuity * ThisBlepSample(t) >> 15;
+					next_sample += discontinuity * NextBlepSample(t) >> 15;
+					high_ = true;
+				}
+				if (high_)
+				{
+					if (!self_reset)
+					{
+						break;
+					}
+					self_reset = false;
+					discontinuity_depth_ = -2048 + (parameter_[1] >> 2);
+					uint32_t t = phase_ / (phase_increment >> 16);
+					int16_t before = 16383;
+					int16_t after = discontinuity_depth_;
+					int16_t discontinuity = after - before;
+					this_sample += discontinuity * ThisBlepSample(t) >> 15;
+					next_sample += discontinuity * NextBlepSample(t) >> 15;
+					high_ = false;
+				}
+			}
+
+			if (sync_reset)
+			{
+				phase_ = reset_time * (phase_increment >> 16);
+				high_ = false;
+			}
+
+			next_sample += phase_ < pw
+							   ? discontinuity_depth_
+							   : phase_ >> 18;
+			*bp++ = ~(this_sample - 8192) << 1;
+		}
+		next_sample_ = next_sample;
+	}
+	break;
+	
+	} // end of oscillator type switch
+	
 	if (tone_offset) {
 		bp = block->data;
 		end = bp + AUDIO_BLOCK_SAMPLES;

@@ -58,6 +58,11 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   patch.pulse_level =  doc["pulse_level"];
   patch.noise_level = doc["noise_level"];
 
+  patch.osc1_parA = doc["osc1_parA"] | 0;
+  patch.osc1_parB = doc["osc1_parB"] | 0;
+  patch.osc2_parA = doc["osc2_parA"] | 0;
+  patch.osc2_parB = doc["osc2_parB"] | 0;
+
   patch.waveshaper_index = doc["waveshaper_index"] | 0;
   patch.waveshaper_level = doc["waveshaper_level"] | 0.0;
 
@@ -257,6 +262,11 @@ FLASHMEM void savePatch(uint8_t patchNr)
   doc["osc2_level"] = voiceBanks[currentVoiceBank]->patch.osc2_level;
   doc["pulse_level"] = voiceBanks[currentVoiceBank]->patch.pulse_level;
   doc["noise_level"] = voiceBanks[currentVoiceBank]->patch.noise_level;
+
+  doc["osc1_parA"] = voiceBanks[currentVoiceBank]->patch.osc1_parA;
+  doc["osc1_parB"] = voiceBanks[currentVoiceBank]->patch.osc1_parB;
+  doc["osc2_parA"] = voiceBanks[currentVoiceBank]->patch.osc2_parA;
+  doc["osc2_parB"] = voiceBanks[currentVoiceBank]->patch.osc2_parB;
 
   doc["waveshaper_index"] = voiceBanks[currentVoiceBank]->patch.waveshaper_index;
   doc["waveshaper_level"] = voiceBanks[currentVoiceBank]->patch.waveshaper_level;
@@ -514,6 +524,7 @@ void updateSerial()
       dumpAllPatchData();
     }
     else receivePatchData(input, currentVoiceBank);
+    // else if (input[0] == "{") receivePatchData(input, currentVoiceBank); // input should at least resemble json to care
   }
 }
 
@@ -551,6 +562,11 @@ FLASHMEM void receivePatchData(String buffer, uint8_t bankNr)
     patch.osc2_level = doc["osc2_level"];
     patch.pulse_level =  doc["pulse_level"];
     patch.noise_level = doc["noise_level"];
+
+    patch.osc1_parA = doc["osc1_parA"] | 0;
+    patch.osc1_parB = doc["osc1_parB"] | 0;
+    patch.osc2_parA = doc["osc2_parA"] | 0;
+    patch.osc2_parB = doc["osc2_parB"] | 0;
 
     patch.waveshaper_index = doc["waveshaper_index"] | 0;
     patch.waveshaper_level = doc["waveshaper_level"] | 0.0;

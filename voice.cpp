@@ -21,9 +21,11 @@
 #include "src/waveTables/AudioSampleTransfor.h"
 
 const float NOTEFREQS[128] = {8.176f, 8.662f, 9.177f, 9.723f, 10.301f, 10.913f, 11.562f, 12.25f, 12.978f, 13.75f, 14.568f, 15.434f, 16.352f, 17.324f, 18.354f, 19.445f, 20.602f, 21.827f, 23.125f, 24.5f, 25.957f, 27.5f, 29.135f, 30.868f, 32.703f, 34.648f, 36.708f, 38.891f, 41.203f, 43.654f, 46.249f, 48.999f, 51.913f, 55.0f, 58.27f, 61.735f, 65.406f, 69.296f, 73.416f, 77.782f, 82.407f, 87.307f, 92.499f, 97.999f, 103.826f, 110.0f, 116.541f, 123.471f, 130.813f, 138.591f, 146.832f, 155.563f, 164.814f, 174.614f, 184.997f, 195.998f, 207.652f, 220.0f, 233.082f, 246.942f, 261.626f, 277.183f, 293.665f, 311.127f, 329.628f, 349.228f, 369.994f, 391.995f, 415.305f, 440.0f, 466.164f, 493.883f, 523.251f, 554.365f, 587.33f, 622.254f, 659.255f, 698.456f, 739.989f, 783.991f, 830.609f, 880.0f, 932.328f, 987.767f, 1046.502f, 1108.731f, 1174.659f, 1244.508f, 1318.51f, 1396.913f, 1479.978f, 1567.982f, 1661.219f, 1760.0f, 1864.655f, 1975.533f, 2093.005f, 2217.461f, 2349.318f, 2489.016f, 2637.02f, 2793.826f, 2959.955f, 3135.963f, 3322.438f, 3520.0f, 3729.31f, 3951.066f, 4186.009f, 4434.922f, 4698.636f, 4978.032f, 5274.041f, 5587.652f, 5919.911f, 6271.927f, 6644.875f, 7040.0f, 7458.62f, 7902.133f, 8372.018f, 8869.844f, 9397.273f, 9956.063f, 10548.08f, 11175.3f, 11839.82f, 12543.85f};
-uint8_t waveformList[NR_WAVEFORMS] = {WAVEFORM_SINE, WAVEFORM_BANDLIMIT_SAWTOOTH_REVERSE, WAVEFORM_BANDLIMIT_PULSE, WAVEFORM_ARBITRARY, WAVEFORM_BANDLIMIT_SAWTOOTH, WAVEFORM_BANDLIMIT_SQUARE, WAVEFORM_TRIANGLE_VARIABLE, WAVEFORM_SAMPLE_HOLD};
+uint8_t waveformList[NR_WAVEFORMS] = {WAVEFORM_SINE, WAVEFORM_BANDLIMIT_SAWTOOTH_REVERSE, WAVEFORM_BANDLIMIT_PULSE, WAVEFORM_ARBITRARY,
+                                      WAVEFORM_BANDLIMIT_SAWTOOTH, WAVEFORM_BANDLIMIT_SQUARE, WAVEFORM_TRIANGLE_VARIABLE, WAVEFORM_SAMPLE_HOLD,
+                                      WAVEFORM_MULTISAW, WAVEFORM_SHRUTHI_ZSYNC, WAVEFORM_BRAIDS_CSAW };
 uint8_t nrWaveforms = sizeof(waveformList);
-char waveformNames[NR_WAVEFORMS][6] = {"SIN", "SAWbr", "PLSb", "WTB", "SAWb", "SQRb", "TRIb", "S&H"};
+char waveformNames[NR_WAVEFORMS][6] = {"SIN", "SAWbr", "PLSb", "WTB", "SAWb", "SQRb", "TRIb", "S&H", "XAW", "ZNC", "CAW"};
 //unused: WAVEFORM_SAWTOOTH, WAVEFORM_SAWTOOTH_REVERSE, WAVEFORM_SQUARE, WAVEFORM_TRIANGLE, WAVEFORM_PULSE
 
 DMAMEM int16_t waveTable1_I16[WAVETABLE_LENGTH];
@@ -210,76 +212,6 @@ void Voice::update()
     _pwm.frequency(0.0);
   }
 }
-
-// void Voice::_updateWaveTable1_phaseScan()
-// {
-//    switch (_patch->osc1_waveTable_movement)
-//   {
-//     case WAVETABLE_PLAYMODE_LFO1:
-//       _waveOffset1 = _patch->osc1_waveTable_start + (_patch->osc1_waveTable_length >> 1) +  lfo1Value * (_patch->osc1_waveTable_length >> 1);
-//       if (_waveOffset1 > (2* WAVETABLE_LENGTH - 257) ) _waveOffset1 = 2*WAVETABLE_LENGTH - 257;
-//       break;
-//     case WAVETABLE_PLAYMODE_LFO2:
-//       _waveOffset1 = _patch->osc1_waveTable_start + lfo2Value * _patch->osc1_waveTable_length;
-//       if (_waveOffset1 > (2* WAVETABLE_LENGTH - 257) ) _waveOffset1 = 2*WAVETABLE_LENGTH - 257;
-//       break;
-//     default:
-//       if (_scanDirection1 == RIGHT)
-//       {
-//         _waveOffset1 = min(_waveOffset1 + _patch->osc1_waveTable_stepSize, _patch->osc1_waveTable_start + _patch->osc1_waveTable_length);
-//         if ( (_waveOffset1 >= (_patch->osc1_waveTable_start + _patch->osc1_waveTable_length) ) && (_patch->osc1_waveTable_movement == WAVETABLE_PLAYMODE_UPDOWN) ) _scanDirection1 = LEFT;
-//         if (_waveOffset1 > (2* WAVETABLE_LENGTH - 257) ) _waveOffset1 = 2*WAVETABLE_LENGTH - 257;
-//       }
-//       else if (_scanDirection1 == LEFT)
-//       {
-//         if (_patch->osc1_waveTable_stepSize > _waveOffset1) _waveOffset1 = 0;
-//         else _waveOffset1 = _waveOffset1 - _patch->osc1_waveTable_stepSize;
-//         if (_waveOffset1 <= _patch->osc1_waveTable_start) _scanDirection1 = RIGHT;
-//       }
-//       break;
-//   }
-// //  if (_scanDirection1 == RIGHT)
-// //     {
-// //       _waveOffset1 = _waveOffset1 + _patch->osc1_waveTable_stepSize;
-// //       if (_waveOffset1 >= (_patch->osc1_waveTable_start + _patch->osc1_waveTable_length) ) _scanDirection1 = LEFT;
-// //     }
-// //     if (_scanDirection1 == LEFT)
-// //     {
-// //       _waveOffset1 = _waveOffset1 - _patch->osc1_waveTable_stepSize;
-// //       if (_waveOffset1 <= _patch->osc1_waveTable_start) _scanDirection1 = RIGHT;
-// //     }
-// //     if (_waveOffset1 > (WAVETABLE_LENGTH * 2 - 256) ) _waveOffset1 = WAVETABLE_LENGTH * 2 - 256;
-//   for (uint16_t index = 0; index < 256; index++)
-//   {
-//     // now adjust for 8192 length
-//     waveTableMorph1_I16[index] = activeWaveTable1[(_waveOffset1 + index) >> 1];
-//   }
-
-//   //_osc1.arbitraryWaveform(&activeWaveTable1[_waveOffset1 >> 1], AWFREQ);
-//   _osc1.arbitraryWaveform(waveTableMorph1_I16, AWFREQ);
-//   _osc1.begin(WAVEFORM_ARBITRARY);
-//   _osc1.amplitude(1.0);
-// }
-
-// // void Voice::_updateWaveTable2_phaseScan()
-// // {
-// //   if (_scanDirection2 == RIGHT)
-// //   {
-// //     _waveOffset2  = _waveOffset2 + _patch->osc2_waveTable_stepSize;
-// //     if (_waveOffset2 >= (_patch->osc2_waveTable_start + _patch->osc2_waveTable_length)) _scanDirection2 = LEFT;
-// //   }
-// //   if (_scanDirection2 == LEFT)
-// //   {
-// //     _waveOffset2 = _waveOffset2 - _patch->osc2_waveTable_stepSize;
-// //     if (_waveOffset2 <= _patch->osc2_waveTable_start) _scanDirection2 = RIGHT;
-// //   }
-// //   if (_waveOffset2 > (ARBITRARY_LENGTH * 2 - 256) ) _waveOffset2 = ARBITRARY_LENGTH * 2 - 256;
-  
-// //   _osc2.arbitraryWaveform(&activeWaveTable2[_waveOffset2 >> 1], AWFREQ);
-// //   //_osc2.arbitraryWaveform(&waveTable2_I16[_waveOffset2 >> 1], AWFREQ);
-// //   _osc2.begin(WAVEFORM_ARBITRARY);
-// //   _osc2.amplitude(1.0);
-// // }
 
 void Voice::_updateWaveTable1()
 {
@@ -492,6 +424,11 @@ void Voice::applyPatchData()
 
   setLfo1AmplitudeModulation();
   setLfo2AmplitudeModulation();
+
+  setOsc1ParA();
+  setOsc1ParB();
+  setOsc2ParA();
+  setOsc2ParB();
 }
 
 void Voice::setOsc1Waveform()
@@ -527,6 +464,11 @@ uint32_t Voice::get_osc2_waveOffset()
 {
   return 0;
 }
+
+void Voice::setOsc1ParA() { _osc1.osc_par_a = _patch->osc1_parA; }
+void Voice::setOsc1ParB() { _osc1.osc_par_b = _patch->osc1_parB; }
+void Voice::setOsc2ParA() { _osc2.osc_par_a = _patch->osc2_parA; }
+void Voice::setOsc2ParB() { _osc2.osc_par_b = _patch->osc2_parB; }
 
 void Voice::setAmpEnv()
 {
@@ -901,6 +843,22 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
     case OSC2_SYNC:
       targetValueI8 = patch.osc2_sync + delta;
       patch.osc2_sync = constrain(targetValueI8, 0, 1);
+      break;
+    case OSC1_PAR_A:
+      patch.osc1_parA = patch.osc1_parA + delta;
+      for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setOsc1ParA();
+      break;
+    case OSC1_PAR_B:
+      patch.osc1_parB = patch.osc1_parB + delta;
+      for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setOsc1ParB();
+      break;
+    case OSC2_PAR_A:
+      patch.osc2_parA = patch.osc2_parA + delta;
+      for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setOsc2ParA();
+      break;
+    case OSC2_PAR_B:
+      patch.osc2_parB = patch.osc2_parB + delta;
+      for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setOsc2ParB();
       break;
 
 

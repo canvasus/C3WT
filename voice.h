@@ -155,12 +155,14 @@ enum ParameterIndexes
 #define LFO1_OFFSET 121
 #define LFO2_OFFSET 122
 
+#define OSC1_PAR_A 123
+#define OSC1_PAR_B 124
+#define OSC2_PAR_A 125
+#define OSC2_PAR_B 126
 
 #define EFX_PAN 118
 #define WAVESHAPER_INDEX 119
 #define WAVESHAPER_LEVEL 120
-
-
 
 #define MODMIXER_ENV3_CH  0
 #define MODMIXER_LFO1_CH  1
@@ -169,6 +171,8 @@ enum ParameterIndexes
 
 #define LEFT  0
 #define RIGHT 1
+
+#define NR_WAVEFORMS 11
 
 #define NR_WAVETABLES 20
 #define WAVETABLE_MODE_PHASESCAN  0
@@ -182,7 +186,7 @@ enum ParameterIndexes
 
 #define WAVETABLE_LENGTH 8192
 
-#define NR_WAVEFORMS 8
+
 
 extern int16_t waveTable1_I16[WAVETABLE_LENGTH];
 extern int16_t waveTable2_I16[WAVETABLE_LENGTH];
@@ -209,6 +213,11 @@ struct Patch
 
   uint8_t osc1_sync = 0;
   uint8_t osc2_sync = 0;
+
+  uint16_t osc1_parA = 0;
+  uint16_t osc1_parB = 0;
+  uint16_t osc2_parA = 0;
+  uint16_t osc2_parB = 0;
 
   float osc1_level = 0.8;
   float osc2_level = 0.0;
@@ -461,6 +470,10 @@ class Voice
     void set_osc2_waveOffset();
     uint32_t get_osc1_waveOffset();
     uint32_t get_osc2_waveOffset();
+    void setOsc1ParA();
+    void setOsc1ParB();
+    void setOsc2ParA();
+    void setOsc2ParB();
 };
 
 class VoiceBank
