@@ -36,6 +36,8 @@ void checkFileSystem();
 uint8_t peekPatchName(uint8_t patchNr);
 uint8_t loadPatch(uint8_t patchNr);
 void savePatch(uint8_t patchNr);
+Patch populatePatchFromDoc(const JsonDocument& doc);
+AudioParameters populateAudioParametersFromDoc(const JsonDocument& doc);
 
 void updateSerial();
 void sendPatchData(uint8_t bankNr);

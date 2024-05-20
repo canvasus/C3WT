@@ -23,9 +23,10 @@
 const float NOTEFREQS[128] = {8.176f, 8.662f, 9.177f, 9.723f, 10.301f, 10.913f, 11.562f, 12.25f, 12.978f, 13.75f, 14.568f, 15.434f, 16.352f, 17.324f, 18.354f, 19.445f, 20.602f, 21.827f, 23.125f, 24.5f, 25.957f, 27.5f, 29.135f, 30.868f, 32.703f, 34.648f, 36.708f, 38.891f, 41.203f, 43.654f, 46.249f, 48.999f, 51.913f, 55.0f, 58.27f, 61.735f, 65.406f, 69.296f, 73.416f, 77.782f, 82.407f, 87.307f, 92.499f, 97.999f, 103.826f, 110.0f, 116.541f, 123.471f, 130.813f, 138.591f, 146.832f, 155.563f, 164.814f, 174.614f, 184.997f, 195.998f, 207.652f, 220.0f, 233.082f, 246.942f, 261.626f, 277.183f, 293.665f, 311.127f, 329.628f, 349.228f, 369.994f, 391.995f, 415.305f, 440.0f, 466.164f, 493.883f, 523.251f, 554.365f, 587.33f, 622.254f, 659.255f, 698.456f, 739.989f, 783.991f, 830.609f, 880.0f, 932.328f, 987.767f, 1046.502f, 1108.731f, 1174.659f, 1244.508f, 1318.51f, 1396.913f, 1479.978f, 1567.982f, 1661.219f, 1760.0f, 1864.655f, 1975.533f, 2093.005f, 2217.461f, 2349.318f, 2489.016f, 2637.02f, 2793.826f, 2959.955f, 3135.963f, 3322.438f, 3520.0f, 3729.31f, 3951.066f, 4186.009f, 4434.922f, 4698.636f, 4978.032f, 5274.041f, 5587.652f, 5919.911f, 6271.927f, 6644.875f, 7040.0f, 7458.62f, 7902.133f, 8372.018f, 8869.844f, 9397.273f, 9956.063f, 10548.08f, 11175.3f, 11839.82f, 12543.85f};
 uint8_t waveformList[NR_WAVEFORMS] = {WAVEFORM_SINE, WAVEFORM_BANDLIMIT_SAWTOOTH_REVERSE, WAVEFORM_BANDLIMIT_PULSE, WAVEFORM_ARBITRARY,
                                       WAVEFORM_BANDLIMIT_SAWTOOTH, WAVEFORM_BANDLIMIT_SQUARE, WAVEFORM_TRIANGLE_VARIABLE, WAVEFORM_SAMPLE_HOLD,
-                                      WAVEFORM_MULTISAW, WAVEFORM_SHRUTHI_ZSYNC, WAVEFORM_BRAIDS_CSAW };
+                                      WAVEFORM_MULTISAW, WAVEFORM_SHRUTHI_ZSYNC, WAVEFORM_BRAIDS_CSAW,
+                                      WAVEFORM_SAWTOOTH, WAVEFORM_SQUARE, WAVEFORM_TRIANGLE};
 uint8_t nrWaveforms = sizeof(waveformList);
-char waveformNames[NR_WAVEFORMS][6] = {"SIN", "SAWbr", "PLSb", "WTB", "SAWb", "SQRb", "TRIb", "S&H", "XAW", "ZNC", "CAW"};
+char waveformNames[NR_WAVEFORMS][6] = {"SIN", "SAWbr", "PLSb", "WTB", "SAWb", "SQRb", "TRIb", "S&H", "XAW", "ZNC", "CAW", "SAW", "SQR", "TRI"};
 //unused: WAVEFORM_SAWTOOTH, WAVEFORM_SAWTOOTH_REVERSE, WAVEFORM_SQUARE, WAVEFORM_TRIANGLE, WAVEFORM_PULSE
 
 DMAMEM int16_t waveTable1_I16[WAVETABLE_LENGTH];
@@ -457,12 +458,12 @@ void Voice::set_osc2_waveOffset()
 
 uint32_t Voice::get_osc1_waveOffset()
 {
-  return 0;
+  return _waveOffset1;
 }
 
 uint32_t Voice::get_osc2_waveOffset()
 {
-  return 0;
+  return _waveOffset2;
 }
 
 void Voice::setOsc1ParA() { _osc1.osc_par_a = _patch->osc1_parA; }
@@ -792,14 +793,16 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
   {
     case OSC1_WAVEFORM:
       targetValueU8 = patch.osc1_waveform + delta;
-      if (targetValueU8 > (NR_WAVEFORMS - 1) ) targetValueU8 = 0;
-      patch.osc1_waveform = targetValueU8;
+      //if (targetValueU8 > (NR_WAVEFORMS - 1) ) targetValueU8 = 0;
+      //patch.osc1_waveform = targetValueU8;
+      patch.osc1_waveform = wraparound(targetValueU8, 0, (NR_WAVEFORMS - 1));
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setOsc1Waveform();
       break;
     case OSC2_WAVEFORM:
       targetValueU8 = patch.osc2_waveform + delta;
-      if (targetValueU8 > (NR_WAVEFORMS - 1) ) targetValueU8 = 0;
-      patch.osc2_waveform = targetValueU8;
+      //if (targetValueU8 > (NR_WAVEFORMS - 1) ) targetValueU8 = 0;
+      //patch.osc2_waveform = targetValueU8;
+      patch.osc2_waveform = wraparound(targetValueU8, 0, (NR_WAVEFORMS - 1));
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setOsc2Waveform();
       break;
     case TRANSPOSE:
@@ -1173,14 +1176,14 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       break;
     case LFO1_WAVEFORM:
       targetValueU8 = patch.lfo1_waveform + delta;
-      if (targetValueU8 > (nrWaveforms - 1) ) targetValueU8 = 0;
-      patch.lfo1_waveform = targetValueU8;
+      //if (targetValueU8 > (nrWaveforms - 1) ) targetValueU8 = 0;
+      patch.lfo1_waveform = wraparound(targetValueU8, 0, (nrWaveforms - 1));
       _lfo1.begin(waveformList[patch.lfo1_waveform]);
       break;
     case LFO2_WAVEFORM:
       targetValueU8 = patch.lfo2_waveform + delta;
       if (targetValueU8 > (nrWaveforms - 1) ) targetValueU8 = 0;
-      patch.lfo2_waveform = targetValueU8;
+      patch.lfo2_waveform = wraparound(targetValueU8, 0, (nrWaveforms - 1));
       _lfo2.begin(waveformList[patch.lfo2_waveform]);
       break;
     case LFO1_FREQUENCY:
@@ -1496,4 +1499,22 @@ void VoiceBank::importWaveTable(const unsigned int * waveTableI32, int16_t * wav
   //   if (index == (ARBITRARY_LENGTH - 1)) waveTableI16[2 * index] = sample1 / preScaler;
   //   else waveTableI16[2 * index] = (sample1 / (2* preScaler)) + (sample2 / (2* preScaler));
   // }
+}
+
+uint16_t VoiceBank::getWaveOffset(uint8_t oscillator)
+{
+  if (oscillator == 1) return voices[0].get_osc1_waveOffset();
+  else return voices[0].get_osc2_waveOffset();
+}
+
+void VoiceBank::adjustArpSequencer(uint8_t step, int8_t delta)
+{
+  int8_t tempOffset = patch.arp_offsets[step] + delta;
+  patch.arp_offsets[step] = constrain(tempOffset, -24, +24);
+}
+
+void VoiceBank::adjustArpVelocity(uint8_t step, int8_t delta)
+{
+  int8_t temp = patch.arp_velocities[step] + delta;
+  patch.arp_velocities[step] = constrain(temp, 0, 127);
 }

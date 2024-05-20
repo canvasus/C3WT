@@ -27,17 +27,14 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   if (!file) return FILE_NOT_EXIST;
 
   StaticJsonDocument<JSON_DOC_SIZE> doc;
-  Patch patch;
-  AudioParameters tempAudioPar;
-
-  // // Deserialize the JSON document
   DeserializationError error = deserializeJson(doc, file);
   if (error)
   {
     Serial.println(F("Failed to read file, using default configuration"));
     return INVALID_FORMAT;
   } 
-  // // Copy values from the JsonDocument to the Config
+
+  file.close();
 
   strlcpy(patchInfo.name,                  // <- destination
           doc["name"] | "INIT PATCH",  // <- source
@@ -45,6 +42,26 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
 
   peekPatchNameUI = patchInfo.name;
 
+  voiceBanks[currentVoiceBank]->patch = populatePatchFromDoc(doc);
+  voiceBanks[currentVoiceBank]->applyPatchData();
+    
+  if (currentVoiceBank == 0)  // NOTE TEMPORARY FIX
+  {
+    audioParameters = populateAudioParametersFromDoc(doc);
+    applyAudioParameters();
+  }
+
+  char  buffer[16];
+  sprintf(buffer, "%03d: %s", patchNr, patchInfo.name);
+  patchNameUI[currentVoiceBank] = buffer;
+  currentPatchNr[currentVoiceBank] = patchNr;
+  peekPatchNr = patchNr;
+  return LOAD_OK;
+}
+
+FLASHMEM Patch populatePatchFromDoc(const JsonDocument& doc)
+{
+  Patch patch;
   patch.osc1_waveform =doc["osc1_waveform"];
   patch.osc2_waveform = doc["osc2_waveform"];
 
@@ -188,8 +205,20 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   patch.arp_offsetTicks = doc["arp_offsetTicks"] | 0;
   patch.arp_octaves = doc["arp_octaves"] | 0;
 
+  for (uint8_t i = 0; i < NR_ARP_SEQUENCER_STEPS; i++)
+  {
+    char parName[14];
+    sprintf(parName, "arp_offset_%d", i);
+    patch.arp_offsets[i] = doc[parName] | 0;
+  }
 
-  // AUDIO PARAMETERS
+  return patch;
+}
+
+FLASHMEM AudioParameters populateAudioParametersFromDoc(const JsonDocument& doc)
+{
+  AudioParameters tempAudioPar;
+  
   tempAudioPar.hpVolume =doc["hpVolume"];
   tempAudioPar.usbGain = doc["usbGain"];
   tempAudioPar.reverb_size = doc["reverb_size"];
@@ -213,26 +242,9 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   tempAudioPar.delay_masterLevel = doc["delay_masterLevel"];
   tempAudioPar.phaser_masterLevel = doc["phaser_masterLevel"];
 
-  file.close();
-
-  voiceBanks[currentVoiceBank]->patch = patch;
-  voiceBanks[currentVoiceBank]->applyPatchData();
-    
-  if (currentVoiceBank == 0)  // NOTE TEMPORARY FIX
-  {
-    audioParameters = tempAudioPar;
-    applyAudioParameters();
-  }
-
-  char  buffer[16];
-  sprintf(buffer, "%03d: %s", patchNr, patchInfo.name);
-  patchNameUI[currentVoiceBank] = buffer;
-  currentPatchNr[currentVoiceBank] = patchNr;
-  peekPatchNr = patchNr;
-  return LOAD_OK;
+  return tempAudioPar;
 }
 
-// Saves the configuration to a file
 FLASHMEM void savePatch(uint8_t patchNr)
 {
   char fileName[14];
@@ -394,7 +406,13 @@ FLASHMEM void savePatch(uint8_t patchNr)
   doc["arp_intervalTicks"] = voiceBanks[currentVoiceBank]->patch.arp_intervalTicks;
   doc["arp_offsetTicks"] = voiceBanks[currentVoiceBank]->patch.arp_offsetTicks;
   doc["arp_octaves"] = voiceBanks[currentVoiceBank]->patch.arp_octaves;
-
+  
+  for (uint8_t i = 0; i < NR_ARP_SEQUENCER_STEPS; i++)
+  {
+    char parName[14];
+    sprintf(parName, "arp_offset_%d", i);
+    doc[parName] = voiceBanks[currentVoiceBank]->patch.arp_offsets[i];
+  }
 
   // AUDIO PARAMETERS
   doc["hpVolume"] = audioParameters.hpVolume;
@@ -531,7 +549,6 @@ void updateSerial()
 FLASHMEM void receivePatchData(String buffer, uint8_t bankNr)
 {
   StaticJsonDocument<JSON_DOC_SIZE> doc;
-  Patch patch;
   AudioParameters tempAudioPar;
 
   DeserializationError error = deserializeJson(doc, buffer);
@@ -550,180 +567,12 @@ FLASHMEM void receivePatchData(String buffer, uint8_t bankNr)
 
     peekPatchNameUI = patchInfo.name;
 
-    patch.osc1_waveform =doc["osc1_waveform"];
-    patch.osc2_waveform = doc["osc2_waveform"];
-
-    patch.transpose = doc["transpose"];
-    patch.detune = doc["detune"];
-    patch.polyMode = doc["polyMode"];
-    patch.mono_mode = doc["mono_mode"];
-
-    patch.osc1_level = doc["osc1_level"];
-    patch.osc2_level = doc["osc2_level"];
-    patch.pulse_level =  doc["pulse_level"];
-    patch.noise_level = doc["noise_level"];
-
-    patch.osc1_parA = doc["osc1_parA"] | 0;
-    patch.osc1_parB = doc["osc1_parB"] | 0;
-    patch.osc2_parA = doc["osc2_parA"] | 0;
-    patch.osc2_parB = doc["osc2_parB"] | 0;
-
-    patch.waveshaper_index = doc["waveshaper_index"] | 0;
-    patch.waveshaper_level = doc["waveshaper_level"] | 0.0;
-
-    patch.phaseModulation = doc["phaseModulation"];
-    patch.frequencyModulation = doc["frequencyModulation"];
-
-    patch.ampEnvelope_attack = doc["ampEnvelope_attack"];
-    patch.ampEnvelope_decay = doc["ampEnvelope_decay"];
-    patch.ampEnvelope_sustain = doc["ampEnvelope_sustain"];
-    patch.ampEnvelope_release = doc["ampEnvelope_release"];
-
-    patch.filterEnvelope_attack = doc["filterEnvelope_attack"];
-    patch.filterEnvelope_decay = doc["filterEnvelope_decay"];
-    patch.filterEnvelope_sustain = doc["filterEnvelope_sustain"];
-    patch.filterEnvelope_release = doc["filterEnvelope_release"];
-    patch.octaveControl = doc["octaveControl"];
-    patch.envToFilter = doc["envToFilter"];
-    patch.cutoff = doc["cutoff"];
-    patch.resonance = doc["resonance"];
-    patch.hpfilter_cutoff = doc["hpfilter_cutoff"]; 
-    
-    patch.envelope3_attack = doc["envelope3_attack"];
-    patch.envelope3_decay = doc["envelope3_decay"];
-    patch.envelope3_sustain = doc["envelope3_sustain"];
-    patch.envelope3_release = doc["envelope3_release"];
-    
-    patch.mod_env3_osc1_pitch = doc["mod_env3_osc1_pitch"];
-    patch.mod_env3_osc2_pitch = doc["mod_env3_osc2_pitch"];
-    patch.mod_env3_osc1_phase = doc["mod_env3_osc1_phase"];
-    patch.mod_env3_osc2_phase = doc["mod_env3_osc2_phase"];
-    patch.mod_env3_filter_cutoff = doc["mod_env3_filter_cutoff"];
-    patch.mod_env3_pwm = doc["mod_env3_pwm"];
-    patch.mod_env3_am_pitch = doc["mod_env3_am_pitch"];
-    patch.mod_env3_fm_pitch = doc["mod_env3_fm_pitch"];
-    patch.mod_env3_lfo1_amplitude = doc["mod_env3_lfo1_ampl"];
-    patch.mod_env3_lfo2_amplitude = doc["mod_env3_lfo2_ampl"];
-    
-    patch.mod_lfo1_osc1_pitch = doc["mod_lfo1_osc1_pitch"];
-    patch.mod_lfo1_osc2_pitch = doc["mod_lfo1_osc2_pitch"];
-    patch.mod_lfo1_osc1_phase = doc["mod_lfo1_osc1_phase"];
-    patch.mod_lfo1_osc2_phase = doc["mod_lfo1_osc2_phase"];
-    patch.mod_lfo1_filter_cutoff = doc["mod_lfo1_filter_cutoff"];
-    patch.mod_lfo1_pwm = doc["mod_lfo1_pwm"];
-    patch.mod_lfo1_am_pitch = doc["mod_lfo1_am_pitch"];
-    patch.mod_lfo1_fm_pitch = doc["mod_lfo1_fm_pitch"];
-
-    patch.mod_lfo2_osc1_pitch = doc["mod_lfo2_osc1_pitch"];
-    patch.mod_lfo2_osc2_pitch = doc["mod_lfo2_osc2_pitch"];
-    patch.mod_lfo2_osc1_phase = doc["mod_lfo2_osc1_phase"];
-    patch.mod_lfo2_osc2_phase = doc["mod_lfo2_osc2_phase"];
-    patch.mod_lfo2_filter_cutoff = doc["mod_lfo2_filter_cutoff"];
-    patch.mod_lfo2_pwm = doc["mod_lfo2_pwm"];
-    patch.mod_lfo2_am_pitch = doc["mod_lfo2_am_pitch"];
-    patch.mod_lfo2_fm_pitch = doc["mod_lfo2_fm_pitch"];
-
-    patch.mod_osc1_osc2_pitch = doc["mod_osc1_osc2_pitch"];
-    patch.mod_osc2_osc1_pitch = doc["mod_osc2_osc1_pitch"];
-    patch.mod_osc1_osc2_phase = doc["mod_osc1_osc2_phase"];
-    patch.mod_osc2_osc1_phase = doc["mod_osc2_osc1_phase"];
-
-    patch.mod_velocity_osc1_pitch = doc["mod_velocity_osc1_pitch"];
-    patch.mod_velocity_osc2_pitch = doc["mod_velocity_osc2_pitch"];
-    patch.mod_velocity_osc1_phase = doc["mod_velocity_osc1_phase"];
-    patch.mod_velocity_osc2_phase = doc["mod_velocity_osc2_phase"];
-    patch.mod_velocity_filter_cutoff = doc["mod_velocity_filter_cutoff"];
-    patch.mod_velocity_pwm = doc["mod_velocity_pwm"];
-
-    patch.mod_wheel_osc1_pitch = doc["mod_wheel_osc1_pitch"];
-    patch.mod_wheel_osc2_pitch = doc["mod_wheel_osc2_pitch"];
-    patch.mod_wheel_osc1_phase = doc["mod_wheel_osc1_phase"];
-    patch.mod_wheel_osc2_phase = doc["mod_wheel_osc2_phase"];
-    patch.mod_wheel_filter_cutoff = doc["mod_wheel_filter_cutoff"];
-    patch.mod_wheel_pwm = doc["mod_wheel_pwm"];
-
-    patch.lfo1Frequency = doc["lfo1Frequency"];
-    patch.lfo2Frequency = doc["lfo2Frequency"];
-    patch.lfo1_waveform = doc["lfo1_waveform"];
-    patch.lfo2_waveform = doc["lfo2_waveform"];
-    patch.lfo1Level = doc["lfo1Level"];
-    patch.lfo2Level = doc["lfo2Level"];
-    patch.lfo1Offset = doc["lfo1Offset"];
-    patch.lfo2Offset = doc["lfo2Offset"];
-
-    patch.fm_frequency_multiplier = doc["fm_frequency_multiplier"];
-    patch.fm_level = doc["fm_level"];
-    patch.osc_fm_waveform = doc["osc_fm_waveform"];
-    patch.fm_offset = doc["fm_offset"];
-
-    patch.am_frequency_multiplier = doc["am_frequency_multiplier"];
-    patch.am_level = doc["am_level"];
-    patch.osc_am_waveform = doc["osc_am_waveform"];
-    patch.am_fixedFrequency = doc["am_fixedFrequency"];
-
-    patch.dryLevel = doc["dryLevel"];
-    patch.pan = doc["pan"];
-    patch.reverbSend = doc["reverbSend"];
-    patch.chorusSend = doc["chorusSend"];
-    patch.delaySend = doc["delaySend"];
-    patch.phaserSend = doc["phaserSend"];
-
-    patch.osc1_waveTable_mode = doc["osc1_waveTable_mode"];
-    patch.osc1_waveTable_index = doc["osc1_waveTable_index"];
-    patch.osc1_waveTable_start = doc["osc1_waveTable_start"];
-    patch.osc1_waveTable_length = doc["osc1_waveTable_length"];
-    patch.osc1_waveTable_interval = doc["osc1_waveTable_interval"];
-    patch.osc1_waveTable_stepSize = doc["osc1_waveTable_stepSize"];
-    patch.osc1_waveTable_movement = doc["osc1_waveTable_movement"];
-
-    patch.osc2_waveTable_mode = doc["osc2_waveTable_mode"];
-    patch.osc2_waveTable_index = doc["osc2_waveTable_index"];
-    patch.osc2_waveTable_start = doc["osc2_waveTable_start"];
-    patch.osc2_waveTable_length = doc["osc2_waveTable_length"];
-    patch.osc2_waveTable_interval = doc["osc2_waveTable_interval"];
-    patch.osc2_waveTable_stepSize = doc["osc2_waveTable_stepSize"];
-    patch.osc2_waveTable_movement = doc["osc2_waveTable_movement"];
-    
-    patch.midi_channel = doc["midi_channel"] | 1;
-    patch.midi_lowLimit = doc["midi_lowLimit"] | 0;
-    patch.midi_highLimit = doc["midi_highLimit"] | 127;
-    patch.midi_transpose = doc["midi_transpose"] | 0; 
-    patch.arp_mode = doc["arp_mode"] | 0;
-    patch.arp_intervalTicks = doc["arp_intervalTicks"] | 24;
-    patch.arp_offsetTicks = doc["arp_offsetTicks"] | 0;
-    patch.arp_octaves = doc["arp_octaves"] | 0;
-
-
-    // AUDIO PARAMETERS
-    tempAudioPar.hpVolume =doc["hpVolume"];
-    tempAudioPar.usbGain = doc["usbGain"];
-    tempAudioPar.reverb_size = doc["reverb_size"];
-    tempAudioPar.reverb_hidamp = doc["reverb_hidamp"];
-    tempAudioPar.reverb_lodamp = doc["reverb_lodamp"];
-    tempAudioPar.reverb_lowpass = doc["reverb_lowpass"];
-    tempAudioPar.reverb_diffusion =doc["reverb_diffusion"];
-    tempAudioPar.reverb_feedback = doc["reverb_feedback"];
-    tempAudioPar.granular_speed = doc["granular_speed"];
-    //tempAudioPar.granular_length = doc["granular_length"];
-    tempAudioPar.chorus_lfoRate = doc["chorus_lfoRate"];
-    tempAudioPar.phaser_lfoRate = doc["phaser_lfoRate"];
-    tempAudioPar.phaser_stages = doc["phaser_stages"];
-    tempAudioPar.phaser_feedback = doc["phaser_feedback"];
-    tempAudioPar.phaser_mix = doc["phaser_mix"];
-    tempAudioPar.delay_feedback = doc["delay_feedback"];
-    tempAudioPar.delay_time = doc["delay_time"];
-    tempAudioPar.delay_type = doc["delay_type"];
-    tempAudioPar.reverb_masterLevel = doc["reverb_masterLevel"];
-    tempAudioPar.chorus_masterLevel = doc["chorus_masterLevel"];
-    tempAudioPar.delay_masterLevel = doc["delay_masterLevel"];
-    tempAudioPar.phaser_masterLevel = doc["phaser_masterLevel"];
-
-    voiceBanks[currentVoiceBank]->patch = patch;
+    voiceBanks[currentVoiceBank]->patch = populatePatchFromDoc(doc);
     voiceBanks[currentVoiceBank]->applyPatchData();
       
     if (currentVoiceBank == 0)  // NOTE TEMPORARY FIX
     {
-      audioParameters = tempAudioPar;
+      audioParameters = populateAudioParametersFromDoc(doc);
       applyAudioParameters();
     }
 

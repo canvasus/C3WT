@@ -1,5 +1,5 @@
 Patch Manager for C3WT synth
-Requirements: Python >3.6 (+ additional requirements?)
+Requirements: Python >3.6 (+ possibly additional requirements?)
 
 Run with "patchManager.bat"
 

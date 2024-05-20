@@ -4,6 +4,7 @@
 #include "voice.h"
 #include "audioFunc.h"
 #include <USBHost_t36.h>
+#include "utils.h"
 
 #define RESOLUTION 24 // 24ppq
 #define MAX_ARP_NOTES 8
@@ -11,13 +12,16 @@
 #define ARP_IDLE 0
 #define ARP_PLAYING 1
 
-#define ARP_OFF  0
-#define ARP_UP   1
-#define ARP_DOWN 2
-#define ARP_CYCLE  3
-#define ARP_CHORD 4
+#define ARP_OFF       0
+#define ARP_UP        1
+#define ARP_DOWN      2
+#define ARP_CYCLE     3
+#define ARP_SEQUENCER 4
+#define ARP_CHORD     5
 
-#define NR_ARP_MODES 4
+#define NR_ARP_MODES 6
+
+#define NR_ARP_SEQUENCER_STEPS 16
 
 #define ARP_DIRECTION_UP 0
 #define ARP_DIRECTION_DOWN 1
@@ -84,6 +88,7 @@ class Arpeggiator
     MidiSettings * _midiSettings;
     VoiceBank * _voiceBank;
     void _printNotes();
+    //int8_t _sequencerOffsets[NR_ARP_SEQUENCER_STEPS];
   
   public:
     //Arpeggiator(MidiSettings * settings, VoiceBank * voiceBank, uint8_t * arpMode, uint8_t * intervalTicks);
@@ -94,9 +99,11 @@ class Arpeggiator
     void removeNote(uint8_t note);
     //uint8_t * offsetTicks;
     void reset();
+    uint8_t getStep() { return _step; }
 };
 
-//extern Arpeggiator arpeggiator;
+extern Arpeggiator arpeggiator_A;
+extern Arpeggiator arpeggiator_B;
 
 void setupMidi();
 void updateMidi();
@@ -118,6 +125,7 @@ void tickMasterClock();
 void updateArpeggiator();
 
 void adjustMidiParameter(uint8_t parameter, int8_t delta);
+void adjustArpeggiatorParameter(uint8_t parameter, int8_t delta);
 
 void setArpeggiatorMode(uint8_t dummy, int8_t value);
 void adjustBpm(uint8_t dummy, int8_t delta);

@@ -2,6 +2,7 @@
 
 #include <Audio.h>
 #include "src/P3_synth_waveform.h"
+#include "utils.h"
 // note: imported waveTables assumed to be 8193 samples, use wav2sketch 44100Hz/PCM
 
 #define ARBITRARY_LENGTH 8193
@@ -20,13 +21,6 @@
 #define FILTER_OCTAVECONTROL 7
 
 #define NR_WAVESHAPE_MODELS 4
-
-enum ParameterIndexes
-{
-  OSC1_WAVEFORM,
-  OSC2_WAVEFORM,
-  TRANSPOSE
-};
 
 // Next parameter index: 123
 #define POLY_MODE 106
@@ -172,7 +166,7 @@ enum ParameterIndexes
 #define LEFT  0
 #define RIGHT 1
 
-#define NR_WAVEFORMS 11
+#define NR_WAVEFORMS 14
 
 #define NR_WAVETABLES 20
 #define WAVETABLE_MODE_PHASESCAN  0
@@ -186,7 +180,7 @@ enum ParameterIndexes
 
 #define WAVETABLE_LENGTH 8192
 
-
+#define NR_ARP_SEQUENCER_STEPS 16
 
 extern int16_t waveTable1_I16[WAVETABLE_LENGTH];
 extern int16_t waveTable2_I16[WAVETABLE_LENGTH];
@@ -199,7 +193,6 @@ extern const String waveTableNames[NR_WAVETABLES];
 extern char waveformNames[NR_WAVEFORMS][6];
 extern char waveTableModes[2][6];
 extern char waveTableMovement[NR_WT_PLAYMODES][6];
-
 
 struct Patch
 {
@@ -355,6 +348,9 @@ struct Patch
   uint8_t arp_intervalTicks = 24;
   uint8_t arp_offsetTicks = 0;
   uint8_t arp_octaves = 0;
+  uint8_t arp_noteLengthTicks = 5;
+  int8_t  arp_offsets[NR_ARP_SEQUENCER_STEPS] = {0,0,12,0,0,12,0,0,3,0,0,3,0,0,0,0};
+  uint8_t  arp_velocities[NR_ARP_SEQUENCER_STEPS] = {127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,127};
 };
 
 class Voice
@@ -474,6 +470,7 @@ class Voice
     void setOsc1ParB();
     void setOsc2ParA();
     void setOsc2ParB();
+    
 };
 
 class VoiceBank
@@ -487,12 +484,9 @@ class VoiceBank
     AudioAnalyzeRMS    _lfo1Peak;
     AudioAnalyzeRMS    _lfo2Peak;
     AudioSynthWaveformDc _modDc;
-    
     AudioFilterStateVariable _dcOffsetFilter;
-
     AudioEffectWaveshaper _waveShaper;
-    //float _waveShapeArray[3] = {-1.0, 0, 1.0};
-    
+ 
     void _setWaveshaper();
     
     uint16_t _connectionIndex = 0;
@@ -530,6 +524,9 @@ class VoiceBank
     void setEfx();
     void applyPatchData();
     void importWaveTable(const unsigned int * waveTableI32, int16_t * waveTableI16);
+    uint16_t getWaveOffset(uint8_t oscillator);
+    void adjustArpSequencer(uint8_t step, int8_t delta);
+    void adjustArpVelocity(uint8_t step, int8_t delta);
 };
 
 const float AWFREQ = 172.0f;

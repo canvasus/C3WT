@@ -50,15 +50,29 @@ void Widget::draw(bool selected)
 void Widget::_drawBox(bool selected)
 {
   //uint16_t colors[2] = {textColor1, textColor2};
-  const uint8_t r = 6;
 
+  // --- Round rects ---
+  const uint8_t r = 6;
   if(selected) tft->fillRoundRect(_x, _y, _w, _h, r, color1);
   else tft->fillRoundRect(_x, _y, _w, _h, r, color2);
   if (drawBorder && !selected) tft->drawRoundRect(_x, _y, _w, _h, r, color2);
 
+  // --- Square rects ---
   //if(selected) tft->fillRect(_x, _y, _w, _h, color1);
   //else tft->fillRect(_x, _y, _w, _h, color2);
   //if (drawBorder && !selected) tft->drawRect(_x, _y, _w, _h, color2);
+
+  // --- Square rects with border ---
+  // if(selected)
+  // {
+  //   tft->fillRect(_x, _y, _w, _h, 0x8413);
+  //   tft->fillRect(_x + 2, _y + 2, _w - 4, _h - 4, color1);
+  // } 
+  // else
+  // {
+  //   tft->fillRect(_x, _y, _w, _h, 0x8413);
+  //   tft->fillRect(_x + 2, _y + 2, _w - 4, _h - 4, color2);
+  // }
 
   //if (drawLabel || drawVariable) _configureText();
   //if (drawWaveform) _drawWaveform(selected);
@@ -170,7 +184,7 @@ void Widget::_drawHbar(bool selected)
   float valueFractional = (value - varMin) / (varMax - varMin);
   float barWidth = valueFractional * w;
 
-  tft->drawRect(x0 - 1, y0 - 1, w + 2, h + 2, color1);
+  tft->drawRect(x0 - 1, y0 - 1, w + 2, h + 2, HBAR_BORDER_COLOR);
 
   if (selected)
   {

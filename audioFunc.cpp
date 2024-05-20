@@ -232,7 +232,7 @@ void adjustAudioParameter(uint8_t parameter, int8_t delta)
       setReverbInputMixer();
       break;
     case GRANULAR_SPEED:
-      targetValueF = audioParameters.granular_speed + delta * 0.2;
+      targetValueF = audioParameters.granular_speed + delta * 0.05;
       audioParameters.granular_speed = constrain(targetValueF, 0.2, 4.0); 
       setGranular();
       break;

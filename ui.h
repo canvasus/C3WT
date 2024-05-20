@@ -45,7 +45,7 @@
 #define HBAR_ACTIVE_SELECTED_COLOR  0x6c35
 #define HBAR_BG_IDLE_COLOR          0x630c
 #define HBAR_BG_SELECTED_COLOR      0x630c
-#define HBAR_BORDER_COLOR           BORDER_COLOR
+#define HBAR_BORDER_COLOR           0x8413 //BORDER_COLOR
 
 #define SHAPE_GRAPH_COLOR           0x6c35
 #define SHAPE_GRAPH_BG_COLOR        0x630c
@@ -82,6 +82,7 @@
 #define SLIDER_HANDLE         0xfd60
 #define MOD_SOURCE_COLOR      0xb75f
 #define MOD_DESTINATION_COLOR 0xfd75
+#define SEQ_MARKER_COLOR      0x07ff
 
 #define PAGE_PATCH       0
 #define PAGE_OSCILLATOR  1
@@ -126,7 +127,7 @@
 
 #define WIDGET_STRINGWIDTH 6
 
-#define MAX_WIDGETS 64
+#define MAX_WIDGETS 84
 #define MAX_STATICS 16
 
 extern bool forceReload;
@@ -301,6 +302,11 @@ void changePatch(uint8_t callerId, int8_t delta);
 void adjustVoiceBankWrapper(uint8_t index, int8_t delta);
 void adjustVoiceBank1Wrapper(uint8_t index, int8_t delta);
 void adjustVoiceBank2Wrapper(uint8_t index, int8_t delta);
+void adjustArpSequencerWrapper_bank1(uint8_t index, int8_t delta);
+void adjustArpSequencerWrapper_bank2(uint8_t index, int8_t delta);
+void adjustArpVelocityWrapper_bank1(uint8_t index, int8_t delta);
+void adjustArpVelocityWrapper_bank2(uint8_t index, int8_t delta);
+
 void setVoiceBankWrapper(uint8_t index, float value);
 void adjustCharacter(uint8_t charPos, int8_t delta);
 void savePatchWrapper(uint8_t index);
@@ -329,6 +335,7 @@ void animateBpm(bool firstCall);
 void animateSystemPage(bool firstCall);
 void animateMeter(bool firstCall);
 void animateWaveShaper(bool firstCall);
+void animateArpeggiator(bool firstCall);
 
 int16_t getEncoderDirection(uint8_t encoderNr);
 uint8_t updateButton(uint8_t buttonNr);

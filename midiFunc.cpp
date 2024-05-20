@@ -10,7 +10,7 @@ IntervalTimer masterClockTimer;
 Arpeggiator arpeggiator_A(&midiSettings, &voiceBank1);
 Arpeggiator arpeggiator_B(&midiSettings, &voiceBank2);
 
-char arpModeNames[NR_ARP_MODES][6] = {"off", "up", "down", "cycle"};
+char arpModeNames[NR_ARP_MODES][6] = {"off", "up", "down", "cycle", "seq", "chrd"};
 
 USBHost myusb;
 USBHub hub1(myusb);
@@ -330,6 +330,8 @@ Arpeggiator::Arpeggiator(MidiSettings * settings, VoiceBank * voiceBank)
   _midiSettings = settings;
   _voiceBank = voiceBank;
   memset(_notesPressed, 255, MAX_ARP_NOTES);
+  //memset(_sequencerOffsets, 0, 16);
+  //for (uint8_t i = 0; i < 16; i++) _sequencerOffsets[i] = i; // TEMP test
 }
 
 void Arpeggiator::update()
@@ -341,11 +343,16 @@ void Arpeggiator::update()
     if ( stepTrigger && !_oldStepTrigger) // rising edge
     {
       // new step
-      _voiceBank->noteOff(_notePlaying, 0);
-      //_voiceBank->noteOff(_notesPressed[_step] + _octave * 12, 0);
+      //Serial.println(_step);
+      _voiceBank->noteOff(_notePlaying, 0); // for mono modes
 
-      //if (_step >= (_nrNotesPressed - 1) ) _octave++;
-      //if (_octave > _voiceBank->patch.arp_octaves) _octave = 0;
+      // if ( _voiceBank->patch.arp_mode == ARP_SEQUENCER ) _notePlaying = (uint8_t)(_notesPressed[0] + _voiceBank->patch.arp_offsets[_step]);
+      // else
+      // {
+      //   if (_octave > _voiceBank->patch.arp_octaves) _octave = 0;
+      //   _notePlaying = _notesPressed[_step] + _octave * 12 + _voiceBank->patch.midi_transpose;
+      // }
+      // _voiceBank->noteOn(_notePlaying, 127);
 
       switch (_voiceBank->patch.arp_mode)
       {
@@ -371,19 +378,31 @@ void Arpeggiator::update()
           if (_step >= (_nrNotesPressed - 1) ) _direction = ARP_DIRECTION_DOWN;
           if (_step == 0) _direction = ARP_DIRECTION_UP;
           break;
+        case ARP_SEQUENCER:
+          if(_step < (NR_ARP_SEQUENCER_STEPS - 1) ) _step++;
+          else _step = 0;
+          break;
         case ARP_CHORD:
           break;
       }
-      
-      if (_octave > _voiceBank->patch.arp_octaves) _octave = 0;
-      _notePlaying = _notesPressed[_step] + _octave * 12 + _voiceBank->patch.midi_transpose;
-      //_voiceBank->noteOn(_notesPressed[_step] + _octave * 12, 127);
-      _voiceBank->noteOn(_notePlaying, 127);
+
+       if ( _voiceBank->patch.arp_mode == ARP_SEQUENCER )
+       {
+        _notePlaying = (uint8_t)(_notesPressed[0] + _voiceBank->patch.arp_offsets[_step]);
+        if (_voiceBank->patch.arp_velocities[_step] > 0) _voiceBank->noteOn(_notePlaying, 127);
+       } 
+       else
+       {
+        if (_octave > _voiceBank->patch.arp_octaves) _octave = 0;
+        _notePlaying = _notesPressed[_step] + _octave * 12 + _voiceBank->patch.midi_transpose;
+        _voiceBank->noteOn(_notePlaying, 127);
+       }
+    
     }
 
     else   
     {
-      // just do note off after noteLength
+      // no step change - just handle note off after noteLength (TBA)
     }
 
     _oldStepTrigger = stepTrigger;
@@ -416,6 +435,7 @@ void Arpeggiator::removeNote(uint8_t note)
   }
   qsort(_notesPressed, MAX_ARP_NOTES, sizeof(uint8_t), compare);
   if (_nrNotesPressed > 0) _step = min(_step, _nrNotesPressed - 1);
+  else if (_voiceBank->patch.arp_mode == ARP_SEQUENCER) _step = NR_ARP_SEQUENCER_STEPS - 1;
   else _step = 0;
   //_printNotes();
 }
@@ -445,6 +465,12 @@ void Arpeggiator::_printNotes()
   }
   Serial.print("_nrNotesPressed: ");
   Serial.println(_nrNotesPressed);
+  // for(uint8_t i = 0; i < NR_ARP_SEQUENCER_STEPS; i++)
+  // {
+  //   Serial.print(_sequencerOffsets[i]);
+  //   Serial.print(", ");
+  // }
+  // Serial.println("");
 }
 
 int compare (const void * a, const void * b)

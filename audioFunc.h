@@ -6,6 +6,7 @@
 #include "src/effect_phaser.h"
 #include "src/SM2k_control_wm8731.h"
 #include "voice.h"
+#include "utils.h"
 
 #define NR_PATCHCORDS_MAINBUS 64
 
@@ -72,9 +73,9 @@ struct AudioParameters
 
   float chorus_lfoRate = 6.0;
   
-  float phaser_lfoRate = 1.6;
-  uint8_t phaser_stages = 0;
-  float phaser_feedback = 0.0;
+  float phaser_lfoRate = 0.2;
+  uint8_t phaser_stages = 6;
+  float phaser_feedback = 0.2;
   float phaser_mix = 0.0;
   float phaser_depth = 0.4;
   
