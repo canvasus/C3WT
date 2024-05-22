@@ -2152,11 +2152,12 @@ FLASHMEM void configurePageArpeggiator()
   pages[PAGE].color2 = IDLE_COLOR;
   pages[PAGE].animateFunction = &animateArpeggiator;
 
-  const uint16_t column_w = 120;
+  const uint16_t column_w = 110;
   const uint16_t row_h = 60;
   const uint8_t padding = 4;
   const uint8_t labelOffsetX = 10;
   const uint8_t labelOffsetY = 8;
+  const uint8_t varOffsetX = 60;
 
   // --- Static labels ---
   staticIndex = pages[PAGE].addStatic(0, 0* (column_w + padding), 0, column_w, 40);
@@ -2202,10 +2203,10 @@ FLASHMEM void configurePageArpeggiator()
   pages[PAGE].staticPointers[staticIndex]->labelOffsetY = labelOffsetY;
 
 
-  widgetIndex = pages[PAGE].addWidget(SYS_BPM, 670, 0, column_w, row_h);
+  widgetIndex = pages[PAGE].addWidget(SYS_BPM, SCREEN_XRES - column_w , 0, column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Bpm");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &midiSettings.bpm;
@@ -2215,7 +2216,7 @@ FLASHMEM void configurePageArpeggiator()
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_ARP_MODE, 1* (column_w + padding), 0, column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("mod");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX - 10;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank1.patch.arp_mode;
@@ -2225,7 +2226,7 @@ FLASHMEM void configurePageArpeggiator()
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_ARP_INTERVAL, 2* (column_w + padding), 0, column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("int");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank1.patch.arp_intervalTicks;
@@ -2234,7 +2235,7 @@ FLASHMEM void configurePageArpeggiator()
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_ARP_OFFSET, 3* (column_w + padding), 0, column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("ofs");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank1.patch.arp_offsetTicks;
@@ -2243,10 +2244,19 @@ FLASHMEM void configurePageArpeggiator()
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_ARP_OCTAVES, 4* (column_w + padding), 0, column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Oct");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank1.patch.arp_octaves;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_A_ARP_KEYTRACK, 5* (column_w + padding), 0, column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Key");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank1.patch.arp_keyTrack;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
 
 
@@ -2254,7 +2264,7 @@ FLASHMEM void configurePageArpeggiator()
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_ARP_MODE, 1* (column_w + padding), 210, column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("mod");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX - 10;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank2.patch.arp_mode;
@@ -2264,7 +2274,7 @@ FLASHMEM void configurePageArpeggiator()
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_ARP_INTERVAL, 2* (column_w + padding), 210, column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("int");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank2.patch.arp_intervalTicks;
@@ -2273,7 +2283,7 @@ FLASHMEM void configurePageArpeggiator()
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_ARP_OFFSET, 3* (column_w + padding), 210, column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("ofs");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank2.patch.arp_offsetTicks;
@@ -2282,10 +2292,19 @@ FLASHMEM void configurePageArpeggiator()
   widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_ARP_OCTAVES, 4* (column_w + padding), 210, column_w, row_h);
   pages[PAGE].widgetPointers[widgetIndex]->label("Oct");
   pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 80;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank2.patch.arp_octaves;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
+
+  widgetIndex = pages[PAGE].addWidget(SYS_BANK_B_ARP_KEYTRACK, 5* (column_w + padding), 210, column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Key");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = varOffsetX;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 0;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank2.patch.arp_keyTrack;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustMidiParameter;
 
   const uint16_t seq_x0 = 32;
@@ -2302,37 +2321,41 @@ FLASHMEM void configurePageArpeggiator()
     widgetIndex = pages[PAGE].addWidget(step, seq_x0 + step * (seq_w + seq_pad), seq_yN_A, seq_w, seq_h);
     pages[PAGE].widgetPointers[widgetIndex]->drawLabel = false;
     pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-    pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 8;
-    pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 8;
+    pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 7;
+    pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 10;
+    pages[PAGE].widgetPointers[widgetIndex]->fontSize = 0;
     pages[PAGE].widgetPointers[widgetIndex]->var_ptr_i8 = &voiceBank1.patch.arp_offsets[step];
     pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustArpSequencerWrapper_bank1;
 
     widgetIndex = pages[PAGE].addWidget(step, seq_x0 + step * (seq_w + seq_pad), seq_yV_A, seq_w, seq_h);
     pages[PAGE].widgetPointers[widgetIndex]->drawLabel = false;
     pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-    pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 8;
-    pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 8;
+    pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 7;
+    pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 10;
+    pages[PAGE].widgetPointers[widgetIndex]->fontSize = 0;
     pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank1.patch.arp_velocities[step];
     pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustArpVelocityWrapper_bank1;
 
     widgetIndex = pages[PAGE].addWidget(step, seq_x0 + step * (seq_w + seq_pad), seq_yN_B, seq_w, seq_h);
     pages[PAGE].widgetPointers[widgetIndex]->drawLabel = false;
     pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-    pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 8;
-    pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 8;
+    pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 7;
+    pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 10;
+    pages[PAGE].widgetPointers[widgetIndex]->fontSize = 0;
     pages[PAGE].widgetPointers[widgetIndex]->var_ptr_i8 = &voiceBank2.patch.arp_offsets[step];
     pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustArpSequencerWrapper_bank2;
 
     widgetIndex = pages[PAGE].addWidget(step, seq_x0 + step * (seq_w + seq_pad), seq_yV_B, seq_w, seq_h);
     pages[PAGE].widgetPointers[widgetIndex]->drawLabel = false;
     pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
-    pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 8;
-    pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 8;
+    pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 7;
+    pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 10;
+    pages[PAGE].widgetPointers[widgetIndex]->fontSize = 0;
     pages[PAGE].widgetPointers[widgetIndex]->var_ptr_u8 = &voiceBank2.patch.arp_velocities[step];
     pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustArpVelocityWrapper_bank2;
   }
 
-  widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 680, 410, 120, 60);
+  widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, SCREEN_XRES - column_w, 410, column_w, 60);
   pages[PAGE].widgetPointers[widgetIndex]->label("<BACK");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
 }
@@ -2994,9 +3017,9 @@ void animateMeter(bool firstCall)
     tft.setFontDefault();
     tft.setFontScale(0);
     tft.setCursor(x0 - 12 , y0 - 3);
-    tft.print(1);
+    tft.print("A");
     tft.setCursor(x0 - 12 , y0 + meter_h - 1);
-    tft.print(2);
+    tft.print("B");
     //tft.drawFastVLine(x0 - 1, y0, 2 * meter_h - 2, meter_color);
   }
 

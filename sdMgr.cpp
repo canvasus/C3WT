@@ -24,13 +24,19 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   sprintf(fileName, "P3_PATCHJ_%03d", patchNr);
 
   File file = SD.open(fileName);
-  if (!file) return FILE_NOT_EXIST;
+  if (!file)
+  {
+    Serial.print(F("File not found: "));
+    Serial.println(fileName);
+    return FILE_NOT_EXIST;
+  }
 
   StaticJsonDocument<JSON_DOC_SIZE> doc;
   DeserializationError error = deserializeJson(doc, file);
   if (error)
   {
-    Serial.println(F("Failed to read file, using default configuration"));
+    Serial.print(F("Json deserialization error: "));
+    Serial.println(error.c_str());
     return INVALID_FORMAT;
   } 
 
@@ -210,6 +216,9 @@ FLASHMEM Patch populatePatchFromDoc(const JsonDocument& doc)
     char parName[14];
     sprintf(parName, "arp_offset_%d", i);
     patch.arp_offsets[i] = doc[parName] | 0;
+    char parName2[16];
+    sprintf(parName2, "arp_velocity_%d", i);
+    patch.arp_velocities[i] = doc[parName2] | 127;
   }
 
   return patch;
@@ -412,6 +421,13 @@ FLASHMEM void savePatch(uint8_t patchNr)
     char parName[14];
     sprintf(parName, "arp_offset_%d", i);
     doc[parName] = voiceBanks[currentVoiceBank]->patch.arp_offsets[i];
+  }
+
+  for (uint8_t i = 0; i < NR_ARP_SEQUENCER_STEPS; i++)
+  {
+    char parName[16];
+    sprintf(parName, "arp_velocity_%d", i);
+    doc[parName] = voiceBanks[currentVoiceBank]->patch.arp_velocities[i];
   }
 
   // AUDIO PARAMETERS

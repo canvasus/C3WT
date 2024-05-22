@@ -22,7 +22,7 @@ struct PatchInfo
 };
 
 #define DATA_SIZE sizeof(Patch) + sizeof(AudioParameters)
-#define JSON_DOC_SIZE 5208
+#define JSON_DOC_SIZE 5800
 
 extern PatchInfo patchInfo;
 extern String patchNameUI[NR_VOICEBANKS];

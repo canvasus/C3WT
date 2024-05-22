@@ -211,12 +211,6 @@ void updateArpeggiator()
   arpeggiator_B.update();
 }
 
-// void setArpeggiatorMode(uint8_t bank, int8_t delta)
-// {
-//   if (bank == 0) voiceBank1.patch.arp_mode = constrain(voiceBank1.patch.arp_mode + delta, 0, NR_ARP_MODES - 1);
-//   else voiceBank2.patch.arp_mode = constrain(voiceBank2.patch.arp_mode + delta, 0, NR_ARP_MODES - 1);
-// }
-
 void adjustBpm(uint8_t dummy, int8_t delta)
 {
   midiSettings.bpm = constrain(midiSettings.bpm + delta, 20, 255);
@@ -319,6 +313,14 @@ void adjustMidiParameter(uint8_t parameter, int8_t delta)
       targetValue_I8 = voiceBank2.patch.arp_octaves + delta;
       voiceBank2.patch.arp_octaves = constrain(targetValue_I8, 0, 3);
       break;
+    case SYS_BANK_A_ARP_KEYTRACK:
+      if (voiceBank1.patch.arp_keyTrack == 0) voiceBank1.patch.arp_keyTrack = 1;
+      else voiceBank1.patch.arp_keyTrack = 0;
+      break;
+    case SYS_BANK_B_ARP_KEYTRACK:
+      if (voiceBank2.patch.arp_keyTrack == 0) voiceBank2.patch.arp_keyTrack = 1;
+      else voiceBank2.patch.arp_keyTrack = 0;
+      break;
 
 
   }
@@ -336,14 +338,13 @@ Arpeggiator::Arpeggiator(MidiSettings * settings, VoiceBank * voiceBank)
 
 void Arpeggiator::update()
 {
-  if ( (_voiceBank->patch.arp_mode != ARP_OFF) && (_nrNotesPressed > 0) )
+  if ( (_voiceBank->patch.arp_mode != ARP_OFF) && ( (_nrNotesPressed > 0) || (_voiceBank->patch.arp_keyTrack == 1) ))
   {
     bool stepTrigger = ( (midiSettings.masterClock % _voiceBank->patch.arp_intervalTicks) == _voiceBank->patch.arp_offsetTicks);
 
     if ( stepTrigger && !_oldStepTrigger) // rising edge
     {
       // new step
-      //Serial.println(_step);
       _voiceBank->noteOff(_notePlaying, 0); // for mono modes
 
       // if ( _voiceBank->patch.arp_mode == ARP_SEQUENCER ) _notePlaying = (uint8_t)(_notesPressed[0] + _voiceBank->patch.arp_offsets[_step]);
@@ -388,7 +389,8 @@ void Arpeggiator::update()
 
        if ( _voiceBank->patch.arp_mode == ARP_SEQUENCER )
        {
-        _notePlaying = (uint8_t)(_notesPressed[0] + _voiceBank->patch.arp_offsets[_step]);
+        _notePlaying = (uint8_t)(_baseNote + _voiceBank->patch.arp_offsets[_step]);
+        //_notePlaying = (uint8_t)(_notesPressed[0] + _voiceBank->patch.arp_offsets[_step]);
         if (_voiceBank->patch.arp_velocities[_step] > 0) _voiceBank->noteOn(_notePlaying, 127);
        } 
        else
@@ -416,13 +418,14 @@ void Arpeggiator::addNote(uint8_t note)
     _notesPressed[MAX_ARP_NOTES - 1] = note;
     _nrNotesPressed++;
     qsort(_notesPressed, MAX_ARP_NOTES, sizeof(uint8_t), compare);
+    _baseNote = _notesPressed[0];
   }
   //_printNotes();
 }
 
 void Arpeggiator::removeNote(uint8_t note)
 {
-  if (_voiceBank->patch.arp_mode != ARP_OFF) _voiceBank->noteOff(note + _octave * 12, 0);
+  if ((_voiceBank->patch.arp_mode != ARP_OFF) && (_voiceBank->patch.arp_keyTrack != 1)) _voiceBank->noteOff(note + _octave * 12, 0);
 
   for(uint8_t i = 0; i < MAX_ARP_NOTES; i++)
   {
@@ -434,8 +437,10 @@ void Arpeggiator::removeNote(uint8_t note)
     }
   }
   qsort(_notesPressed, MAX_ARP_NOTES, sizeof(uint8_t), compare);
+  if (_voiceBank->patch.arp_keyTrack == 1) return;
   if (_nrNotesPressed > 0) _step = min(_step, _nrNotesPressed - 1);
   else if (_voiceBank->patch.arp_mode == ARP_SEQUENCER) _step = NR_ARP_SEQUENCER_STEPS - 1;
+  //else if (_voiceBank->patch.arp_keyTrack == 1) return;
   else _step = 0;
   //_printNotes();
 }
@@ -450,7 +455,8 @@ void Arpeggiator::reset()
       _notesPressed[i] = 255;
     }
   }
-  _step = 0;
+  if (_voiceBank->patch.arp_mode == ARP_SEQUENCER) _step = NR_ARP_SEQUENCER_STEPS - 1;
+  else _step = 0;
   //memset(_notesPressed, 255, MAX_ARP_NOTES);
   _nrNotesPressed = 0;
   _notePlaying = 0;

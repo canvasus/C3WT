@@ -47,6 +47,8 @@
 #define SYS_BANK_B_ARP_OFFSET 16
 #define SYS_BANK_A_ARP_OCTAVES 17
 #define SYS_BANK_B_ARP_OCTAVES 18
+#define SYS_BANK_A_ARP_KEYTRACK 19
+#define SYS_BANK_B_ARP_KEYTRACK 20
 
 
 extern uint8_t noteStatus[128];
@@ -85,6 +87,7 @@ class Arpeggiator
     uint8_t _direction = ARP_DIRECTION_UP;
     bool _oldStepTrigger = false;
     uint8_t _notePlaying = 0;
+    uint8_t _baseNote = 0;
     MidiSettings * _midiSettings;
     VoiceBank * _voiceBank;
     void _printNotes();

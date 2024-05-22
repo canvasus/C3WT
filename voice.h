@@ -349,6 +349,7 @@ struct Patch
   uint8_t arp_offsetTicks = 0;
   uint8_t arp_octaves = 0;
   uint8_t arp_noteLengthTicks = 5;
+  uint8_t arp_keyTrack = 0;
   int8_t  arp_offsets[NR_ARP_SEQUENCER_STEPS] = {0,0,12,0,0,12,0,0,3,0,0,3,0,0,0,0};
   uint8_t  arp_velocities[NR_ARP_SEQUENCER_STEPS] = {127,127,127,127,127,127,127,127,127,127,127,127,127,127,127,127};
 };
