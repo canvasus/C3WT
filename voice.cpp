@@ -1234,7 +1234,8 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       if (targetValueI8 > (NR_WAVETABLES - 1) ) targetValueI8 = 0;
       if (targetValueI8 < 0) targetValueI8 = NR_WAVETABLES - 1;
       patch.osc1_waveTable_index = (uint8_t)targetValueI8;
-      importWaveTable(waveTables[patch.osc1_waveTable_index], waveTable1_I16); // FIX for multitimbral
+      //importWaveTable(waveTables[patch.osc1_waveTable_index], waveTable1_I16); // FIX for multitimbral
+      importWaveTable(waveTables[patch.osc1_waveTable_index], activeWaveTables[0 + id*2]); // bank A has id 0 --> 0
       break;
     case OSC1_WAVETABLE_MODE:
       targetValueI8 = patch.osc1_waveTable_mode + delta;
@@ -1282,7 +1283,8 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       if (targetValueI8 > (NR_WAVETABLES - 1) ) targetValueI8 = 0;
       if (targetValueI8 < 0) targetValueI8 = NR_WAVETABLES - 1;
       patch.osc2_waveTable_index = (uint8_t)targetValueI8;
-      importWaveTable(waveTables[patch.osc2_waveTable_index], waveTable2_I16); // FIX for multitimbral
+      //importWaveTable(waveTables[patch.osc2_waveTable_index], waveTable2_I16); // FIX for multitimbral
+      importWaveTable(waveTables[patch.osc2_waveTable_index], activeWaveTables[1 + id*2]); // bank A has id 0 --> 1
       break;
     case OSC2_WAVETABLE_MODE:
       targetValueI8 = patch.osc2_waveTable_mode + delta;

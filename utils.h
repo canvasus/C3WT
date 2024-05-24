@@ -7,3 +7,5 @@
     typeof(high) _high = (high);\
     (_amt < _low) ? _high : ((_amt > _high) ? _low : _amt);\
      })
+
+
