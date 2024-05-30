@@ -1772,6 +1772,15 @@ FLASHMEM void configurePage_envelope()
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.ampEnvelope_release;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
 
+  widgetIndex = pages[PAGE].addWidget(VELOCITY_TO_AMP_ENV_AMPL, 0* (column_w + padding), 5* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Vel");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 70;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 2;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.velocityToLevel;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
+
   widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 680, 410, 120, 60);
   pages[PAGE].widgetPointers[widgetIndex]->label("<BACK");
   pages[PAGE].widgetPointers[widgetIndex]->activateCb = &setPage;
@@ -1875,6 +1884,15 @@ FLASHMEM void configurePage_filter()
   pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
   pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 2;
   pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.hpfilter_cutoff;
+  pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
+
+  widgetIndex = pages[PAGE].addWidget(VELOCITY_TO_FILTER_ENV_AMPL, 0* (column_w + padding), 5* (row_h + padding), column_w, row_h);
+  pages[PAGE].widgetPointers[widgetIndex]->label("Vel");
+  pages[PAGE].widgetPointers[widgetIndex]->drawVariable = true;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetX = 70;
+  pages[PAGE].widgetPointers[widgetIndex]->varOffsetY = 30;
+  pages[PAGE].widgetPointers[widgetIndex]->floatPrecision = 2;
+  pages[PAGE].widgetPointers[widgetIndex]->var_ptr_f = &voiceBanks[currentVoiceBank]->patch.velocityToFilterEnvelope;
   pages[PAGE].widgetPointers[widgetIndex]->setI8 = &adjustVoiceBankWrapper;
 
   widgetIndex = pages[PAGE].addWidget(PAGE_PATCH, 680, 410, 120, 60);

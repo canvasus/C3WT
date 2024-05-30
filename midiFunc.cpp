@@ -347,14 +347,6 @@ void Arpeggiator::update()
       // new step
       _voiceBank->noteOff(_notePlaying, 0); // for mono modes
 
-      // if ( _voiceBank->patch.arp_mode == ARP_SEQUENCER ) _notePlaying = (uint8_t)(_notesPressed[0] + _voiceBank->patch.arp_offsets[_step]);
-      // else
-      // {
-      //   if (_octave > _voiceBank->patch.arp_octaves) _octave = 0;
-      //   _notePlaying = _notesPressed[_step] + _octave * 12 + _voiceBank->patch.midi_transpose;
-      // }
-      // _voiceBank->noteOn(_notePlaying, 127);
-
       switch (_voiceBank->patch.arp_mode)
       {
         case ARP_UP:
@@ -390,8 +382,7 @@ void Arpeggiator::update()
        if ( _voiceBank->patch.arp_mode == ARP_SEQUENCER )
        {
         _notePlaying = (uint8_t)(_baseNote + _voiceBank->patch.arp_offsets[_step]);
-        //_notePlaying = (uint8_t)(_notesPressed[0] + _voiceBank->patch.arp_offsets[_step]);
-        if (_voiceBank->patch.arp_velocities[_step] > 0) _voiceBank->noteOn(_notePlaying, 127);
+        if (_voiceBank->patch.arp_velocities[_step] > 0) _voiceBank->noteOn(_notePlaying, _voiceBank->patch.arp_velocities[_step]);
        } 
        else
        {

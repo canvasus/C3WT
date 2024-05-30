@@ -101,11 +101,13 @@ FLASHMEM Voice::Voice()
   _envelope3.hold(0.0);
   _envelope3.delay(0.0);
 
-  _connect(_envelopeDC, 0, _filterEnvelope, 0);
+  //_connect(_envelopeDC, 0, _filterEnvelope, 0);
+  _connect(_filterEnvelopeDC, 0, _filterEnvelope, 0);
   _connect(_filterEnvelope, 0, _filterModMixer, 0);
   _connect(_filterModMixer, 0, _filter, 1);
   
   _envelopeDC.amplitude(1.0);
+  _filterEnvelopeDC.amplitude(1.0);
 
   _filter.frequency(FILTER_MAX_CUTOFF);
   _filter.octaveControl(FILTER_OCTAVECONTROL);
@@ -345,6 +347,12 @@ void Voice::noteOn(uint8_t note, uint8_t velocity)
   currentNote = note;
   updateFrequency();
 
+  if (_patch->velocityToLevel > 0.01) output.gain((1.0 - _patch->velocityToLevel) + _patch->velocityToLevel * velocity / 127.0);
+  else output.gain(1.0);
+
+  if (_patch->velocityToFilterEnvelope > 0.01)  _filterEnvelopeDC.amplitude((1.0 - _patch->velocityToFilterEnvelope) + _patch->velocityToFilterEnvelope * velocity / 127.0);
+  else _filterEnvelopeDC.amplitude(1.0);
+
   if (_patch->osc1_waveTable_movement == WAVETABLE_PLAYMODE_ONESHOT_UP)
   {
     _waveOffset1 = _patch->osc1_waveTable_start;
@@ -485,7 +493,6 @@ void Voice::setFilterEnv()
   _filterEnvelope.decay(_patch->filterEnvelope_decay);
   _filterEnvelope.sustain(_patch->filterEnvelope_sustain);
   _filterEnvelope.release(_patch->filterEnvelope_release);
-  //_filterModMixer.gain(0, _patch->envToFilter);
 }
 
 void Voice::setEnv3()
@@ -589,7 +596,7 @@ void Voice::set_modMixer_osc2_phase()
 
 void Voice::set_modMixer_filter()
 {
-  _filterModMixer.gain(0, _patch->envToFilter); // FILTER ENV
+  _filterModMixer.gain(0, _patch->envToFilter); // FILTER ENV (DC)
   _filterModMixer.gain(1, _patch->mod_lfo1_filter_cutoff); // LFO1
   _filterModMixer.gain(2, _patch->mod_lfo2_filter_cutoff); // LFO2
   _filterModMixer.gain(3, 0.0);
@@ -931,6 +938,15 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
       break;
     
+    case VELOCITY_TO_AMP_ENV_AMPL:
+      targetValueF = patch.velocityToLevel + delta * 0.02;
+      patch.velocityToLevel  = constrain(targetValueF, 0.0, 1.0);
+      break;
+    case VELOCITY_TO_FILTER_ENV_AMPL:
+      targetValueF = patch.velocityToFilterEnvelope + delta * 0.02;
+      patch.velocityToFilterEnvelope  = constrain(targetValueF, 0.0, 1.0);
+      break;
+
     case ENV3_ATTACK:
       if (patch.envelope3_attack < 11) targetValueF = patch.envelope3_attack + delta;
       else targetValueF = patch.envelope3_attack + delta * 10;
@@ -1234,7 +1250,6 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       if (targetValueI8 > (NR_WAVETABLES - 1) ) targetValueI8 = 0;
       if (targetValueI8 < 0) targetValueI8 = NR_WAVETABLES - 1;
       patch.osc1_waveTable_index = (uint8_t)targetValueI8;
-      //importWaveTable(waveTables[patch.osc1_waveTable_index], waveTable1_I16); // FIX for multitimbral
       importWaveTable(waveTables[patch.osc1_waveTable_index], activeWaveTables[0 + id*2]); // bank A has id 0 --> 0
       break;
     case OSC1_WAVETABLE_MODE:
@@ -1283,7 +1298,6 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       if (targetValueI8 > (NR_WAVETABLES - 1) ) targetValueI8 = 0;
       if (targetValueI8 < 0) targetValueI8 = NR_WAVETABLES - 1;
       patch.osc2_waveTable_index = (uint8_t)targetValueI8;
-      //importWaveTable(waveTables[patch.osc2_waveTable_index], waveTable2_I16); // FIX for multitimbral
       importWaveTable(waveTables[patch.osc2_waveTable_index], activeWaveTables[1 + id*2]); // bank A has id 0 --> 1
       break;
     case OSC2_WAVETABLE_MODE:

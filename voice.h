@@ -154,6 +154,9 @@
 #define OSC2_PAR_A 125
 #define OSC2_PAR_B 126
 
+#define VELOCITY_TO_AMP_ENV_AMPL 127
+#define VELOCITY_TO_FILTER_ENV_AMPL 128
+
 #define EFX_PAN 118
 #define WAVESHAPER_INDEX 119
 #define WAVESHAPER_LEVEL 120
@@ -234,8 +237,10 @@ struct Patch
 
   float cutoff = 1.0;
   float resonance = 0.0;
-
   float hpfilter_cutoff = 0.0;
+
+  float velocityToLevel = 0.0;
+  float velocityToFilterEnvelope = 0.0;
 
   float envelope3_attack = 0.0;
   float envelope3_decay = 200;
@@ -367,7 +372,8 @@ class Voice
     AudioEffectEnvelope               _envelope3;
 
     AudioSynthWaveformDc              _envelopeDC;
-    
+    AudioSynthWaveformDc              _filterEnvelopeDC;
+
     #ifndef USE_LADDER_FILTER
     AudioFilterStateVariable          _filter;
     #endif
