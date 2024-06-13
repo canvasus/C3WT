@@ -37,6 +37,8 @@
 #define SIDECHAIN_HOLD    40
 #define SIDECHAIN_RELEASE 41
 
+#define HP_VOLUME 42
+
 #define DELAY_NORMAL 0
 #define DELAY_PINGPONG 1
 
@@ -58,7 +60,7 @@ extern char voiceBankNames[NR_VOICEBANKS][6];
 
 struct AudioParameters
 {
-  float hpVolume = 0.70;
+  float hpVolume = 0.50;
   float usbGain = 1.5;
  
   float reverb_size = 0.75;

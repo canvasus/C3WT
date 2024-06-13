@@ -49,7 +49,8 @@
 #define SYS_BANK_B_ARP_OCTAVES 18
 #define SYS_BANK_A_ARP_KEYTRACK 19
 #define SYS_BANK_B_ARP_KEYTRACK 20
-
+#define SYS_BANK_A_ARP_LENGTH_MS 21
+#define SYS_BANK_B_ARP_LENGTH_MS 22
 
 extern uint8_t noteStatus[128];
 extern uint8_t midiActivity;
@@ -91,16 +92,13 @@ class Arpeggiator
     MidiSettings * _midiSettings;
     VoiceBank * _voiceBank;
     void _printNotes();
-    //int8_t _sequencerOffsets[NR_ARP_SEQUENCER_STEPS];
+    elapsedMillis _noteTimer;
   
   public:
-    //Arpeggiator(MidiSettings * settings, VoiceBank * voiceBank, uint8_t * arpMode, uint8_t * intervalTicks);
     Arpeggiator(MidiSettings * midiSettings, VoiceBank * voiceBank);
-    //void tick();
     void update();
     void addNote(uint8_t note);
     void removeNote(uint8_t note);
-    //uint8_t * offsetTicks;
     void reset();
     uint8_t getStep() { return _step; }
 };

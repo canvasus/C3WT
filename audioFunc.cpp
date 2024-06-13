@@ -59,6 +59,7 @@ FLASHMEM void setupAudio()
   codecControl1.setAddress(0x1A);
   codecControl1.enable();
   codecControl1.inputLevel(0.0);
+  codecControl1.volume(audioParameters.hpVolume);
   
   voiceBank1.id = 0;
   voiceBank2.id = 1;
@@ -308,6 +309,12 @@ void adjustAudioParameter(uint8_t parameter, int8_t delta)
       audioParameters.sideChain_release = constrain(targetValueF, 0, 200.0);
       break;
 
+    case HP_VOLUME:
+      targetValueF = audioParameters.hpVolume + delta * 0.05;
+      audioParameters.hpVolume = constrain(targetValueF, 0, 1.0);
+      codecControl1.volume(audioParameters.hpVolume);
+      break;
+
     default:
       break;
   }
@@ -356,6 +363,7 @@ void setChorus()
 {
   chorus.lfoRate(audioParameters.chorus_lfoRate);
 }
+
 
 void setPhaser()
 {

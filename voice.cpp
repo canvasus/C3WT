@@ -78,7 +78,8 @@ FLASHMEM Voice::Voice()
 
   _connect(_oscMixer, 0, _amplitudeModulation, 0);
   _connect(_amplitudeModulation, 0, _filter, 0);
-  _connect(_filter, 0, _ampEnvelope, 0);
+  //_connect(_filter, 0, _ampEnvelope, 0);
+  _connect(_filterMixer, 0, _ampEnvelope, 0);
   _connect(_ampEnvelope, 0, output, 0);
 
   // Amplitude Modulation (post osc mixer)
@@ -105,7 +106,10 @@ FLASHMEM Voice::Voice()
   _connect(_filterEnvelopeDC, 0, _filterEnvelope, 0);
   _connect(_filterEnvelope, 0, _filterModMixer, 0);
   _connect(_filterModMixer, 0, _filter, 1);
-  
+  _connect(_filter, 0, _filterMixer, 0); // LP
+  _connect(_filter, 1, _filterMixer, 1); // BP
+  _connect(_filter, 2, _filterMixer, 2); // HP
+
   _envelopeDC.amplitude(1.0);
   _filterEnvelopeDC.amplitude(1.0);
 
@@ -222,7 +226,7 @@ void Voice::_updateWaveTable1()
   switch (_patch->osc1_waveTable_movement)
   {
     case WAVETABLE_PLAYMODE_LFO1:
-      _waveOffset1 = _patch->osc1_waveTable_start + (_patch->osc1_waveTable_length >> 1) +  lfo1Value * (_patch->osc1_waveTable_length >> 1);
+      _waveOffset1 = _patch->osc1_waveTable_start + lfo1Value * _patch->osc1_waveTable_length;
       if (_waveOffset1 > (2* WAVETABLE_LENGTH - 257) ) _waveOffset1 = 2*WAVETABLE_LENGTH - 257;
       break;
     case WAVETABLE_PLAYMODE_LFO2:
@@ -276,7 +280,7 @@ void Voice::_updateWaveTable2()
   switch (_patch->osc2_waveTable_movement)
   {
     case WAVETABLE_PLAYMODE_LFO1:
-      _waveOffset2 = _patch->osc2_waveTable_start + (_patch->osc2_waveTable_length >> 1) +  lfo1Value * (_patch->osc2_waveTable_length >> 1);
+      _waveOffset2 = _patch->osc2_waveTable_start + lfo1Value * _patch->osc2_waveTable_length;
       if (_waveOffset2 > (2* WAVETABLE_LENGTH - 257) ) _waveOffset2 = 2*WAVETABLE_LENGTH - 257;
       break;
     case WAVETABLE_PLAYMODE_LFO2:
@@ -513,6 +517,11 @@ void Voice::setFilter()
   #ifdef USE_LADDER_FILTER
   _filter.resonance(1.8 * _patch->resonance);  // Ladder
   #endif
+
+  _filterMixer.gain(0, _patch->filterMix_LP);
+  _filterMixer.gain(1, _patch->filterMix_BP);
+  _filterMixer.gain(2, _patch->filterMix_HP);
+
 }
 
 void Voice::setOscMixer(uint8_t oscillatorId)
@@ -664,13 +673,6 @@ void VoiceBank::configure()
   _connect(_waveShaper, 0, output_reverbSend_R, 0);
   _connect(_waveShaper, 0, output_chorusSend, 0);
   _connect(_waveShaper, 0, output_delaySend, 0);
-
-  //_connect(_dcOffsetFilter, 2, output_dry_L, 0);
-  //_connect(_dcOffsetFilter, 2, output_dry_R, 0);
-  //_connect(_dcOffsetFilter, 2, output_reverbSend_L, 0);
-  //_connect(_dcOffsetFilter, 2, output_reverbSend_R, 0);
-  //_connect(_dcOffsetFilter, 2, output_chorusSend, 0);
-  //_connect(_dcOffsetFilter, 2, output_delaySend, 0);
 
   _voiceMixer[2].gain(0, 0.5);
   _voiceMixer[2].gain(1, 0.5);
@@ -937,6 +939,23 @@ void VoiceBank::adjustParameter(uint8_t parameter, int8_t delta)
       patch.resonance = constrain(targetValueF, 0.0, 1.0);
       for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
       break;
+    
+    case FILTERMIX_LP:
+      targetValueF = patch.filterMix_LP + delta * 0.01;
+      patch.filterMix_LP = constrain(targetValueF, 0.0, 1.0);
+      for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
+      break;
+    case FILTERMIX_BP:
+      targetValueF = patch.filterMix_BP + delta * 0.01;
+      patch.filterMix_BP = constrain(targetValueF, 0.0, 1.0);
+      for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
+      break;
+    case FILTERMIX_HP:
+      targetValueF = patch.filterMix_HP + delta * 0.01;
+      patch.filterMix_HP = constrain(targetValueF, 0.0, 1.0);
+      for (uint8_t voiceIndex = 0; voiceIndex < NR_VOICES; voiceIndex++) voices[voiceIndex].setFilter();
+      break;
+    
     
     case VELOCITY_TO_AMP_ENV_AMPL:
       targetValueF = patch.velocityToLevel + delta * 0.02;

@@ -221,6 +221,7 @@ void adjustBpm(uint8_t dummy, int8_t delta)
 void adjustMidiParameter(uint8_t parameter, int8_t delta)
 {
   int8_t targetValue_I8 = 0;
+  int16_t targetValue_I16 = 0;
   switch (parameter)
   {
     case SYS_BANK_A_MIDICHANNEL:
@@ -321,6 +322,14 @@ void adjustMidiParameter(uint8_t parameter, int8_t delta)
       if (voiceBank2.patch.arp_keyTrack == 0) voiceBank2.patch.arp_keyTrack = 1;
       else voiceBank2.patch.arp_keyTrack = 0;
       break;
+    case SYS_BANK_A_ARP_LENGTH_MS:
+      targetValue_I16 = voiceBank1.patch.arp_noteLengthMs + delta;
+      voiceBank1.patch.arp_noteLengthMs = constrain(targetValue_I16, 0, 2000);
+      break;
+    case SYS_BANK_B_ARP_LENGTH_MS:
+      targetValue_I16 = voiceBank2.patch.arp_noteLengthMs + delta;
+      voiceBank2.patch.arp_noteLengthMs = constrain(targetValue_I16, 0, 2000);
+      break;
 
 
   }
@@ -345,7 +354,7 @@ void Arpeggiator::update()
     if ( stepTrigger && !_oldStepTrigger) // rising edge
     {
       // new step
-      _voiceBank->noteOff(_notePlaying, 0); // for mono modes
+      //_voiceBank->noteOff(_notePlaying, 0); // for mono modes
 
       switch (_voiceBank->patch.arp_mode)
       {
@@ -379,27 +388,40 @@ void Arpeggiator::update()
           break;
       }
 
-       if ( _voiceBank->patch.arp_mode == ARP_SEQUENCER )
-       {
-        _notePlaying = (uint8_t)(_baseNote + _voiceBank->patch.arp_offsets[_step]);
-        if (_voiceBank->patch.arp_velocities[_step] > 0) _voiceBank->noteOn(_notePlaying, _voiceBank->patch.arp_velocities[_step]);
-       } 
-       else
+      if ( _voiceBank->patch.arp_mode == ARP_SEQUENCER )
+      {
+        if (_voiceBank->patch.arp_velocities[_step] > 0)
+        {
+          _notePlaying = (uint8_t)(_baseNote + _voiceBank->patch.arp_offsets[_step]);
+          _voiceBank->noteOn(_notePlaying, _voiceBank->patch.arp_velocities[_step]);
+          _noteTimer = 0;
+        }
+      } 
+      else
        {
         if (_octave > _voiceBank->patch.arp_octaves) _octave = 0;
         _notePlaying = _notesPressed[_step] + _octave * 12 + _voiceBank->patch.midi_transpose;
         _voiceBank->noteOn(_notePlaying, 127);
+        _noteTimer = 0;
        }
     
     }
 
-    else   
-    {
-      // no step change - just handle note off after noteLength (TBA)
-    }
+    // else   
+    // {
+    //   // no step change - just handle note off after noteLength (TBA)
+    //   if ( (_notePlaying > 0) && (_noteTimer >= _voiceBank->patch.arp_noteLengthMs) ) _voiceBank->noteOff(_notePlaying, 0); // for mono modes
+    // }
 
     _oldStepTrigger = stepTrigger;
-  } 
+  }
+
+  // no step change - just handle note off after noteLength (TBA)
+  if ( (_notePlaying > 0) && (_noteTimer >= _voiceBank->patch.arp_noteLengthMs) )
+  {
+    _voiceBank->noteOff(_notePlaying, 0); // for mono modes
+    _notePlaying = 0;
+  }
 }
   
 void Arpeggiator::addNote(uint8_t note)

@@ -5,26 +5,18 @@
 #include "voice.h"
 #include "audioFunc.h"
 #include "ui.h"
+#include "utils.h"
 
 #define CS_SD BUILTIN_SDCARD
 
 #define NR_PATCHES 150
-#define PATCH_NAME_NR_CHARACTERS 11
 
 #define LOAD_OK         0
 #define INVALID_FORMAT  1
 #define FILE_NOT_EXIST  2
 
-struct PatchInfo
-{
-  uint16_t dataSize = 0;
-  char name[PATCH_NAME_NR_CHARACTERS] = {'I', 'N', 'I', 'T', ' ', 'P', 'A', 'T', 'C', 'H'};
-};
+#define JSON_DOC_SIZE 6200
 
-#define DATA_SIZE sizeof(Patch) + sizeof(AudioParameters)
-#define JSON_DOC_SIZE 5800
-
-extern PatchInfo patchInfo;
 extern String patchNameUI[NR_VOICEBANKS];
 extern String peekPatchNameUI;
 extern uint8_t currentPatchNr[NR_VOICEBANKS];

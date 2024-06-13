@@ -83,6 +83,7 @@
 #define MOD_SOURCE_COLOR      0xb75f
 #define MOD_DESTINATION_COLOR 0xfd75
 #define SEQ_MARKER_COLOR      0x07ff
+#define WAVETABLE_POSITION_COLOR    0x07ff
 
 #define PAGE_PATCH       0
 #define PAGE_OSCILLATOR  1

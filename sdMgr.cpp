@@ -1,6 +1,6 @@
 #include "sdMgr.h"
 
-PatchInfo patchInfo;
+//PatchInfo patchInfo;
 String patchNameUI[NR_VOICEBANKS] = {"000: INIT PATCH", "000: INIT PATCH"};
 String peekPatchNameUI = "INIT PATCH";
 uint8_t currentPatchNr[NR_VOICEBANKS] = {0, 0};
@@ -42,15 +42,11 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
 
   file.close();
 
-  strlcpy(patchInfo.name,                  // <- destination
-          doc["name"] | "INIT PATCH",  // <- source
-          sizeof(patchInfo.name)); 
-
-  peekPatchNameUI = patchInfo.name;
-
   voiceBanks[currentVoiceBank]->patch = populatePatchFromDoc(doc);
   voiceBanks[currentVoiceBank]->applyPatchData();
-    
+  
+  peekPatchNameUI = voiceBanks[currentVoiceBank]->patch.name;
+
   if (currentVoiceBank == 0)  // NOTE TEMPORARY FIX
   {
     audioParameters = populateAudioParametersFromDoc(doc);
@@ -58,7 +54,7 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
   }
 
   char  buffer[16];
-  sprintf(buffer, "%03d: %s", patchNr, patchInfo.name);
+  sprintf(buffer, "%03d: %s", patchNr, voiceBanks[currentVoiceBank]->patch.name);
   patchNameUI[currentVoiceBank] = buffer;
   currentPatchNr[currentVoiceBank] = patchNr;
   peekPatchNr = patchNr;
@@ -68,6 +64,11 @@ FLASHMEM uint8_t loadPatch(uint8_t patchNr)
 FLASHMEM Patch populatePatchFromDoc(const JsonDocument& doc)
 {
   Patch patch;
+
+  strlcpy(patch.name,                  // <- destination
+          doc["name"] | "INIT PATCH",  // <- source
+          sizeof(patch.name)); 
+
   patch.osc1_waveform =doc["osc1_waveform"];
   patch.osc2_waveform = doc["osc2_waveform"];
 
@@ -85,6 +86,9 @@ FLASHMEM Patch populatePatchFromDoc(const JsonDocument& doc)
   patch.osc1_parB = doc["osc1_parB"] | 0;
   patch.osc2_parA = doc["osc2_parA"] | 0;
   patch.osc2_parB = doc["osc2_parB"] | 0;
+
+  patch.velocityToLevel = doc["velocityToLevel"];
+  patch.velocityToFilterEnvelope = doc["velocityToFilterEnvelope"];
 
   patch.waveshaper_index = doc["waveshaper_index"] | 0;
   patch.waveshaper_level = doc["waveshaper_level"] | 0.0;
@@ -107,6 +111,10 @@ FLASHMEM Patch populatePatchFromDoc(const JsonDocument& doc)
   patch.resonance = doc["resonance"];
   patch.hpfilter_cutoff = doc["hpfilter_cutoff"]; 
   
+  patch.filterMix_LP = doc["filterMix_LP"] | 1.0;
+  patch.filterMix_BP = doc["filterMix_BP"] | 0.0;
+  patch.filterMix_HP = doc["filterMix_HP"] | 0.0;
+
   patch.envelope3_attack = doc["envelope3_attack"];
   patch.envelope3_decay = doc["envelope3_decay"];
   patch.envelope3_sustain = doc["envelope3_sustain"];
@@ -210,6 +218,7 @@ FLASHMEM Patch populatePatchFromDoc(const JsonDocument& doc)
   patch.arp_intervalTicks = doc["arp_intervalTicks"] | 24;
   patch.arp_offsetTicks = doc["arp_offsetTicks"] | 0;
   patch.arp_octaves = doc["arp_octaves"] | 0;
+  patch.arp_keyTrack = doc["arp_keyTrack"] | 0;
 
   for (uint8_t i = 0; i < NR_ARP_SEQUENCER_STEPS; i++)
   {
@@ -268,8 +277,7 @@ FLASHMEM void savePatch(uint8_t patchNr)
 
   StaticJsonDocument<JSON_DOC_SIZE> doc;
 
-  // Set the values in the document
-  doc["name"] = patchInfo.name;
+  doc["name"] = voiceBanks[currentVoiceBank]->patch.name;
 
   doc["osc1_waveform"] = voiceBanks[currentVoiceBank]->patch.osc1_waveform;
   doc["osc2_waveform"] = voiceBanks[currentVoiceBank]->patch.osc2_waveform;
@@ -288,6 +296,9 @@ FLASHMEM void savePatch(uint8_t patchNr)
   doc["osc1_parB"] = voiceBanks[currentVoiceBank]->patch.osc1_parB;
   doc["osc2_parA"] = voiceBanks[currentVoiceBank]->patch.osc2_parA;
   doc["osc2_parB"] = voiceBanks[currentVoiceBank]->patch.osc2_parB;
+
+  doc["velocityToLevel"] = voiceBanks[currentVoiceBank]->patch.velocityToLevel;
+  doc["velocityToFilterEnvelope"] = voiceBanks[currentVoiceBank]->patch.velocityToFilterEnvelope;
 
   doc["waveshaper_index"] = voiceBanks[currentVoiceBank]->patch.waveshaper_index;
   doc["waveshaper_level"] = voiceBanks[currentVoiceBank]->patch.waveshaper_level;
@@ -309,7 +320,11 @@ FLASHMEM void savePatch(uint8_t patchNr)
   doc["cutoff"] = voiceBanks[currentVoiceBank]->patch.cutoff;
   doc["resonance"] = voiceBanks[currentVoiceBank]->patch.resonance;
   doc["hpfilter_cutoff"] = voiceBanks[currentVoiceBank]->patch.hpfilter_cutoff;
-    
+
+  doc["filterMix_LP"] = voiceBanks[currentVoiceBank]->patch.filterMix_LP;
+  doc["filterMix_BP"] = voiceBanks[currentVoiceBank]->patch.filterMix_BP;
+  doc["filterMix_HP"] = voiceBanks[currentVoiceBank]->patch.filterMix_HP;
+
   doc["envelope3_attack"] = voiceBanks[currentVoiceBank]->patch.envelope3_attack;
   doc["envelope3_decay"] = voiceBanks[currentVoiceBank]->patch.envelope3_decay;
   doc["envelope3_sustain"] = voiceBanks[currentVoiceBank]->patch.envelope3_sustain;
@@ -415,7 +430,8 @@ FLASHMEM void savePatch(uint8_t patchNr)
   doc["arp_intervalTicks"] = voiceBanks[currentVoiceBank]->patch.arp_intervalTicks;
   doc["arp_offsetTicks"] = voiceBanks[currentVoiceBank]->patch.arp_offsetTicks;
   doc["arp_octaves"] = voiceBanks[currentVoiceBank]->patch.arp_octaves;
-  
+  doc["arp_keyTrack"] = voiceBanks[currentVoiceBank]->patch.arp_keyTrack;
+
   for (uint8_t i = 0; i < NR_ARP_SEQUENCER_STEPS; i++)
   {
     char parName[14];
@@ -464,7 +480,7 @@ FLASHMEM void savePatch(uint8_t patchNr)
   file.close();
  
   char  buffer[16];
-  sprintf(buffer, "%03d: %s", patchNr, patchInfo.name);
+  sprintf(buffer, "%03d: %s", patchNr, voiceBanks[currentVoiceBank]->patch.name);
   patchNameUI[currentVoiceBank] = buffer;
 }
 
@@ -476,7 +492,7 @@ uint8_t peekPatchName(uint8_t patchNr)
 
   File file = SD.open(fileName);
 
-  StaticJsonDocument<5208> doc;
+  StaticJsonDocument<JSON_DOC_SIZE> doc;
 
   // // Deserialize the JSON document
   DeserializationError error = deserializeJson(doc, file);
@@ -552,12 +568,28 @@ void updateSerial()
   if (Serial.available() > 0)
   {
     String input = Serial.readStringUntil('\n');
+    //Serial.println(input.substring(0, 4));
     if (input == "DUMP")
     {
       Serial.println("Dump request recognized");
       dumpAllPatchData();
     }
-    else receivePatchData(input, currentVoiceBank);
+   
+    else if (input.substring(0, 5) == "STORE") // "STORE001\n"
+    {
+      uint16_t patchNr = (uint16_t)input.substring(5, 8).toInt();
+      patchNr = constrain(patchNr, 0, NR_PATCHES - 1);
+      //Serial.println(input.substring(5, 8));
+      //Serial.println(patchNr);
+      Serial.println("Patch saved");
+      savePatch(patchNr);
+    } 
+
+    else
+    {
+      receivePatchData(input, currentVoiceBank);
+      forceReload = true;
+    }
     // else if (input[0] == "{") receivePatchData(input, currentVoiceBank); // input should at least resemble json to care
   }
 }
@@ -577,26 +609,17 @@ FLASHMEM void receivePatchData(String buffer, uint8_t bankNr)
   {
     Serial.println(F("Patch data received OK"));
     
-    strlcpy(patchInfo.name,                  // <- destination
-            doc["name"] | "INIT PATCH",  // <- source
-            sizeof(patchInfo.name)); 
-
-    peekPatchNameUI = patchInfo.name;
-
     voiceBanks[currentVoiceBank]->patch = populatePatchFromDoc(doc);
     voiceBanks[currentVoiceBank]->applyPatchData();
       
-    if (currentVoiceBank == 0)  // NOTE TEMPORARY FIX
-    {
-      audioParameters = populateAudioParametersFromDoc(doc);
-      applyAudioParameters();
-    }
+    peekPatchNameUI = voiceBanks[currentVoiceBank]->patch.name;
+    audioParameters = populateAudioParametersFromDoc(doc);
+    applyAudioParameters();
 
     char  buffer[16];
-    sprintf(buffer, "%03d: %s", currentPatchNr[currentVoiceBank], patchInfo.name);
+    sprintf(buffer, "%03d: %s", currentPatchNr[currentVoiceBank], voiceBanks[currentVoiceBank]->patch.name);
     patchNameUI[currentVoiceBank] = buffer;
     peekPatchNr = currentPatchNr[currentVoiceBank];
-    forceReload = true;
-
+    //forceReload = true;
   }
 }

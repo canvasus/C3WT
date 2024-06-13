@@ -1,8 +1,9 @@
+import os
 import serial
 import serial.tools.list_ports
 import json
 import tkinter as tk
-from tkinter.filedialog import askopenfile
+from tkinter.filedialog import askopenfile, askdirectory
 
 def findPort():
     portName = ""
@@ -36,11 +37,10 @@ def updatePortIndicator(indicator):
         portString = "Teensy 4.x not found"
         indicator.config(text = portString, bg="red")
 
-def fileDialog():
-    file = askopenfile(mode ='r', filetypes =[('Python Files', '*.txt')])
+def uploadPatch(file):
     if file is not None:
         content = file.read()
-        print(content)
+        #print(content)
         try:
             global ser
             ser.write(content.encode())
@@ -48,6 +48,25 @@ def fileDialog():
         except:
             messageBox.config(text = "Patch transfer failed")
             print("ERROR patch not transfered")
+
+def uploadPack():
+    patchId = 0
+    directory = askdirectory()
+    #print(directory)
+    for filename in os.listdir(directory):
+        f = os.path.join(directory, filename)
+        # checking if it is a file
+        if os.path.isfile(f):
+            print(f)
+            file = open(f, "r")
+            uploadPatch(file)
+            requestStore(patchId)
+            patchId += 1
+
+def uploadSingle():
+    file = askopenfile(mode ='r', filetypes =[('Python Files', '*.txt')])
+    uploadPatch(file)
+
 
 def listenTask():
     global ser
@@ -62,6 +81,7 @@ def listenTask():
             message = "Patch received: " + json_data_1['name'].strip()
             messageBox.config(text = message)
         except ValueError:
+            messageBox.config(text = "T: " + output.strip())
             #print("decode/store patch failed")
             pass
 
@@ -69,6 +89,14 @@ def requestDump():
     global ser
     try:
         string = "DUMP\n"
+        ser.write(string.encode())
+    except:
+        pass
+
+def requestStore(patchId):
+    global ser
+    try:
+        string = "STORE{_patchId:03d}\n".format(_patchId = patchId)
         ser.write(string.encode())
     except:
         pass
@@ -105,12 +133,19 @@ portIndicator = tk.Label(root,
                  text="")
 portIndicator.place(x=0,y=0)
 
-button_upload = tk.Button(root, text="Upload patch..."
-                   ,command = lambda:fileDialog()
+button_upload_single = tk.Button(root, text="Upload single..."
+                   ,command = lambda:uploadSingle()
                    ,height= 2
-                   ,width = 36)
+                   ,width = 16)
 
-button_upload.place(x=20,y=30)
+button_upload_single.place(x=20,y=30)
+
+button_upload_pack = tk.Button(root, text="Upload pack..."
+                   ,command = lambda:uploadPack()
+                   ,height= 2
+                   ,width = 16)
+
+button_upload_pack.place(x=160,y=30)
 
 button_dump = tk.Button(root, text="Request all patches"
                    ,command = lambda:requestDump()
